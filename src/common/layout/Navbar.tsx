@@ -1,7 +1,7 @@
 import { BiLogIn, BiSearch, BiUser } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import useTheme from "../hooks/useTheme";
-import IconList from "../lib/iconList";
+import iconList from "../lib/iconList";
 
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
@@ -12,7 +12,7 @@ const Navbar = () => {
         {/* brand */}
         <Link to={"/"} className="text-xl font-semibold">
           <img
-            src="/images/logo/chirkut-logo-primary.png"
+            src="/images/logo/chirkutt-logo-primary.png"
             alt=""
             className="w-[38px]"
             title="chirkutt"
@@ -20,10 +20,10 @@ const Navbar = () => {
         </Link>
 
         {/* search box */}
-        <div className="relative flex-1 sm:flex-none max-w-[300px]">
+        <div className="relative flex-1 sm:flex-none max-w-[300px] sm:w-[300px]">
           <input
             type="text"
-            className="w-full sm:w-auto text-sm pr-4 rounded bg-neutral-50 dark:bg-neutral-800 focus:outline-none border border-neutral-200 dark:border-neutral-700  focus:ring-1 focus:ring-primary-300"
+            className="w-full  text-sm pr-4 rounded bg-neutral-50 dark:bg-neutral-800 focus:outline-none border border-neutral-200 dark:border-neutral-700  focus:ring-1 focus:ring-primary-300"
             placeholder="search here..."
           />
           <button
@@ -49,7 +49,7 @@ const Navbar = () => {
             </Link>
           ) : null}
           <button className="btn-icon btn-secondary" onClick={toggleTheme}>
-            {theme == "dark" ? <IconList.light /> : <IconList.dark />}
+            {theme == "dark" ? iconList.light : iconList.dark}
           </button>
         </div>
       </div>
