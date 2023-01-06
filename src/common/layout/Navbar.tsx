@@ -7,7 +7,7 @@ const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
   const authorized = true;
   return (
-    <nav className="py-2.5 bg-neutral-50 border-b border-b-neutral-200">
+    <nav className="py-2.5 bg-neutral-50 dark:bg-neutral-900 border-b border-b-neutral-200 dark:border-b-neutral-800 ">
       <div className="container flex items-center gap-2">
         {/* brand */}
         <Link to={"/"} className="text-xl font-semibold">
@@ -23,7 +23,7 @@ const Navbar = () => {
         <div className="relative flex-1 sm:flex-none max-w-[300px]">
           <input
             type="text"
-            className="w-full sm:w-auto text-sm pr-4 rounded bg-neutral-50 focus:outline-none border border-neutral-200 focus:ring-1 focus:ring-primary-300"
+            className="w-full sm:w-auto text-sm pr-4 rounded bg-neutral-50 dark:bg-neutral-800 focus:outline-none border border-neutral-200 dark:border-neutral-700  focus:ring-1 focus:ring-primary-300"
             placeholder="search here..."
           />
           <button
@@ -43,7 +43,7 @@ const Navbar = () => {
             </Link>
           ) : null}
           {authorized ? (
-            <Link to={"/profile"} className="btn btn-light hidden sm:flex">
+            <Link to={"/profile"} className="btn btn-theme hidden sm:flex">
               <BiUser />
               tonmoydeb
             </Link>
