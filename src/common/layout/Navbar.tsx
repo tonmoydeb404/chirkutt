@@ -1,8 +1,10 @@
 import { BiLogIn, BiSearch, BiUser } from "react-icons/bi";
 import { Link } from "react-router-dom";
+import useTheme from "../hooks/useTheme";
 import IconList from "../lib/iconList";
 
 const Navbar = () => {
+  const { theme, toggleTheme } = useTheme();
   const authorized = true;
   return (
     <nav className="py-2.5 bg-neutral-50 border-b border-b-neutral-200">
@@ -46,8 +48,8 @@ const Navbar = () => {
               tonmoydeb
             </Link>
           ) : null}
-          <button className="btn-icon btn-secondary">
-            <IconList.dark />
+          <button className="btn-icon btn-secondary" onClick={toggleTheme}>
+            {theme == "dark" ? <IconList.light /> : <IconList.dark />}
           </button>
         </div>
       </div>
