@@ -1,7 +1,9 @@
 import {
+  BiBookmarkPlus,
   BiBookmarks,
   BiCog,
   BiComment,
+  BiDotsHorizontalRounded,
   BiHome,
   BiLike,
   BiLogIn,
@@ -19,15 +21,17 @@ const iconList: { [key: string]: JSX.Element } = {
   light: <BiSun />,
   home: <BiHome />,
   person: <BiUser />,
-  bookmark: <BiBookmarks />,
+  bookmarks: <BiBookmarks />,
+  add_bookmark: <BiBookmarkPlus />,
   settings: <BiCog />,
   signout: <BiLogOut />,
   signin: <BiLogIn />,
   comment: <BiComment />,
   like: <BiLike />,
   share: <BiShare />,
-  more: <BiMenu />,
+  menu: <BiMenu />,
   add: <BiMessageAdd />,
+  more: <BiDotsHorizontalRounded />,
 };
 
 export default iconList;

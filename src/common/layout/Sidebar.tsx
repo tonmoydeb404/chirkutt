@@ -5,7 +5,7 @@ import { linkListLinkType } from "../types/linkList.type";
 const sidebarLinks: linkListLinkType[] = [
   { title: "Home", path: "/", icon: "home" },
   { title: "Profile", path: "/profile", icon: "person" },
-  { title: "Saved", path: "/saved", icon: "bookmark" },
+  { title: "Saved", path: "/saved", icon: "bookmarks" },
   { title: "Settings", path: "/settings", icon: "settings" },
   { title: "Sign Out", path: "/signout", icon: "signout" },
 ];
