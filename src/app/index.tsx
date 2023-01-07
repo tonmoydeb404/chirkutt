@@ -16,8 +16,8 @@ import { store } from "./store";
 const App = () => {
   return (
     <Provider store={store}>
-      <Layout>
-        <Routes>
+      <Routes>
+        <Route element={<Layout sidebar={true} />}>
           <Route path="/" element={<Home />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/settings" element={<Settings />} />
@@ -25,14 +25,16 @@ const App = () => {
           {/* dynamic */}
           <Route path="/post/:id" element={<Post />} />
           <Route path="/user/:username" element={<User />} />
+        </Route>
+        <Route element={<Layout sidebar={false} />}>
           {/* auth */}
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/reset" element={<Reset />} />
-          {/* error */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Layout>
+        </Route>
+        {/* error */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
     </Provider>
   );
 };
