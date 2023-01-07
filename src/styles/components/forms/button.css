@@ -18,6 +18,14 @@
   @apply inline-block duration-200 rounded border p-2.5  focus:outline-none focus:ring-2;
 }
 
+.btn-icon.btn-sm {
+  @apply p-2;
+}
+
+.btn-icon.btn-theme {
+  @apply border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 hover:bg-neutral-300 dark:hover:bg-neutral-700 text-neutral-900 dark:text-neutral-50 focus:ring-neutral-200 dark:focus:ring-neutral-500;
+}
+
 .btn-icon.btn-primary {
   @apply border-primary-600 bg-primary-600 hover:bg-primary-700 text-white;
 }
