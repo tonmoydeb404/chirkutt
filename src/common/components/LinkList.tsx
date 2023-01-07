@@ -5,7 +5,7 @@ import { linkListPropsType } from "../types/linkList.type";
 const LinkList = ({ links }: linkListPropsType) => {
   return links && links.length ? (
     <>
-      <ul className="flex flex-col border border-neutral-200 dark:bg-neutral-800 dark:border-neutral-700 py-2 px-2 rounded gap-0.5">
+      <ul className="flex flex-col border border-neutral-200 dark:bg-neutral-800 dark:border-neutral-700 py-2 px-2 rounded gap-0.5 shadow-sm">
         {links.map((link) => (
           <li key={link.path}>
             <NavLink
