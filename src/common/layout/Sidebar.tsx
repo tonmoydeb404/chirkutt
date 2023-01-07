@@ -12,7 +12,7 @@ const sidebarLinks: linkListLinkType[] = [
 
 const Sidebar = () => {
   return (
-    <aside className="flex flex-col gap-5 w-[220px] ">
+    <aside className="flex flex-col gap-3 md:gap-5 w-[50px] md:w-[220px] max-[500px]:hidden">
       <UserCard
         title="Chirkutt"
         username="chirkutt"
