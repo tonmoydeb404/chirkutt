@@ -2,6 +2,10 @@
   @apply inline-flex items-center gap-1 rounded border  px-4 py-2 text-sm font-medium duration-200 focus:outline-none focus:ring-2 tracking-wide;
 }
 
+.btn.btn-ghost {
+  @apply border-0 hover:bg-neutral-200 dark:hover:bg-neutral-700 bg-transparent;
+}
+
 .btn.btn-secondary {
   @apply border-secondary-800 bg-secondary-800 hover:bg-secondary-900 text-white focus:ring-secondary-300 dark:focus:ring-secondary-600;
 }
@@ -32,4 +36,8 @@
 
 .btn-icon.btn-secondary {
   @apply border-secondary-800 bg-secondary-800 hover:bg-secondary-900 text-white focus:ring-secondary-300 dark:focus:ring-secondary-600;
+}
+
+.btn-icon.btn-ghost {
+  @apply border-0 hover:bg-neutral-200 dark:hover:bg-neutral-700 bg-transparent;
 }

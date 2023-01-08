@@ -4,8 +4,11 @@ import {
   BiCog,
   BiComment,
   BiDotsHorizontalRounded,
+  BiError,
   BiHome,
   BiLike,
+  BiLock,
+  BiLockOpen,
   BiLogIn,
   BiLogOut,
   BiMenu,
@@ -14,7 +17,10 @@ import {
   BiShare,
   BiSun,
   BiUser,
+  BiUserPlus,
 } from "react-icons/bi";
+
+import { BsEye, BsEyeSlash } from "react-icons/bs";
 
 const iconList: { [key: string]: JSX.Element } = {
   dark: <BiMoon />,
@@ -26,12 +32,18 @@ const iconList: { [key: string]: JSX.Element } = {
   settings: <BiCog />,
   signout: <BiLogOut />,
   signin: <BiLogIn />,
+  signup: <BiUserPlus />,
   comment: <BiComment />,
   like: <BiLike />,
   share: <BiShare />,
   menu: <BiMenu />,
   add: <BiMessageAdd />,
   more: <BiDotsHorizontalRounded />,
+  error: <BiError />,
+  password: <BiLock />,
+  password_reset: <BiLockOpen />,
+  eye: <BsEye />,
+  eye_slash: <BsEyeSlash />,
 };
 
 export default iconList;
