@@ -48,7 +48,7 @@ const Navbar = () => {
               tonmoydeb
             </Link>
           ) : null}
-          <button className="btn-icon btn-secondary" onClick={toggleTheme}>
+          <button className="btn-icon btn-ghost" onClick={toggleTheme}>
             {theme == "dark" ? iconList.light : iconList.dark}
           </button>
         </div>
