@@ -1,5 +1,5 @@
 .btn {
-  @apply inline-flex items-center gap-1 rounded border  px-4 py-2 text-sm font-medium duration-200 focus:outline-none focus:ring-2 tracking-wide;
+  @apply inline-flex items-center gap-1 rounded border  px-4 py-2 text-sm font-medium duration-200 focus:outline-none focus:ring-2 tracking-wide cursor-pointer;
 }
 
 .btn.btn-ghost {
