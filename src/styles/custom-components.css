@@ -2,5 +2,8 @@
 @import "./components/forms/button.css";
 @import "./components/forms/input-group.css";
 
-/* common */
+/* custom components */
 @import "./components/dropdown.css";
+
+/* common */
+@import "./components/common.css";

@@ -3,7 +3,9 @@ import {
   BiBookmarks,
   BiCog,
   BiComment,
+  BiDetail,
   BiDotsHorizontalRounded,
+  BiEnvelope,
   BiError,
   BiHome,
   BiLike,
@@ -38,12 +40,14 @@ const iconList: { [key: string]: JSX.Element } = {
   share: <BiShare />,
   menu: <BiMenu />,
   add: <BiMessageAdd />,
+  post: <BiDetail />,
   more: <BiDotsHorizontalRounded />,
   error: <BiError />,
   password: <BiLock />,
   password_reset: <BiLockOpen />,
   eye: <BsEye />,
   eye_slash: <BsEyeSlash />,
+  email: <BiEnvelope />,
 };
 
 export default iconList;
