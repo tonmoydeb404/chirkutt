@@ -15,8 +15,8 @@ const Layout = ({ children, sidebar }: propTypes) => {
     <>
       <Navbar />
       <div className="container py-5 flex gap-3 md:gap-5">
-        {sidebar ? <Sidebar /> : null}
         <div className="flex-1">{children ? children : <Outlet />}</div>
+        {sidebar ? <Sidebar /> : null}
       </div>
       <MobileMenu />
       <Footer />
