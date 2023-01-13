@@ -62,7 +62,7 @@ const PostCard = ({
           {likes.length}
           <span className="text-base">{iconList.like}</span>
         </button>
-        <Link to={`/posts/${id}`} className="btn px-2 py-1.5 btn-theme">
+        <Link to={`/post/${id}`} className="btn px-2 py-1.5 btn-theme">
           01
           <span className="text-base">{iconList.comment}</span>
         </Link>
