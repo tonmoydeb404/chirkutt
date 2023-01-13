@@ -10,12 +10,18 @@
   @apply uppercase text-sm font-medium tracking-wide;
 }
 
-.input-group > input {
+.input-group > input,
+.input-group > textarea {
   @apply rounded bg-white  dark:bg-neutral-800 border-neutral-400 dark:border-neutral-700 focus:ring-primary-600;
 }
 
+.box .input-group > input,
+.box .input-group > textarea {
+  @apply dark:bg-neutral-900/40 bg-neutral-100 border-neutral-300 dark:border-neutral-700;
+}
+
 .input-group_error {
-  @apply text-danger-600 text-sm hidden items-center gap-0.5;
+  @apply text-error-600 text-sm hidden items-center gap-0.5;
 }
 
 .input-group.invalid .input-group_error {

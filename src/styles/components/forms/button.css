@@ -6,22 +6,6 @@
   @apply px-2 py-1;
 }
 
-.btn.btn-ghost {
-  @apply border-0 hover:bg-neutral-200 dark:hover:bg-neutral-700 bg-transparent;
-}
-
-.btn.btn-secondary {
-  @apply border-secondary-800 bg-secondary-800 hover:bg-secondary-900 text-white focus:ring-secondary-300 dark:focus:ring-secondary-600;
-}
-
-.btn.btn-primary {
-  @apply border-primary-600 bg-primary-600 hover:bg-primary-700 text-white focus:ring-primary-300 dark:focus:ring-primary-600/40;
-}
-
-.btn.btn-theme {
-  @apply border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 hover:bg-neutral-300 dark:hover:bg-neutral-700 text-neutral-900 dark:text-neutral-50 focus:ring-neutral-200 dark:focus:ring-neutral-500;
-}
-
 .btn-icon {
   @apply inline-block duration-200 rounded border p-2.5  focus:outline-none focus:ring-2;
 }
@@ -30,18 +14,37 @@
   @apply p-2;
 }
 
-.btn-icon.btn-theme {
-  @apply border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 hover:bg-neutral-300 dark:hover:bg-neutral-700 text-neutral-900 dark:text-neutral-50 focus:ring-neutral-200 dark:focus:ring-neutral-500;
+.btn.btn-ghost,
+.btn-icon.btn-ghost {
+  @apply border-0 hover:bg-neutral-200 dark:hover:bg-neutral-700 bg-transparent;
 }
 
-.btn-icon.btn-primary {
-  @apply border-primary-600 bg-primary-600 hover:bg-primary-700 text-white;
-}
-
+.btn.btn-secondary,
 .btn-icon.btn-secondary {
   @apply border-secondary-800 bg-secondary-800 hover:bg-secondary-900 text-white focus:ring-secondary-300 dark:focus:ring-secondary-600;
 }
 
-.btn-icon.btn-ghost {
-  @apply border-0 hover:bg-neutral-200 dark:hover:bg-neutral-700 bg-transparent;
+.btn.btn-primary,
+.btn-icon.btn-primary {
+  @apply border-primary-600 bg-primary-600 hover:bg-primary-700 text-white focus:ring-primary-300 dark:focus:ring-primary-600/40;
+}
+
+.btn.btn-error,
+.btn-icon.btn-error {
+  @apply border-error-600 bg-error-600 hover:bg-error-700 text-white focus:ring-error-300 dark:focus:ring-error-600/40;
+}
+
+.btn.btn-success,
+.btn-icon.btn-success {
+  @apply border-success-600 bg-success-600 hover:bg-success-700 text-white focus:ring-success-300 dark:focus:ring-success-600/40;
+}
+
+.btn.btn-warning,
+.btn-icon.btn-warning {
+  @apply border-warning-600 bg-warning-600 hover:bg-warning-700 text-white focus:ring-warning-300 dark:focus:ring-warning-600/40;
+}
+
+.btn.btn-theme,
+.btn-icon.btn-theme {
+  @apply border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 hover:bg-neutral-300 dark:hover:bg-neutral-700 text-neutral-900 dark:text-neutral-50 focus:ring-neutral-200 dark:focus:ring-neutral-500;
 }

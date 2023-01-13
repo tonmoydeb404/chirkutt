@@ -30,7 +30,7 @@ module.exports = {
         secondary: colors.slate,
         neutral: colors.neutral,
         // action colors
-        danger: colors.red,
+        error: colors.red,
         success: colors.green,
         warning: colors.yellow,
       },

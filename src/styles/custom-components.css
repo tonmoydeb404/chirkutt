@@ -4,6 +4,7 @@
 
 /* custom components */
 @import "./components/dropdown.css";
+@import "./components/comments.css";
 
 /* common */
 @import "./components/common.css";
