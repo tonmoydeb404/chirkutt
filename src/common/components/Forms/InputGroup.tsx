@@ -1,7 +1,7 @@
 import { ComponentProps, HTMLInputTypeAttribute, ReactNode } from "react";
 import { BiErrorAlt } from "react-icons/bi";
 
-type inputGroupPropsType = {
+type InputGroupProps = {
   label: string;
   id: string;
   type?: HTMLInputTypeAttribute;
@@ -20,7 +20,7 @@ const InputGroup = ({
   inputClass = "",
   children,
   ...props
-}: inputGroupPropsType) => {
+}: InputGroupProps) => {
   return (
     <div className={`input-group ${containerClass}`}>
       <div className="input-group_header">
