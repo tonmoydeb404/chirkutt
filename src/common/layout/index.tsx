@@ -21,7 +21,7 @@ const Layout = ({ children, sidebar }: propTypes) => {
       </div>
       <MobileMenu />
       <Footer />
-      <PostForm show={false} />
+      <PostForm />
     </>
   );
 };

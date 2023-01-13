@@ -1,11 +1,11 @@
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { closePostForm, selectPostForm } from "../../services/postFormSlice";
 import iconList from "../lib/iconList";
 import TextGroup from "./Forms/TextGroup";
 
-type PostFormProps = {
-  show: boolean;
-};
-
-const PostForm = ({ show }: PostFormProps) => {
+const PostForm = () => {
+  const { show } = useAppSelector(selectPostForm);
+  const dispatch = useAppDispatch();
   return (
     <div
       className={`absolute top-0 left-0 w-full min-h-full bg-neutral-900/50 flex-col items-center justify-center ${
@@ -16,7 +16,10 @@ const PostForm = ({ show }: PostFormProps) => {
         <div className="flex items-center">
           <h2 className="font-medium mr-auto text-lg">Create new post</h2>
 
-          <button className="btn-icon btn-sm btn-ghost text-lg">
+          <button
+            className="btn-icon btn-sm btn-ghost text-lg"
+            onClick={() => dispatch(closePostForm())}
+          >
             {iconList.close}
           </button>
         </div>
@@ -31,7 +34,12 @@ const PostForm = ({ show }: PostFormProps) => {
           <button className="btn btn-primary">
             save <span>{iconList.check}</span>
           </button>
-          <button className="btn btn-theme">cancel</button>
+          <button
+            className="btn btn-theme"
+            onClick={() => dispatch(closePostForm())}
+          >
+            cancel
+          </button>
         </div>
       </div>
     </div>

@@ -1,8 +1,11 @@
 import { Link } from "react-router-dom";
+import { useAppDispatch } from "../app/hooks";
 import PostCard from "../common/components/PostCard";
 import iconList from "../common/lib/iconList";
+import { openPostForm } from "../services/postFormSlice";
 
 const Profile = () => {
+  const dispatch = useAppDispatch();
   return (
     <>
       <div className="flex flex-col">
@@ -74,7 +77,10 @@ const Profile = () => {
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-medium">Recent Posts</h3>
 
-            <button className="btn btn-sm btn-primary">
+            <button
+              className="btn btn-sm btn-primary"
+              onClick={() => dispatch(openPostForm())}
+            >
               add new <span>{iconList.add}</span>
             </button>
           </div>
