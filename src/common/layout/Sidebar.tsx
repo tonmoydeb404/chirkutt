@@ -1,16 +1,27 @@
-import LinkList from "../components/LinkList";
+import { useAppDispatch } from "../../app/hooks";
+import { openPostForm } from "../../services/postFormSlice";
+import LinkList from "../components/List";
 import UserCard from "../components/UserCard";
-import { linkListLinkType } from "../types/linkList.type";
-
-const sidebarLinks: linkListLinkType[] = [
-  { title: "Home", path: "/", icon: "home" },
-  { title: "Profile", path: "/profile", icon: "person" },
-  { title: "Saved", path: "/saved", icon: "bookmarks" },
-  { title: "Settings", path: "/settings", icon: "settings" },
-  { title: "Sign Out", path: "/signout", icon: "signout" },
-];
+import { ListItemType } from "../types/ListType";
 
 const Sidebar = () => {
+  const dispatch = useAppDispatch();
+
+  const authorizedLinks: ListItemType[] = [
+    { title: "Home", path: "/", icon: "home" },
+    { title: "Profile", path: "/profile", icon: "person" },
+    { title: "New Post", action: () => dispatch(openPostForm()), icon: "add" },
+    { title: "Saved", path: "/saved", icon: "bookmarks" },
+    { title: "Settings", path: "/settings", icon: "settings" },
+    { title: "Sign Out", path: "/signout", icon: "signout" },
+  ];
+
+  const unauthorizedLinks: ListItemType[] = [
+    { title: "Home", path: "/", icon: "home" },
+    { title: "Sign up", path: "/signup", icon: "signup" },
+    { title: "Sign in", path: "/signin", icon: "signin" },
+  ];
+
   return (
     <aside className="flex flex-col gap-3 md:gap-5 w-[50px] md:w-[220px] max-[500px]:hidden">
       <UserCard
@@ -18,7 +29,7 @@ const Sidebar = () => {
         username="chirkutt"
         avatar="/images/logo/chirkutt-logo-secondary.png"
       />
-      <LinkList links={sidebarLinks} />
+      <LinkList items={authorizedLinks} />
     </aside>
   );
 };

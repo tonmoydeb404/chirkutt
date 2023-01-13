@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import iconList from "../lib/iconList";
-import { linkListLinkType } from "../types/linkList.type";
+import { linkListLinkType } from "../types/ListType";
 
 const mobileMenuLinks: linkListLinkType[] = [
   { title: "Home", path: "/", icon: "home" },

@@ -5,7 +5,7 @@ import iconList from "../lib/iconList";
 
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
-  const authorized = true;
+  const authorized = false;
   return (
     <nav className="py-2.5 bg-neutral-50 dark:bg-neutral-900 border-b border-b-neutral-200 dark:border-b-neutral-800 ">
       <div className="container flex items-center gap-2">
