@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { Outlet } from "react-router-dom";
+import PostForm from "../components/PostForm";
 import Footer from "./Footer";
 import MobileMenu from "./MobileMenu";
 import Navbar from "./Navbar";
@@ -20,6 +21,7 @@ const Layout = ({ children, sidebar }: propTypes) => {
       </div>
       <MobileMenu />
       <Footer />
+      <PostForm show={false} />
     </>
   );
 };
