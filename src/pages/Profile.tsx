@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import PostCard from "../common/components/PostCard";
 import iconList from "../common/lib/iconList";
 
 const Profile = () => {
@@ -37,7 +38,7 @@ const Profile = () => {
           </div>
         </div>
 
-        <div className="grid min-[500px]:grid-cols-2 sm:grid-cols-3 mt-5 gap-3">
+        <div className="grid min-[500px]:grid-cols-2 sm:grid-cols-3 mt-2 gap-2">
           <div className="flex items-start gap-1 py-2 sm:py-2.5 px-2 sm:px-3 box rounded">
             <span className="text-[40px] text-primary-600">
               {iconList.post}
@@ -66,6 +67,55 @@ const Profile = () => {
               <h3 className="text-xs uppercase tracking-wide">comments</h3>
               <h2 className="text-xl font-bold">200</h2>
             </div>
+          </div>
+        </div>
+
+        <div className="mt-10">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-medium">Recent Posts</h3>
+
+            <button className="btn btn-sm btn-primary">
+              add new <span>{iconList.add}</span>
+            </button>
+          </div>
+
+          <div className="flex flex-col gap-3 mt-3">
+            <PostCard
+              id="1"
+              text="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore, impedit"
+              createdAt={new Date().toISOString()}
+              modifiedAt={new Date().toISOString()}
+              likes={["tonmoy", "kdsa"]}
+              author={{
+                name: "Tonmoy Deb",
+                avatar: "/images/logo/chirkutt-logo-primary.png",
+                username: "tonmoydeb",
+              }}
+            />
+            <PostCard
+              id="1"
+              text="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore, impedit"
+              createdAt={new Date().toISOString()}
+              modifiedAt={new Date().toISOString()}
+              likes={["tonmoy", "kdsa"]}
+              author={{
+                name: "Tonmoy Deb",
+                avatar: "/images/logo/chirkutt-logo-primary.png",
+                username: "tonmoydeb",
+              }}
+            />
+            <PostCard
+              id="1"
+              text="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore, impedit"
+              createdAt={new Date().toISOString()}
+              modifiedAt={new Date().toISOString()}
+              likes={["tonmoy", "kdsa"]}
+              author={{
+                name: "Tonmoy Deb",
+                avatar: "/images/logo/chirkutt-logo-primary.png",
+                username: "tonmoydeb",
+              }}
+            />
           </div>
         </div>
       </div>
