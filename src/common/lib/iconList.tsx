@@ -1,6 +1,7 @@
 import {
   BiBookmarkPlus,
   BiBookmarks,
+  BiCheck,
   BiCog,
   BiComment,
   BiDetail,
@@ -16,10 +17,13 @@ import {
   BiMenu,
   BiMessageAdd,
   BiMoon,
+  BiSend,
   BiShare,
   BiSun,
+  BiTrash,
   BiUser,
   BiUserPlus,
+  BiX,
 } from "react-icons/bi";
 
 import { BsEye, BsEyeSlash } from "react-icons/bs";
@@ -40,6 +44,7 @@ const iconList: { [key: string]: JSX.Element } = {
   share: <BiShare />,
   menu: <BiMenu />,
   add: <BiMessageAdd />,
+  remove: <BiTrash />,
   post: <BiDetail />,
   more: <BiDotsHorizontalRounded />,
   error: <BiError />,
@@ -48,6 +53,9 @@ const iconList: { [key: string]: JSX.Element } = {
   eye: <BsEye />,
   eye_slash: <BsEyeSlash />,
   email: <BiEnvelope />,
+  check: <BiCheck />,
+  close: <BiX />,
+  send: <BiSend />,
 };
 
 export default iconList;
