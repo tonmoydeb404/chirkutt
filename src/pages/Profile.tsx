@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useAppDispatch } from "../app/hooks";
 import PostCard from "../common/components/PostCard";
 import iconList from "../common/lib/iconList";
-import { openPostForm } from "../services/postFormSlice";
+import { openPostForm } from "../features/postFormSlice";
 
 const Profile = () => {
   const dispatch = useAppDispatch();

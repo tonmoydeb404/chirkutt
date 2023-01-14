@@ -1,5 +1,6 @@
 import { useAppDispatch } from "../../app/hooks";
-import { openPostForm } from "../../services/postFormSlice";
+import { openPostForm } from "../../features/postFormSlice";
+import { signout } from "../../services/auth.service";
 import LinkList from "../components/List";
 import UserCard from "../components/UserCard";
 import { ListItemType } from "../types/ListType";
@@ -13,7 +14,7 @@ const Sidebar = () => {
     { title: "New Post", action: () => dispatch(openPostForm()), icon: "add" },
     { title: "Saved", path: "/saved", icon: "bookmarks" },
     { title: "Settings", path: "/settings", icon: "settings" },
-    { title: "Sign Out", path: "/signout", icon: "signout" },
+    { title: "Sign Out", action: signout, icon: "signout" },
   ];
 
   const unauthorizedLinks: ListItemType[] = [

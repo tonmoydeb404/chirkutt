@@ -1,6 +1,7 @@
 import { Provider } from "react-redux";
 import { Route, Routes } from "react-router-dom";
 import Layout from "../common/layout";
+import AuthStateChanged from "../features/auth/AuthStateChanged";
 import Home from "../pages/Home";
 import Post from "../pages/Post";
 import Profile from "../pages/Profile";
@@ -16,25 +17,27 @@ import { store } from "./store";
 const App = () => {
   return (
     <Provider store={store}>
-      <Routes>
-        <Route element={<Layout sidebar={true} />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/saved" element={<Saved />} />
-          {/* dynamic */}
-          <Route path="/post/:id" element={<Post />} />
-          <Route path="/user/:username" element={<User />} />
-        </Route>
-        <Route element={<Layout sidebar={false} />}>
-          {/* auth */}
-          <Route path="/signin" element={<SignIn />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/reset" element={<Reset />} />
-        </Route>
-        {/* error */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <AuthStateChanged>
+        <Routes>
+          <Route element={<Layout sidebar={true} />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/saved" element={<Saved />} />
+            {/* dynamic */}
+            <Route path="/post/:id" element={<Post />} />
+            <Route path="/user/:username" element={<User />} />
+          </Route>
+          <Route element={<Layout sidebar={false} />}>
+            {/* auth */}
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/reset" element={<Reset />} />
+          </Route>
+          {/* error */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </AuthStateChanged>
     </Provider>
   );
 };

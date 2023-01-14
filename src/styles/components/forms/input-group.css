@@ -24,6 +24,6 @@
   @apply text-error-600 text-sm hidden items-center gap-0.5;
 }
 
-.input-group.invalid .input-group_error {
+.input-group[data-invalid="true"] .input-group_error {
   @apply flex;
 }

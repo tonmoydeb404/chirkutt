@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { closePostForm, selectPostForm } from "../../services/postFormSlice";
+import { closePostForm, selectPostForm } from "../../features/postFormSlice";
 import iconList from "../lib/iconList";
 import TextGroup from "./Forms/TextGroup";
 

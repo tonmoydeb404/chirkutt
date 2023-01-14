@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import website from "../constants/website.json";
+import website from "../../constants/website.json";
 
 type returnType = {
   theme: "dark" | "light";

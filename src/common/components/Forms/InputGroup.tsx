@@ -22,16 +22,18 @@ const InputGroup = ({
   ...props
 }: InputGroupProps) => {
   return (
-    <div className={`input-group ${containerClass}`}>
+    <div className={`input-group ${containerClass}`} data-invalid={!!errorText}>
       <div className="input-group_header">
         <label htmlFor={id}>{label}</label>
         {children}
       </div>
       <input id={id} type={type} className={inputClass} {...props} />
-      <div className="input-group_error">
-        <BiErrorAlt />
-        {errorText ? <p>{errorText}</p> : null}
-      </div>
+      {errorText && errorText.length ? (
+        <div className="input-group_error">
+          <BiErrorAlt />
+          <p>{errorText}</p>
+        </div>
+      ) : null}
     </div>
   );
 };

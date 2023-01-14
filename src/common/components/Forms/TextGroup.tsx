@@ -20,7 +20,7 @@ const TextGroup = ({
   ...props
 }: TextGroupProps) => {
   return (
-    <div className={`input-group ${containerClass}`}>
+    <div className={`input-group ${containerClass}`} data-invalid={!!errorText}>
       {label || children ? (
         <div className="input-group_header">
           {label ? <label htmlFor={id}>{label}</label> : null}
@@ -28,10 +28,12 @@ const TextGroup = ({
         </div>
       ) : null}
       <textarea id={id} className={inputClass} {...props}></textarea>
-      <div className="input-group_error">
-        <BiErrorAlt />
-        {errorText ? <p>{errorText}</p> : null}
-      </div>
+      {errorText && errorText.length ? (
+        <div className="input-group_error">
+          <BiErrorAlt />
+          <p>{errorText}</p>
+        </div>
+      ) : null}
     </div>
   );
 };
