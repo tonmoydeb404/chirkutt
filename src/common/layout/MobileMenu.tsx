@@ -1,8 +1,8 @@
 import { NavLink } from "react-router-dom";
 import iconList from "../lib/iconList";
-import { linkListLinkType } from "../types/ListType";
+import { ListItemType } from "../types/ListType";
 
-const mobileMenuLinks: linkListLinkType[] = [
+const mobileMenuLinks: ListItemType[] = [
   { title: "Home", path: "/", icon: "home" },
   { title: "Saved", path: "/saved", icon: "bookmarks" },
   { title: "New post", path: "/post/add", icon: "add" },
