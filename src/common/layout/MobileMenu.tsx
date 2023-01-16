@@ -27,7 +27,7 @@ const MobileMenu = () => {
               {iconList[link.icon]}
             </NavLink>
           </li>
-        ) ? null)}
+        ) : null)}
 
         <li className="inline-flex">
           <button className="inline-block text-2xl py-2 px-2 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded">
