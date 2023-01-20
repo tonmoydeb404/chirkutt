@@ -3,12 +3,14 @@ import PostCard from "../common/components/PostCard";
 import { selectAuth } from "../features/auth/authSlice";
 import { openPostForm } from "../features/postFormSlice";
 import iconList from "../lib/iconList";
+import { useGetAllPostsQuery } from "../services/postsApi";
 
 const Profile = () => {
     const dispatch = useAppDispatch();
     const { user, status } = useAppSelector(selectAuth);
+    const { data, isLoading, isError, isSuccess } = useGetAllPostsQuery({});
 
-    if (status === "AUTHORIZED") {
+    if (status === "AUTHORIZED" && user) {
         return (
             <>
                 <div className="flex flex-col">
@@ -107,42 +109,18 @@ const Profile = () => {
                         </div>
 
                         <div className="flex flex-col gap-3 mt-3">
-                            <PostCard
-                                id="1"
-                                text="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore, impedit"
-                                createdAt={new Date().toISOString()}
-                                modifiedAt={new Date().toISOString()}
-                                likes={["tonmoy", "kdsa"]}
-                                author={{
-                                    name: "Tonmoy Deb",
-                                    avatar: "/images/logo/chirkutt-logo-primary.png",
-                                    username: "tonmoydeb",
-                                }}
-                            />
-                            <PostCard
-                                id="1"
-                                text="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore, impedit"
-                                createdAt={new Date().toISOString()}
-                                modifiedAt={new Date().toISOString()}
-                                likes={["tonmoy", "kdsa"]}
-                                author={{
-                                    name: "Tonmoy Deb",
-                                    avatar: "/images/logo/chirkutt-logo-primary.png",
-                                    username: "tonmoydeb",
-                                }}
-                            />
-                            <PostCard
-                                id="1"
-                                text="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore, impedit"
-                                createdAt={new Date().toISOString()}
-                                modifiedAt={new Date().toISOString()}
-                                likes={["tonmoy", "kdsa"]}
-                                author={{
-                                    name: "Tonmoy Deb",
-                                    avatar: "/images/logo/chirkutt-logo-primary.png",
-                                    username: "tonmoydeb",
-                                }}
-                            />
+                            {isLoading ? <p>loading...</p> : null}
+                            {isError ? (
+                                <p>something wents to wrong...</p>
+                            ) : null}
+                            {data && isSuccess && Object.keys(data).length
+                                ? Object.keys(data).map((key: string) => {
+                                      const post = data[key];
+                                      return post.authorUID === user.uid ? (
+                                          <PostCard key={post.id} {...post} />
+                                      ) : null;
+                                  })
+                                : "no more posts"}
                         </div>
                     </div>
                 </div>

@@ -12,7 +12,7 @@ const Home = () => {
 
     if (data && isSuccess) {
         return (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-3">
                 {Object.keys(data).length
                     ? Object.keys(data).map((key: string) => {
                           const post = data[key];

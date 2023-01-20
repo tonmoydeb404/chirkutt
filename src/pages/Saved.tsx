@@ -1,4 +1,3 @@
-import PostCard from "../common/components/PostCard";
 import iconList from "../lib/iconList";
 
 const Saved = () => {
@@ -12,44 +11,7 @@ const Saved = () => {
                 </button>
             </div>
 
-            <div className="flex flex-col gap-3 mt-5">
-                <PostCard
-                    id="1"
-                    text="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore, impedit"
-                    createdAt={new Date().toISOString()}
-                    modifiedAt={new Date().toISOString()}
-                    likes={["tonmoy", "kdsa"]}
-                    author={{
-                        name: "Tonmoy Deb",
-                        avatar: "/images/logo/chirkutt-logo-primary.png",
-                        username: "tonmoydeb",
-                    }}
-                />
-                <PostCard
-                    id="1"
-                    text="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore, impedit"
-                    createdAt={new Date().toISOString()}
-                    modifiedAt={new Date().toISOString()}
-                    likes={["tonmoy", "kdsa"]}
-                    author={{
-                        name: "Tonmoy Deb",
-                        avatar: "/images/logo/chirkutt-logo-primary.png",
-                        username: "tonmoydeb",
-                    }}
-                />
-                <PostCard
-                    id="1"
-                    text="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore, impedit"
-                    createdAt={new Date().toISOString()}
-                    modifiedAt={new Date().toISOString()}
-                    likes={["tonmoy", "kdsa"]}
-                    author={{
-                        name: "Tonmoy Deb",
-                        avatar: "/images/logo/chirkutt-logo-primary.png",
-                        username: "tonmoydeb",
-                    }}
-                />
-            </div>
+            <div className="flex flex-col gap-3 mt-5"></div>
         </>
     );
 };

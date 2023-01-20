@@ -3,6 +3,7 @@ import { useAppSelector } from "../app/hooks";
 import PostCard from "../common/components/PostCard";
 import { selectAuth } from "../features/auth/authSlice";
 import iconList from "../lib/iconList";
+import { useGetAllPostsQuery } from "../services/postsApi";
 import { useGetUserQuery } from "../services/usersApi";
 
 const User = () => {
@@ -16,13 +17,16 @@ const User = () => {
         isLoading,
         isError,
         error,
+        isSuccess,
     } = useGetUserQuery({ username });
+    const posts = useGetAllPostsQuery({});
 
     // navigate to profile page if authorized username and page username matched
     if (status === "AUTHORIZED" && authUser?.username === username)
         return <Navigate to={"/profile"}></Navigate>;
 
-    if (user && !isLoading && !isError) {
+    // success state
+    if (user && isSuccess) {
         return (
             <>
                 <div className="flex flex-col">
@@ -109,42 +113,20 @@ const User = () => {
                         </div>
 
                         <div className="flex flex-col gap-3 mt-3">
-                            <PostCard
-                                id="1"
-                                text="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore, impedit"
-                                createdAt={new Date().toISOString()}
-                                modifiedAt={new Date().toISOString()}
-                                likes={["tonmoy", "kdsa"]}
-                                author={{
-                                    name: "Tonmoy Deb",
-                                    avatar: "/images/logo/chirkutt-logo-primary.png",
-                                    username: "tonmoydeb",
-                                }}
-                            />
-                            <PostCard
-                                id="1"
-                                text="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore, impedit"
-                                createdAt={new Date().toISOString()}
-                                modifiedAt={new Date().toISOString()}
-                                likes={["tonmoy", "kdsa"]}
-                                author={{
-                                    name: "Tonmoy Deb",
-                                    avatar: "/images/logo/chirkutt-logo-primary.png",
-                                    username: "tonmoydeb",
-                                }}
-                            />
-                            <PostCard
-                                id="1"
-                                text="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore, impedit"
-                                createdAt={new Date().toISOString()}
-                                modifiedAt={new Date().toISOString()}
-                                likes={["tonmoy", "kdsa"]}
-                                author={{
-                                    name: "Tonmoy Deb",
-                                    avatar: "/images/logo/chirkutt-logo-primary.png",
-                                    username: "tonmoydeb",
-                                }}
-                            />
+                            {posts.isLoading ? <p>loading...</p> : null}
+                            {posts.isError ? (
+                                <p>something wents to wrong...</p>
+                            ) : null}
+                            {posts.data &&
+                            posts.isSuccess &&
+                            Object.keys(posts.data).length
+                                ? Object.keys(posts.data).map((key: string) => {
+                                      const post = posts.data[key];
+                                      return post.authorUID === user.uid ? (
+                                          <PostCard key={post.id} {...post} />
+                                      ) : null;
+                                  })
+                                : "no more posts"}
                         </div>
                     </div>
                 </div>
@@ -152,7 +134,8 @@ const User = () => {
         );
     }
 
-    if (!user && !isLoading && isError) {
+    // error state
+    if (!user && isError) {
         return (
             <div>
                 {typeof error === "string" ? error : "something wents to wrong"}
