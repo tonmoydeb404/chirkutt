@@ -2,8 +2,8 @@ import { BiLogIn, BiSearch, BiUser } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { selectAuth } from "../../features/auth/authSlice";
+import iconList from "../../lib/iconList";
 import useTheme from "../hooks/useTheme";
-import iconList from "../lib/iconList";
 
 const Navbar = () => {
     const { theme, toggleTheme } = useTheme();

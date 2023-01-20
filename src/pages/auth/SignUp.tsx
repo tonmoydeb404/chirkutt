@@ -3,9 +3,11 @@ import { useState } from "react";
 import { BiErrorAlt } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import * as yup from "yup";
+import { useAppDispatch } from "../../app/hooks";
 import InputGroup from "../../common/components/Forms/InputGroup";
-import iconList from "../../common/lib/iconList";
-import { signup } from "../../services/auth.service";
+import { authSignIn } from "../../features/auth/authSlice";
+import { signup } from "../../lib/auth";
+import iconList from "../../lib/iconList";
 
 type SignUpForm = {
     name: string;
@@ -16,6 +18,7 @@ type SignUpForm = {
 };
 
 const SignUp = () => {
+    const dispatch = useAppDispatch();
     const [viewPass, setViewPass] = useState<boolean>(false);
     const [errorMsg, setErrorMsg] = useState<null | string>(null);
 
@@ -23,15 +26,16 @@ const SignUp = () => {
         setViewPass((prevState) => !prevState);
     };
 
-    const onSubmitHandler = async ({
-        name,
-        email,
-        gender,
-        password,
-    }: SignUpForm) => {
+    const onSubmitHandler = async (
+        { name, email, gender, password }: SignUpForm,
+        { resetForm }: { resetForm: () => void }
+    ) => {
         setErrorMsg(null);
         try {
-            await signup({ name, email, password, gender });
+            const response = await signup({ name, email, password, gender });
+            if (!response) throw "something went to wrong. please try again";
+            dispatch(authSignIn(response));
+            resetForm();
         } catch (error: any) {
             setErrorMsg(error);
         }

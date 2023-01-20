@@ -1,5 +1,5 @@
 import PostCard from "../common/components/PostCard";
-import iconList from "../common/lib/iconList";
+import iconList from "../lib/iconList";
 
 const Saved = () => {
     return (

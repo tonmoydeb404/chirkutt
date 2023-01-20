@@ -2,9 +2,11 @@ import { Formik } from "formik";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import * as yup from "yup";
+import { useAppDispatch } from "../../app/hooks";
 import InputGroup from "../../common/components/Forms/InputGroup";
-import iconList from "../../common/lib/iconList";
-import { signin } from "../../services/auth.service";
+import { authSignIn } from "../../features/auth/authSlice";
+import { signin } from "../../lib/auth";
+import iconList from "../../lib/iconList";
 
 type SignInForm = {
     email: string;
@@ -12,6 +14,7 @@ type SignInForm = {
 };
 
 const SignIn = () => {
+    const dispatch = useAppDispatch();
     const [viewPass, setViewPass] = useState<boolean>(false);
     const [errorMsg, setErrorMsg] = useState<null | string>(null);
 
@@ -25,7 +28,9 @@ const SignIn = () => {
     ) => {
         setErrorMsg(null);
         try {
-            await signin({ email, password });
+            const response = await signin({ email, password });
+            if (!response) throw "something went to wrong. please try again";
+            dispatch(authSignIn(response));
             resetForm();
         } catch (error: any) {
             setErrorMsg(error);

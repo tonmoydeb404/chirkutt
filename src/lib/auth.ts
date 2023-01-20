@@ -4,11 +4,11 @@ import {
     signOut,
     updateProfile,
 } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
-import { UserType } from "../common/types/UserType";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { dicebearGender } from "../constants/dicebear.constant";
 import { USERS } from "../constants/firebase.constant";
 import { auth, db } from "../firebase";
+import { UserType } from "../types/UserType";
 
 type SignUpProps = {
     name: string;
@@ -51,7 +51,7 @@ export const signup = async ({ name, gender, email, password }: SignUpProps) =>
             // save data to database
             await setDoc(doc(db, USERS, userAuth.user.uid), user);
             // resolve request
-            return resolve({ uid: user.uid });
+            return resolve(user);
         } catch (error: any) {
             const errorMsg =
                 error.code || error.message || "something went wrong";
@@ -72,8 +72,11 @@ export const signin = ({ email, password }: SignInProps) =>
                 email,
                 password
             );
+            // get data
+            const userDoc = await getDoc(doc(db, USERS, userAuth.user.uid));
+            const user = userDoc.data();
 
-            resolve({ uid: userAuth.user.uid });
+            resolve(user);
         } catch (error: any) {
             const errorMsg =
                 error.code || error.message || "something went wrong";

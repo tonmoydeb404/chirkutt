@@ -1,10 +1,10 @@
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectAuth } from "../../features/auth/authSlice";
 import { openPostForm } from "../../features/postFormSlice";
-import { signout } from "../../services/auth.service";
+import { signout } from "../../lib/auth";
+import { ListItemType } from "../../types/ListType";
 import LinkList from "../components/List";
 import UserCard from "../components/UserCard";
-import { ListItemType } from "../types/ListType";
 
 const Sidebar = () => {
     const dispatch = useAppDispatch();

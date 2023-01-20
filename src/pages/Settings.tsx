@@ -1,6 +1,6 @@
 import InputGroup from "../common/components/Forms/InputGroup";
 import TextGroup from "../common/components/Forms/TextGroup";
-import iconList from "../common/lib/iconList";
+import iconList from "../lib/iconList";
 
 const Settings = () => {
     return (

@@ -16,6 +16,7 @@ const AuthStateChanged = ({ children }: { children?: ReactNode }) => {
                 dispatch(authLoading());
                 const userDoc = await getDoc(doc(db, USERS, userAuth.uid));
                 const user = userDoc.data();
+                if (!user) throw Error("there was an error in server side");
 
                 dispatch(authSignIn(user));
             } catch (error) {

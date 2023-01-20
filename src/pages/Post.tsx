@@ -1,7 +1,7 @@
 import TextGroup from "../common/components/Forms/TextGroup";
 import PostCard from "../common/components/PostCard";
 import PostComment from "../common/components/PostComment";
-import iconList from "../common/lib/iconList";
+import iconList from "../lib/iconList";
 
 const Post = () => {
     return (
