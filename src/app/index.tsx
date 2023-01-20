@@ -1,3 +1,4 @@
+import { Toaster } from "react-hot-toast";
 import { Provider } from "react-redux";
 import { Route, Routes } from "react-router-dom";
 import Layout from "../common/layout";
@@ -49,6 +50,7 @@ const App = () => {
                     <Route path="*" element={<NotFound />} />
                 </Routes>
             </AuthStateChanged>
+            <Toaster />
         </Provider>
     );
 };

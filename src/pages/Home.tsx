@@ -1,22 +1,29 @@
 import PostCard from "../common/components/PostCard";
+import { useGetAllPostsQuery } from "../services/postsApi";
 
 const Home = () => {
-    return (
-        <>
-            <PostCard
-                id="1"
-                text="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore, impedit"
-                createdAt={new Date().toISOString()}
-                modifiedAt={new Date().toISOString()}
-                likes={["tonmoy", "kdsa"]}
-                author={{
-                    name: "Tonmoy Deb",
-                    avatar: "/images/logo/chirkutt-logo-primary.png",
-                    username: "tonmoydeb",
-                }}
-            />
-        </>
+    const { data, isLoading, isError, error, isSuccess } = useGetAllPostsQuery(
+        {}
     );
+
+    if (!data && isError) {
+        return <p>something wents to wrong</p>;
+    }
+
+    if (data && isSuccess) {
+        return (
+            <div className="flex flex-col gap-2">
+                {Object.keys(data).length
+                    ? Object.keys(data).map((key: string) => {
+                          const post = data[key];
+                          return <PostCard key={post.id} {...post} />;
+                      })
+                    : "no more posts"}
+            </div>
+        );
+    }
+
+    return <p>loading...</p>;
 };
 
 export default Home;

@@ -1,12 +1,52 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { USERS } from "../constants/firebase.constant";
-import { getQueryResult, updateDocument } from "../lib/database";
+import {
+    getCollection,
+    getCollectionRealtime,
+    getQueryResult,
+    updateDocument,
+} from "../lib/database";
 import { UserType } from "../types/UserType";
+import { arrayToObject } from "../utilities/arrayToObject";
 
 export const usersApi = createApi({
     reducerPath: "usersApi",
     baseQuery: fakeBaseQuery(),
     endpoints: (builder) => ({
+        getAllUsers: builder.query({
+            queryFn: async () => {
+                try {
+                    const response = await getCollection<UserType>(USERS);
+                    const data = arrayToObject(response, "uid");
+                    return { data };
+                } catch (error) {
+                    return { error };
+                }
+            },
+            onCacheEntryAdded: async (
+                arg,
+                { updateCachedData, cacheDataLoaded, cacheEntryRemoved }
+            ) => {
+                let unsubscribe = () => {};
+                try {
+                    await cacheDataLoaded;
+                    unsubscribe = getCollectionRealtime<UserType>(
+                        USERS,
+                        (data) => {
+                            updateCachedData(
+                                (draft) =>
+                                    (draft = arrayToObject<UserType>(
+                                        data,
+                                        "uid"
+                                    ))
+                            );
+                        }
+                    );
+                } catch (error) {}
+                await cacheEntryRemoved;
+                unsubscribe();
+            },
+        }),
         getUser: builder.query({
             queryFn: async ({ username }: { username: string }) => {
                 try {
@@ -50,4 +90,5 @@ export const usersApi = createApi({
 });
 
 // hooks
-export const { useGetUserQuery, useUpdateUserMutation } = usersApi;
+export const { useGetUserQuery, useUpdateUserMutation, useGetAllUsersQuery } =
+    usersApi;
