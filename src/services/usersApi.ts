@@ -1,6 +1,6 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { USERS } from "../constants/firebase.constant";
-import { getQueryResult } from "../lib/database";
+import { getQueryResult, updateDocument } from "../lib/database";
 import { UserType } from "../types/UserType";
 
 export const usersApi = createApi({
@@ -23,8 +23,31 @@ export const usersApi = createApi({
                 }
             },
         }),
+        updateUser: builder.mutation({
+            queryFn: async ({
+                uid,
+                updates,
+            }: {
+                uid: string;
+                updates: { [key: string]: any };
+            }) => {
+                try {
+                    const response = (await updateDocument(
+                        uid,
+                        USERS,
+                        updates
+                    )) as UserType;
+
+                    if (!response) throw "something went to wrong";
+
+                    return { data: response };
+                } catch (error) {
+                    return { error };
+                }
+            },
+        }),
     }),
 });
 
 // hooks
-export const { useGetUserQuery } = usersApi;
+export const { useGetUserQuery, useUpdateUserMutation } = usersApi;

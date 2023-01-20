@@ -31,11 +31,13 @@ const Sidebar = () => {
 
     return (
         <aside className="flex flex-col gap-3 md:gap-5 w-[50px] md:w-[220px] max-[500px]:hidden">
-            <UserCard
-                title="Chirkutt"
-                username="chirkutt"
-                avatar="/images/logo/chirkutt-logo-secondary.png"
-            />
+            {user ? (
+                <UserCard
+                    title={user?.name}
+                    username={user?.username}
+                    avatar={user?.avatar}
+                />
+            ) : null}
             <LinkList items={user ? authorizedLinks : unauthorizedLinks} />
         </aside>
     );

@@ -1,11 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
-import type { UserType } from "../../types/UserType";
+import { AuthType } from "../../types/AuthType";
 
-const initialState: {
-    user: UserType | null;
-    status: "INTIAL" | "LOADING" | "AUTHORIZED" | "UNAUTHORIZED";
-} = { user: null, status: "INTIAL" };
+const initialState: AuthType = { user: null, status: "INTIAL" };
 
 export const authSlice = createSlice({
     name: "auth",
