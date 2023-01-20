@@ -2,22 +2,30 @@ import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 import type { UserType } from "../../common/types/UserType";
 
-const initialState: UserType | null = null;
+const initialState: {
+    user: UserType | null;
+    status: "INTIAL" | "LOADING" | "AUTHORIZED" | "UNAUTHORIZED";
+} = { user: null, status: "INTIAL" };
 
 const authSlice = createSlice({
-  name: "auth",
-  initialState,
-  reducers: {
-    authSignIn: (state, action) => {
-      state = action.payload;
+    name: "auth",
+    initialState,
+    reducers: {
+        authLoading: (state) => {
+            state.status = "LOADING";
+        },
+        authSignIn: (state, action) => {
+            state.user = action.payload;
+            state.status = "AUTHORIZED";
+        },
+        authSignOut: (state) => {
+            state.user = null;
+            state.status = "UNAUTHORIZED";
+        },
     },
-    authSignOut: (state) => {
-      state = null;
-    },
-  },
 });
 
-export const { authSignIn, authSignOut } = authSlice.actions;
+export const { authSignIn, authSignOut, authLoading } = authSlice.actions;
 export const authReducer = authSlice.reducer;
 
 // selectors
