@@ -1,8 +1,12 @@
 import { formatDistanceToNow, parseISO } from "date-fns";
+import { useEffect } from "react";
+import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
-import { useAppSelector } from "../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectAuth } from "../../features/auth/authSlice";
+import { openPostForm } from "../../features/postFormSlice";
 import iconList from "../../lib/iconList";
+import { useDeletePostMutation } from "../../services/postsApi";
 import { PostType } from "../../types/PostType";
 import { UserType } from "../../types/UserType";
 
@@ -17,9 +21,53 @@ const PostCard = ({
   modifiedAt,
   likes,
   author,
+  authorUID,
 }: PostCardType) => {
   const { user, status } = useAppSelector(selectAuth);
   const isAuthorized = user?.uid === author.uid;
+  const [deletePost, result] = useDeletePostMutation();
+
+  // dispatch
+  const dispatch = useAppDispatch();
+
+  // effects
+  useEffect(() => {
+    // toasts
+    if (!result.isUninitialized && result.isLoading) {
+      toast.loading("deleting post", { id: "deletepost" });
+    }
+    if (!result.isUninitialized && result.isSuccess) {
+      toast.success("successfully deleted post", { id: "deletepost" });
+    }
+    if (!result.isUninitialized && result.isError) {
+      toast.error("cannot delete post", { id: "deletepost" });
+    }
+
+    return () => {
+      result.reset();
+    };
+  }, [result]);
+
+  // handlers
+  const handleDelete = async () => {
+    try {
+      await deletePost(id);
+    } catch (error) {
+      toast.error("error in deleting post!", { id: "deletepost" });
+    }
+  };
+  const handleEdit = () => {
+    const post: PostType = {
+      id,
+      text,
+      createdAt,
+      modifiedAt,
+      likes,
+      authorUID,
+    };
+    dispatch(openPostForm({ type: "EDIT", value: post }));
+  };
+
   return author ? (
     <article className="flex flex-col p-3 bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded shadow-sm">
       {/* header part */}
@@ -54,8 +102,10 @@ const PostCard = ({
               </label>
 
               <ul>
-                <li>Edit Post</li>
-                <li className="text-error-600">Delete Post</li>
+                <li onClick={handleEdit}>Edit Post</li>
+                <li className="text-error-600" onClick={handleDelete}>
+                  Delete Post
+                </li>
               </ul>
             </label>
           ) : null}

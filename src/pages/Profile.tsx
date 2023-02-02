@@ -92,7 +92,7 @@ const Profile = () => {
 
               <button
                 className="btn btn-sm btn-primary"
-                onClick={() => dispatch(openPostForm())}
+                onClick={() => dispatch(openPostForm({ type: "CREATE" }))}
               >
                 add new <span>{iconList.add}</span>
               </button>

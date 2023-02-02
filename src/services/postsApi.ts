@@ -1,6 +1,11 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { POSTS } from "../constants/firebase.constant";
-import { createDocument, getCollection } from "../lib/database";
+import {
+  createDocument,
+  deleteDocument,
+  getCollection,
+  updateDocument,
+} from "../lib/database";
 import { PostType } from "../types/PostType";
 import { arrayToObject } from "../utilities/arrayToObject";
 
@@ -48,8 +53,44 @@ export const postsApi = createApi({
       },
       invalidatesTags: ["Post"],
     }),
+    deletePost: builder.mutation({
+      queryFn: async (id: string) => {
+        try {
+          const response = await deleteDocument(id, POSTS);
+          return { data: response };
+        } catch (error) {
+          return { error };
+        }
+      },
+      invalidatesTags: ["Post"],
+    }),
+    updatePost: builder.mutation({
+      queryFn: async ({
+        id,
+        updates,
+      }: {
+        id: string;
+        updates: { [key: string]: any };
+      }) => {
+        try {
+          const response = await updateDocument<PostType>(id, POSTS, updates);
+
+          if (!response) throw "something went to wrong";
+
+          return { data: response };
+        } catch (error) {
+          return { error };
+        }
+      },
+      invalidatesTags: ["Post"],
+    }),
   }),
 });
 
 // hooks
-export const { useGetAllPostsQuery, useCreatePostMutation } = postsApi;
+export const {
+  useGetAllPostsQuery,
+  useCreatePostMutation,
+  useDeletePostMutation,
+  useUpdatePostMutation,
+} = postsApi;
