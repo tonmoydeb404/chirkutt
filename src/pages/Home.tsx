@@ -3,21 +3,19 @@ import { useGetAllPostsQuery } from "../services/postsApi";
 import { useGetAllUsersQuery } from "../services/usersApi";
 
 const Home = () => {
-  const { data, isLoading, isError, error, isSuccess } = useGetAllPostsQuery(
-    {}
-  );
+  const posts = useGetAllPostsQuery({});
   const users = useGetAllUsersQuery({});
 
-  if (isError || users.isError) {
+  if (posts.isError || users.isError) {
     return <p>something wents to wrong</p>;
   }
 
-  if (isSuccess && users.isSuccess) {
+  if (posts.isSuccess && posts.data && users.isSuccess && users.data) {
     return (
       <div className="flex flex-col gap-3">
-        {Object.keys(data).length
-          ? Object.keys(data).map((key: string) => {
-              const post = data[key];
+        {Object.keys(posts.data).length
+          ? Object.keys(posts.data).map((key: string) => {
+              const post = posts.data[key];
               const author = users.data[post.authorUID];
               return <PostCard key={post.id} {...post} author={author} />;
             })
