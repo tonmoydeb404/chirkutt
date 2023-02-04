@@ -20,7 +20,7 @@ const Post = () => {
   // success state
   if (posts.isSuccess && posts.data && users.isSuccess && users.data) {
     const post = posts.data[id];
-    const user = users.data[id];
+    const user = users.data[post.authorUID];
 
     return (
       <>

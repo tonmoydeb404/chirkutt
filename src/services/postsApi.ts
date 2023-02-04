@@ -70,7 +70,7 @@ export const postsApi = createApi({
         updates,
       }: {
         id: string;
-        updates: { [key: string]: any };
+        updates: Partial<PostType>;
       }) => {
         try {
           const response = await updateDocument<PostType>(id, POSTS, updates);
@@ -82,7 +82,21 @@ export const postsApi = createApi({
           return { error };
         }
       },
-      invalidatesTags: ["Post"],
+      // invalidatesTags: ["Post"],
+      onQueryStarted: async ({ id, updates }, { dispatch, queryFulfilled }) => {
+        try {
+          const { data } = await queryFulfilled;
+          const patchResult = dispatch(
+            postsApi.util.updateQueryData("getAllPosts", {}, (draft) => {
+              if (draft && draft[id] && data) {
+                draft[id] = data;
+              }
+            })
+          );
+        } catch (error) {
+          // console.log(error);
+        }
+      },
     }),
   }),
 });
