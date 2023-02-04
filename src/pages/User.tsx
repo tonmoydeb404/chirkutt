@@ -3,10 +3,13 @@ import { useAppSelector } from "../app/hooks";
 import PostCard from "../common/components/PostCard";
 import { selectAuth } from "../features/auth/authSlice";
 import iconList from "../lib/iconList";
+import { useGetAllCommentsQuery } from "../services/commentsApi";
 import { useGetAllPostsQuery } from "../services/postsApi";
 import { useGetUserQuery } from "../services/usersApi";
 
 const User = () => {
+  const comments = useGetAllCommentsQuery({});
+
   const { username } = useParams();
   // navigate to error page
   if (!username) return <Navigate to={"/404"}></Navigate>;
@@ -103,11 +106,23 @@ const User = () => {
             <div className="flex flex-col gap-3 mt-3">
               {posts.isLoading ? <p>loading...</p> : null}
               {posts.isError ? <p>something wents to wrong...</p> : null}
-              {posts.data && posts.isSuccess && Object.keys(posts.data).length
+              {posts.data &&
+              posts.isSuccess &&
+              Object.keys(posts.data).length &&
+              comments.data &&
+              comments.isSuccess
                 ? Object.keys(posts.data).map((key: string) => {
                     const post = posts.data[key];
+                    const postComments = Object.keys(comments.data).filter(
+                      (c) => comments.data[c].postID === post.id
+                    );
                     return post.authorUID === user.uid ? (
-                      <PostCard key={post.id} {...post} author={user} />
+                      <PostCard
+                        comments={postComments.length}
+                        key={post.id}
+                        {...post}
+                        author={user}
+                      />
                     ) : null;
                   })
                 : "no more posts"}
