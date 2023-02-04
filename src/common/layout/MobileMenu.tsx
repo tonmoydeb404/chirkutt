@@ -1,13 +1,16 @@
 import { NavLink } from "react-router-dom";
-import { useAppDispatch } from "../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { selectAuth } from "../../features/auth/authSlice";
 import { openPostForm } from "../../features/postFormSlice";
+import { signout } from "../../lib/auth";
 import iconList from "../../lib/iconList";
 import { ListItemType } from "../../types/ListType";
 
 const MobileMenu = () => {
   const dispatch = useAppDispatch();
+  const { user } = useAppSelector(selectAuth);
 
-  const mobileMenuLinks: ListItemType[] = [
+  const authorizedLinks: ListItemType[] = [
     { title: "Home", path: "/", icon: "home" },
     { title: "Saved", path: "/saved", icon: "bookmarks" },
     {
@@ -16,11 +19,19 @@ const MobileMenu = () => {
       icon: "add",
     },
     { title: "Profile", path: "/profile", icon: "person" },
+    { title: "Sign Out", action: signout, icon: "signout" },
   ];
+
+  const unauthorizedLinks: ListItemType[] = [
+    { title: "Home", path: "/", icon: "home" },
+    { title: "Sign up", path: "/signup", icon: "signup" },
+    { title: "Sign in", path: "/signin", icon: "signin" },
+  ];
+
   return (
     <div className="px-6 w-full fixed bottom-0 left-0 h-[55px] bg-white dark:bg-neutral-800 shadow border-t border-t-neutral-300 dark:border-t-neutral-700 min-[501px]:hidden min-[401px]:px-12">
       <ul className="flex items-center justify-between w-full h-full">
-        {mobileMenuLinks.map((link) =>
+        {(user ? authorizedLinks : unauthorizedLinks).map((link) =>
           "path" in link ? (
             <li className="inline-flex" key={link.path}>
               <NavLink
@@ -47,12 +58,6 @@ const MobileMenu = () => {
             </li>
           )
         )}
-
-        <li className="inline-flex">
-          <button className="inline-block text-2xl py-2 px-2 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded">
-            {iconList.menu}
-          </button>
-        </li>
       </ul>
     </div>
   );

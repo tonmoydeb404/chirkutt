@@ -67,6 +67,7 @@ const PostForm = () => {
   // post create handler
   const postCreateHandler = async (text: string) => {
     try {
+      if (!user) throw Error("authentication failed");
       const newPost: PostType = {
         id: nanoid(),
         text,
