@@ -1,69 +1,84 @@
+import { formatDistanceToNow, parseISO } from "date-fns";
 import { ReactNode, useState } from "react";
 import { Link } from "react-router-dom";
+import { useAppSelector } from "../../app/hooks";
+import { selectAuth } from "../../features/auth/authSlice";
 import iconList from "../../lib/iconList";
+import { CommentType } from "../../types/CommentType";
+import { UserType } from "../../types/UserType";
+import ReplayForm from "./ReplayForm";
 
 type PostCommentProps = {
-    id: string;
-    avatar: string;
-    name: string;
-    comment: string;
-    username: string;
-    children?: ReactNode;
-    replay: boolean;
-};
+  author: UserType;
+  children?: ReactNode;
+  replay: boolean;
+  handleDeleteComment: (id: string) => Promise<void>;
+} & CommentType;
 
 const PostComment = ({
-    avatar,
-    name,
-    comment,
-    username,
-    id,
-    children,
-    replay,
+  author,
+  id,
+  children,
+  postID,
+  text,
+  createdAt,
+  replay = false,
+  handleDeleteComment,
 }: PostCommentProps) => {
-    const [showReplay, setShowReplay] = useState(false);
+  const { user: authUser } = useAppSelector(selectAuth);
+  const [showReplay, setShowReplay] = useState(false);
 
-    return (
-        <div className="comments_thread_wrapper">
-            <div className="comments_thread">
-                <img src={avatar} alt={name} />
-                <div className="comments_thread_body">
-                    <Link
-                        to={`/user/${username}`}
-                        className="comments_thread_title"
-                    >
-                        {name}
-                    </Link>
-                    <p className="comments_thread_text">{comment}</p>
-                    {replay ? (
-                        <button
-                            className="btn btn-sm btn-ghost self-end"
-                            onClick={() => setShowReplay((prev) => !prev)}
-                        >
-                            replay
-                        </button>
-                    ) : null}
-                </div>
+  return (
+    <div className="comments_thread_wrapper">
+      <div className="flex flex-col gap-1 group">
+        <div className="comments_thread ">
+          <img src={author.avatar} alt={author.name} />
+          <div className="comments_thread_body">
+            <div className="flex items-center gap-1">
+              <Link
+                to={`/user/${author.username}`}
+                className="comments_thread_title"
+              >
+                {author.name}
+              </Link>
+              <div className="w-1 h-1 bg-secondary-200 rounded-full overflow-hidden"></div>
+              <p className="comment_thread_date text-xs opacity-60">
+                {formatDistanceToNow(
+                  parseISO(new Date(createdAt).toISOString())
+                )}{" "}
+                ago
+              </p>
             </div>
-
-            {children ? (
-                <div className="comments_thread_replies">{children}</div>
-            ) : null}
-
-            {replay && showReplay ? (
-                <div className="comments_thread_form">
-                    <img
-                        src="/images/logo/chirkutt-logo-primary.png"
-                        alt="avatar"
-                    />
-                    <input type="text" placeholder="leave a reply" />
-                    <button className="btn btn-icon btn-sm btn-theme">
-                        {iconList.send}
-                    </button>
-                </div>
-            ) : null}
+            <p className="comments_thread_text">{text}</p>
+          </div>
+          {authUser && author.uid === authUser?.uid ? (
+            <button
+              className="btn btn-error btn-icon btn-sm self-start invisible group-hover:visible"
+              onClick={async () => await handleDeleteComment(id)}
+            >
+              {iconList.remove}
+            </button>
+          ) : null}
         </div>
-    );
+        {replay ? (
+          <button
+            className="btn btn-sm btn-ghost self-end"
+            onClick={() => setShowReplay((prev) => !prev)}
+          >
+            replay
+          </button>
+        ) : null}
+      </div>
+
+      {children ? (
+        <div className="comments_thread_replies">{children}</div>
+      ) : null}
+
+      {replay && showReplay ? (
+        <ReplayForm postID={postID} parentID={id} />
+      ) : null}
+    </div>
+  );
 };
 
 export default PostComment;

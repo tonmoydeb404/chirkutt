@@ -14,6 +14,7 @@ import { PostType } from "../../types/PostType";
 import { UserType } from "../../types/UserType";
 
 type PostCardType = {
+  comments: number;
   author: UserType;
 } & PostType;
 
@@ -25,6 +26,7 @@ const PostCard = ({
   likes,
   author,
   authorUID,
+  comments,
 }: PostCardType) => {
   const { user, status } = useAppSelector(selectAuth);
   const isAuthorized = user?.uid === author.uid;
@@ -106,10 +108,7 @@ const PostCard = ({
               {author.name}
             </Link>
             <span className="text-xs inline-block opacity-70">
-              {formatDistanceToNow(
-                parseISO(modifiedAt ? modifiedAt : createdAt)
-              )}{" "}
-              ago
+              {formatDistanceToNow(parseISO(createdAt))} ago
             </span>
           </div>
         </div>
@@ -155,7 +154,7 @@ const PostCard = ({
           </span>
         </button>
         <Link to={`/post/${id}`} className="btn px-2 py-1.5 btn-theme">
-          01
+          {comments}
           <span className="text-base">{iconList.comment}</span>
         </Link>
 

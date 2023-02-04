@@ -3,12 +3,14 @@ import PostCard from "../common/components/PostCard";
 import { selectAuth } from "../features/auth/authSlice";
 import { openPostForm } from "../features/postFormSlice";
 import iconList from "../lib/iconList";
+import { useGetAllCommentsQuery } from "../services/commentsApi";
 import { useGetAllPostsQuery } from "../services/postsApi";
 
 const Profile = () => {
   const dispatch = useAppDispatch();
   const { user, status } = useAppSelector(selectAuth);
-  const { data, isLoading, isError, isSuccess } = useGetAllPostsQuery({});
+  const posts = useGetAllPostsQuery({});
+  const comments = useGetAllCommentsQuery({});
 
   if (status === "AUTHORIZED" && user) {
     return (
@@ -99,13 +101,25 @@ const Profile = () => {
             </div>
 
             <div className="flex flex-col gap-3 mt-3">
-              {isLoading ? <p>loading...</p> : null}
-              {isError ? <p>something wents to wrong...</p> : null}
-              {data && isSuccess && Object.keys(data).length
-                ? Object.keys(data).map((key: string) => {
-                    const post = data[key];
+              {posts.isLoading ? <p>loading...</p> : null}
+              {posts.isError ? <p>something wents to wrong...</p> : null}
+              {posts.data &&
+              posts.isSuccess &&
+              comments.data &&
+              comments.isSuccess &&
+              Object.keys(posts.data).length
+                ? Object.keys(posts.data).map((key: string) => {
+                    const post = posts.data[key];
+                    const postComments = Object.keys(comments.data).filter(
+                      (c) => comments.data[c].postID === post.id
+                    );
                     return post.authorUID === user.uid ? (
-                      <PostCard key={post.id} {...post} author={user} />
+                      <PostCard
+                        key={post.id}
+                        {...post}
+                        author={user}
+                        comments={postComments.length}
+                      />
                     ) : null;
                   })
                 : "no more posts"}

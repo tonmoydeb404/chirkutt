@@ -10,6 +10,7 @@ import {
   setDoc,
   updateDoc,
   where,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "../firebase";
 
@@ -143,3 +144,26 @@ export const getCollectionRealtime = <T>(
 
   return unsubscribe;
 };
+
+// delete multiple document
+export const deleteMultiDocument = (
+  documentId: string[],
+  collectionName: string
+) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const batch = writeBatch(db);
+
+      documentId.forEach((id) => {
+        const docRef = doc(db, collectionName, id);
+        batch.delete(docRef);
+      });
+
+      await batch.commit();
+
+      resolve(true);
+    } catch (error: any) {
+      const errorMsg = error.code || error.message || "something went wrong";
+      return reject(errorMsg);
+    }
+  });

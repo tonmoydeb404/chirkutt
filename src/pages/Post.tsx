@@ -1,8 +1,11 @@
 import { Navigate, useParams } from "react-router-dom";
-import TextGroup from "../common/components/Forms/TextGroup";
+import CommentForm from "../common/components/CommentForm";
 import PostCard from "../common/components/PostCard";
 import PostComment from "../common/components/PostComment";
-import iconList from "../lib/iconList";
+import {
+  useDeleteCommentMutation,
+  useGetAllCommentsQuery,
+} from "../services/commentsApi";
 import { useGetAllPostsQuery } from "../services/postsApi";
 import { useGetAllUsersQuery } from "../services/usersApi";
 
@@ -12,90 +15,115 @@ const Post = () => {
 
   const posts = useGetAllPostsQuery({});
   const users = useGetAllUsersQuery({});
+  const comments = useGetAllCommentsQuery({});
+  const [deleteComment, deleteResult] = useDeleteCommentMutation();
+
+  const handleDeleteComment = async (id: string) => {
+    try {
+      // check commments data
+      if (!comments.data || !comments.data[id]) return;
+
+      const comment = comments.data[id];
+      const idList = [comment.id];
+
+      // look for comment replyies
+      if (comment.parentID === null) {
+        Object.keys(comments.data).forEach((key) => {
+          const replay = comments.data?.[key];
+          if (replay?.parentID === comment.id) {
+            idList.push(replay.id);
+          }
+        });
+      }
+
+      await deleteComment(idList);
+    } catch (e) {}
+  };
 
   // error state
   if (posts.isError || users.isError) {
     return <p>something wents to wrong</p>;
   }
   // success state
-  if (posts.isSuccess && posts.data && users.isSuccess && users.data) {
+  if (
+    posts.isSuccess &&
+    posts.data &&
+    users.isSuccess &&
+    users.data &&
+    comments.data &&
+    comments.isSuccess
+  ) {
     const post = posts.data[id];
     const user = users.data[post.authorUID];
+    const postComments = Object.keys(comments.data).filter(
+      (c) => comments.data[c].postID === post.id
+    );
 
     return (
       <>
-        <PostCard {...post} author={user} />
+        <PostCard {...post} author={user} comments={postComments.length} />
+
+        <CommentForm postID={post.id} />
 
         <div className="flex items-center justify-between mt-10">
           <h3 className="">All Comments</h3>
         </div>
 
-        <div className="comments mt-5">
-          <PostComment
-            avatar="/images/logo/chirkutt-logo-secondary.png"
-            name="Tonmoy Deb"
-            comment="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odit,
-              consectetur?"
-            id="1"
-            username="tonmoydeb"
-            replay
-          >
-            <PostComment
-              avatar="/images/logo/chirkutt-logo-secondary.png"
-              name="Tonmoy Deb"
-              comment="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odit,
-              consectetur?"
-              id="1"
-              username="tonmoydeb"
-              replay={false}
-            />
-            <PostComment
-              avatar="/images/logo/chirkutt-logo-secondary.png"
-              name="Tonmoy Deb"
-              comment="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odit,
-              consectetur?"
-              id="1"
-              username="tonmoydeb"
-              replay={false}
-            />
-          </PostComment>
-          <PostComment
-            avatar="/images/logo/chirkutt-logo-secondary.png"
-            name="Tonmoy Deb"
-            comment="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odit,
-              consectetur?"
-            id="1"
-            username="tonmoydeb"
-            replay
-          />
-          <PostComment
-            avatar="/images/logo/chirkutt-logo-secondary.png"
-            name="Tonmoy Deb"
-            comment="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odit,
-              consectetur?"
-            id="1"
-            username="tonmoydeb"
-            replay
-          />
-        </div>
+        {comments.isSuccess ? (
+          <div className="comments mt-5">
+            {comments.data && Object.keys(comments.data).length
+              ? Object.keys(comments.data).map((commentId, _, arr) => {
+                  const comment = comments.data[commentId];
 
-        <div className="flex items-center justify-between mt-10">
-          <h3 className="">Write a comments</h3>
-        </div>
+                  if (comment.parentID !== null || comment.postID !== post.id)
+                    return null;
 
-        <div className="mt-3 flex gap-2 rounded">
-          <img
-            src="/images/logo/chirkutt-logo-primary.png"
-            alt="Tonmoy Deb"
-            className="w-[35px] h-[35px] rounded hidden min-[501px]:block"
-          />
-          <div className="flex-1 flex flex-col gap-2">
-            <TextGroup id="new_comment" placeholder="write your comment" />
-            <button className="btn btn-sm btn-primary self-end">
-              submit <span>{iconList.check}</span>
-            </button>
+                  const commentAuthor = users.data[comment.authorUID];
+                  const commentRepliesId = arr
+                    .filter((replayId) => {
+                      const replay = comments.data[replayId];
+
+                      return (
+                        replay.parentID === comment.id &&
+                        replay.postID === post.id
+                      );
+                    })
+                    .sort((a, b) => {
+                      return (
+                        new Date(comments.data[a].createdAt).getTime() -
+                        new Date(comments.data[b].createdAt).getTime()
+                      );
+                    });
+
+                  return (
+                    <PostComment
+                      key={comment.id}
+                      {...comment}
+                      author={commentAuthor}
+                      replay
+                      handleDeleteComment={handleDeleteComment}
+                    >
+                      {commentRepliesId.map((replayId) => {
+                        const replay = comments.data[replayId];
+                        const replayAuthor = users.data[replay.authorUID];
+
+                        return (
+                          <PostComment
+                            key={replay.id}
+                            {...replay}
+                            author={replayAuthor}
+                            replay={false}
+                            handleDeleteComment={handleDeleteComment}
+                          />
+                        );
+                      })}
+                    </PostComment>
+                  );
+                })
+              : "no comments are found"}
           </div>
-        </div>
+        ) : null}
+        {comments.isLoading ? "loading..." : null}
       </>
     );
   }
