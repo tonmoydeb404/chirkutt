@@ -112,7 +112,7 @@ const PostForm = () => {
 
   return (
     <div
-      className={`absolute top-0 left-0 w-full h-full min-h-full bg-neutral-900/60 flex-col items-center justify-center ${
+      className={`fixed top-0 left-0 w-full h-full min-h-full bg-neutral-900/60 flex-col items-center justify-center ${
         show ? "flex" : "hidden"
       }`}
     >
