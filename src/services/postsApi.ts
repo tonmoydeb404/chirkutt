@@ -4,6 +4,7 @@ import {
   createDocument,
   deleteDocument,
   getCollection,
+  getQueryResult,
   updateDocument,
 } from "../lib/database";
 import { PostType } from "../types/PostType";
@@ -98,6 +99,37 @@ export const postsApi = createApi({
         }
       },
     }),
+    searchPosts: builder.query({
+      queryFn: async (query: string) => {
+        try {
+          const response = await getQueryResult<PostType>(
+            [{ key: "text", condition: ">=", value: query }],
+            POSTS
+          );
+          // sorting by time
+          const sortedResponse = response.sort((a, b) => {
+            return (
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            );
+          });
+          const data = arrayToObject(sortedResponse, "id");
+          return { data };
+        } catch (error) {
+          return { error };
+        }
+      },
+      providesTags: (result) => {
+        return result
+          ? [
+              ...Object.keys(result).map((id) => ({
+                type: "Post" as const,
+                id,
+              })),
+              "Post",
+            ]
+          : ["Post"];
+      },
+    }),
   }),
 });
 
@@ -107,4 +139,6 @@ export const {
   useCreatePostMutation,
   useDeletePostMutation,
   useUpdatePostMutation,
+  useSearchPostsQuery,
+  useLazySearchPostsQuery,
 } = postsApi;
