@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import { useAppSelector } from "../app/hooks";
 import PostCard from "../common/components/PostCard";
@@ -5,6 +6,7 @@ import { selectAuth } from "../features/auth/authSlice";
 import iconList from "../lib/iconList";
 import { useGetAllCommentsQuery } from "../services/commentsApi";
 import { useGetAllPostsQuery } from "../services/postsApi";
+import { useLazyGetSavedPostsQuery } from "../services/savedApi";
 import { useGetUserQuery } from "../services/usersApi";
 
 const User = () => {
@@ -23,6 +25,22 @@ const User = () => {
     isSuccess,
   } = useGetUserQuery({ username });
   const posts = useGetAllPostsQuery({});
+
+  const [getSavedPost, savedPostResult] = useLazyGetSavedPostsQuery();
+
+  // trigger get saved post
+  useEffect(() => {
+    const fetchSavedPost = async () => {
+      if (status === "AUTHORIZED" && authUser) {
+        try {
+          await getSavedPost(authUser.uid).unwrap();
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    };
+    fetchSavedPost();
+  }, [authUser, status]);
 
   // navigate to profile page if authorized username and page username matched
   if (status === "AUTHORIZED" && authUser?.username === username)
@@ -66,38 +84,6 @@ const User = () => {
             </div>
           </div>
 
-          <div className="grid min-[500px]:grid-cols-2 sm:grid-cols-3 mt-2 gap-2">
-            <div className="flex items-start gap-1 py-2 sm:py-2.5 px-2 sm:px-3 box rounded">
-              <span className="text-[40px] text-primary-600">
-                {iconList.post}
-              </span>
-              <div className="flex flex-col gap-0">
-                <h3 className="text-xs uppercase tracking-wide">Chirkutts</h3>
-                <h2 className="text-xl font-bold">20</h2>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-1 py-2 sm:py-2.5 px-2 sm:px-3 box rounded">
-              <span className="text-[40px] text-success-600">
-                {iconList.like}
-              </span>
-              <div className="flex flex-col gap-0">
-                <h3 className="text-xs uppercase tracking-wide">Likes</h3>
-                <h2 className="text-xl font-bold">200</h2>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-1 py-2 sm:py-2.5 px-2 sm:px-3 box rounded">
-              <span className="text-[40px] text-warning-600">
-                {iconList.comment}
-              </span>
-              <div className="flex flex-col gap-0">
-                <h3 className="text-xs uppercase tracking-wide">comments</h3>
-                <h2 className="text-xl font-bold">200</h2>
-              </div>
-            </div>
-          </div>
-
           <div className="mt-10">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-medium">Recent Posts</h3>
@@ -116,12 +102,14 @@ const User = () => {
                     const postComments = Object.keys(comments.data).filter(
                       (c) => comments.data[c].postID === post.id
                     );
+                    const isSaved = !!savedPostResult?.data?.[post.id];
                     return post.authorUID === user.uid ? (
                       <PostCard
                         comments={postComments.length}
                         key={post.id}
                         {...post}
                         author={user}
+                        isSaved={isSaved}
                       />
                     ) : null;
                   })

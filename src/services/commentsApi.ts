@@ -4,6 +4,7 @@ import {
   createDocument,
   deleteMultiDocument,
   getCollection,
+  getQueryResult,
 } from "../lib/database";
 import { CommentType } from "../types/CommentType";
 import { arrayToObject } from "../utilities/arrayToObject";
@@ -17,6 +18,37 @@ export const commentsApi = createApi({
       queryFn: async () => {
         try {
           const response = await getCollection<CommentType>(COMMENTS);
+          // sorting by time
+          const sortedResponse = response.sort((a, b) => {
+            return (
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            );
+          });
+          const data = arrayToObject(sortedResponse, "id");
+          return { data };
+        } catch (error) {
+          return { error };
+        }
+      },
+      providesTags: (result) => {
+        return result
+          ? [
+              ...Object.keys(result).map((id) => ({
+                type: "Comment" as const,
+                id,
+              })),
+              "Comment",
+            ]
+          : ["Comment"];
+      },
+    }),
+    getPostComments: builder.query({
+      queryFn: async (id: string) => {
+        try {
+          const response = await getQueryResult<CommentType>(
+            [{ key: "postID", value: id, condition: "==" }],
+            COMMENTS
+          );
           // sorting by time
           const sortedResponse = response.sort((a, b) => {
             return (
@@ -72,4 +104,5 @@ export const {
   useLazyGetAllCommentsQuery,
   useCreateCommentMutation,
   useDeleteCommentMutation,
+  useGetPostCommentsQuery,
 } = commentsApi;

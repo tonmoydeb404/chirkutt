@@ -10,11 +10,16 @@ import {
   useDeletePostMutation,
   useUpdatePostMutation,
 } from "../../services/postsApi";
+import {
+  useAddSavedPostMutation,
+  useRemoveSavedPostMutation,
+} from "../../services/savedApi";
 import { PostType } from "../../types/PostType";
 import { UserType } from "../../types/UserType";
 
 type PostCardType = {
   comments: number;
+  isSaved: boolean;
   author: UserType;
 } & PostType;
 
@@ -27,11 +32,14 @@ const PostCard = ({
   author,
   authorUID,
   comments,
+  isSaved,
 }: PostCardType) => {
   const { user, status } = useAppSelector(selectAuth);
   const isAuthorized = user?.uid === author.uid;
   const [deletePost, result] = useDeletePostMutation();
   const [updatePost, updateResult] = useUpdatePostMutation();
+  const [savePost, saveResult] = useAddSavedPostMutation();
+  const [removePost, removeResult] = useRemoveSavedPostMutation();
   const navigate = useNavigate();
 
   // dispatch
@@ -55,7 +63,7 @@ const PostCard = ({
     };
   }, [result]);
 
-  // handlers
+  // handle delete
   const handleDelete = async () => {
     try {
       await deletePost(id);
@@ -63,6 +71,7 @@ const PostCard = ({
       toast.error("error in deleting post!", { id: "deletepost" });
     }
   };
+  // handle edit
   const handleEdit = () => {
     const post: PostType = {
       id,
@@ -73,6 +82,31 @@ const PostCard = ({
       authorUID,
     };
     dispatch(openPostForm({ type: "EDIT", value: post }));
+  };
+
+  // handle save
+  const handleBookmark = async () => {
+    if (!user) {
+      return;
+    }
+
+    try {
+      if (isSaved) {
+        // remove bookmark
+        await removePost({
+          uid: user.uid,
+          id,
+        }).unwrap();
+      } else {
+        // add bookmark
+        await savePost({
+          uid: user.uid,
+          post: { postID: id, savedAt: new Date().toISOString() },
+        }).unwrap();
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   // handle post reaction
@@ -162,8 +196,11 @@ const PostCard = ({
           {iconList.share}
         </button>
         {user ? (
-          <button className="btn-icon btn-theme btn-sm">
-            {iconList.add_bookmark}
+          <button
+            className="btn-icon btn-theme btn-sm"
+            onClick={handleBookmark}
+          >
+            {iconList[isSaved ? "remove_bookmark" : "add_bookmark"]}
           </button>
         ) : null}
       </section>

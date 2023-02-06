@@ -2,6 +2,7 @@ import { Unsubscribe } from "firebase/auth";
 import {
   collection,
   deleteDoc,
+  deleteField,
   doc,
   getDoc,
   getDocs,
@@ -116,15 +117,33 @@ export const deleteDocument = (documentId: string, collectionName: string) =>
     }
   });
 
+export const deleteDocumentField = (
+  documentId: string,
+  collectionName: string,
+  fieldName: string
+) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const docRef = doc(db, collectionName, documentId);
+      await updateDoc(docRef, { [fieldName]: deleteField() });
+
+      resolve(true);
+    } catch (error: any) {
+      const errorMsg = error.code || error.message || "something went wrong";
+      return reject(errorMsg);
+    }
+  });
+
 export const createDocument = (
   documentId: string,
   collectionName: string,
-  data: { [key: string]: any }
+  data: { [key: string]: any },
+  merge: boolean = false
 ) =>
   new Promise<boolean>(async (resolve, reject) => {
     try {
       const docRef = doc(db, collectionName, documentId);
-      await setDoc(docRef, data);
+      await setDoc(docRef, data, { merge });
       resolve(true);
     } catch (error: any) {
       const errorMsg = error.code || error.message || "something went wrong";

@@ -1,23 +1,45 @@
+import { useEffect } from "react";
 import { Navigate, useParams } from "react-router-dom";
+import { useAppSelector } from "../app/hooks";
 import CommentForm from "../common/components/CommentForm";
 import PostCard from "../common/components/PostCard";
 import PostComment from "../common/components/PostComment";
+import { selectAuth } from "../features/auth/authSlice";
 import {
   useDeleteCommentMutation,
-  useGetAllCommentsQuery,
+  useGetPostCommentsQuery,
 } from "../services/commentsApi";
 import { useGetAllPostsQuery } from "../services/postsApi";
+import { useLazyGetSavedPostsQuery } from "../services/savedApi";
 import { useGetAllUsersQuery } from "../services/usersApi";
 
 const Post = () => {
   const { id } = useParams();
   if (!id) return <Navigate to={"/404"} />;
 
+  const { user: authUser, status } = useAppSelector(selectAuth);
   const posts = useGetAllPostsQuery({});
   const users = useGetAllUsersQuery({});
-  const comments = useGetAllCommentsQuery({});
+  const comments = useGetPostCommentsQuery(id);
   const [deleteComment, deleteResult] = useDeleteCommentMutation();
+  const [getSavedPost, savedPostResult] = useLazyGetSavedPostsQuery();
 
+  // trigger get saved post
+  useEffect(() => {
+    const fetchSavedPost = async () => {
+      if (status === "AUTHORIZED" && authUser) {
+        try {
+          await getSavedPost(authUser.uid).unwrap();
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    };
+
+    fetchSavedPost();
+  }, [authUser, status]);
+
+  // handle delete
   const handleDeleteComment = async (id: string) => {
     try {
       // check commments data
@@ -58,10 +80,16 @@ const Post = () => {
     const postComments = Object.keys(comments.data).filter(
       (c) => comments.data[c].postID === post.id
     );
+    const isSaved = !!savedPostResult?.data?.[post.id];
 
     return (
       <>
-        <PostCard {...post} author={user} comments={postComments.length} />
+        <PostCard
+          isSaved={isSaved}
+          {...post}
+          author={user}
+          comments={postComments.length}
+        />
 
         <CommentForm postID={post.id} />
 
@@ -75,8 +103,7 @@ const Post = () => {
               ? Object.keys(comments.data).map((commentId, _, arr) => {
                   const comment = comments.data[commentId];
 
-                  if (comment.parentID !== null || comment.postID !== post.id)
-                    return null;
+                  if (comment.parentID !== null) return null;
 
                   const commentAuthor = users.data[comment.authorUID];
                   const commentRepliesId = arr

@@ -3,7 +3,6 @@ import { ReactNode, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { selectAuth } from "../../features/auth/authSlice";
-import iconList from "../../lib/iconList";
 import { CommentType } from "../../types/CommentType";
 import { UserType } from "../../types/UserType";
 import ReplayForm from "./ReplayForm";
@@ -34,14 +33,13 @@ const PostComment = ({
         <div className="comments_thread ">
           <img src={author.avatar} alt={author.name} />
           <div className="comments_thread_body">
-            <div className="flex items-center gap-1">
+            <div className="flex justify-between items-center gap-1">
               <Link
                 to={`/user/${author.username}`}
                 className="comments_thread_title"
               >
                 {author.name}
               </Link>
-              <div className="w-1 h-1 bg-secondary-200 rounded-full overflow-hidden"></div>
               <p className="comment_thread_date text-xs opacity-60">
                 {formatDistanceToNow(
                   parseISO(new Date(createdAt).toISOString())
@@ -49,25 +47,31 @@ const PostComment = ({
                 ago
               </p>
             </div>
-            <p className="comments_thread_text">{text}</p>
+            <div className="flex gap-2">
+              <p className="comments_thread_text mr-auto">{text}</p>
+            </div>
+
+            <div className="flex items-center gap-1 justify-end mt-1">
+              {authUser && author.uid === authUser?.uid ? (
+                <button
+                  className="btn btn-sm btn-theme comment_thread_delete_btn"
+                  onClick={async () => await handleDeleteComment(id)}
+                >
+                  delete
+                </button>
+              ) : null}
+
+              {replay && authUser ? (
+                <button
+                  className="btn btn-sm btn-theme comment_thread_replay_btn"
+                  onClick={() => setShowReplay((prev) => !prev)}
+                >
+                  replay
+                </button>
+              ) : null}
+            </div>
           </div>
-          {authUser && author.uid === authUser?.uid ? (
-            <button
-              className="btn btn-error btn-icon btn-sm self-start invisible group-hover:visible"
-              onClick={async () => await handleDeleteComment(id)}
-            >
-              {iconList.remove}
-            </button>
-          ) : null}
         </div>
-        {replay ? (
-          <button
-            className="btn btn-sm btn-ghost self-end"
-            onClick={() => setShowReplay((prev) => !prev)}
-          >
-            replay
-          </button>
-        ) : null}
       </div>
 
       {children ? (

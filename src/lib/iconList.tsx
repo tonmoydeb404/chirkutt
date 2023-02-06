@@ -1,4 +1,5 @@
 import {
+  BiBookmarkMinus,
   BiBookmarkPlus,
   BiBookmarks,
   BiCheck,
@@ -37,6 +38,7 @@ const iconList: { [key: string]: JSX.Element } = {
   person: <BiUser />,
   bookmarks: <BiBookmarks />,
   add_bookmark: <BiBookmarkPlus />,
+  remove_bookmark: <BiBookmarkMinus />,
   settings: <BiCog />,
   signout: <BiLogOut />,
   signin: <BiLogIn />,
