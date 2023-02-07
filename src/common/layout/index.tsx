@@ -34,20 +34,22 @@ const Layout = ({ children, sidebar }: propTypes) => {
   }, [authUser, status]);
 
   // is all notifications are readed
-  const isAllReaded =
+  const isNotReaded = Boolean(
     allNotifications.isSuccess &&
-    Object.keys(allNotifications.data).every(
-      (key) => allNotifications.data[key].status === "SEEN"
-    );
+      Object.keys(allNotifications.data).length &&
+      Object.keys(allNotifications.data).some(
+        (key) => allNotifications.data[key].status === "UNSEEN"
+      )
+  );
 
   return (
     <>
       <Navbar />
       <div className="container py-5 flex gap-3 md:gap-5">
         <div className="flex-1">{children ? children : <Outlet />}</div>
-        {sidebar ? <Sidebar notifications={!isAllReaded} /> : null}
+        {sidebar ? <Sidebar notifications={isNotReaded} /> : null}
       </div>
-      <MobileMenu notifications={!isAllReaded} />
+      <MobileMenu notifications={isNotReaded} />
       <Footer />
       <PostForm />
     </>

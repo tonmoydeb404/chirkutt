@@ -7,7 +7,7 @@ import PostComment from "../common/components/PostComment";
 import { selectAuth } from "../features/auth/authSlice";
 import {
   useDeleteCommentMutation,
-  useGetPostCommentsQuery,
+  useLazyGetPostCommentsQuery,
 } from "../services/commentsApi";
 import { useRemoveMultiNotificationMutation } from "../services/notificationsApi";
 import { useGetAllPostsQuery } from "../services/postsApi";
@@ -21,11 +21,20 @@ const Post = () => {
   const { user: authUser, status } = useAppSelector(selectAuth);
   const posts = useGetAllPostsQuery({});
   const users = useGetAllUsersQuery({});
-  const comments = useGetPostCommentsQuery(id);
+  const [getComments, comments] = useLazyGetPostCommentsQuery();
   const [deleteComment, deleteResult] = useDeleteCommentMutation();
   const [getSavedPost, savedPostResult] = useLazyGetSavedPostsQuery();
   const [removeMultiNotif, removeMultiNotifResult] =
     useRemoveMultiNotificationMutation();
+
+  // trigger get comments
+  useEffect(() => {
+    const fetchComments = async () => {
+      await getComments(id);
+    };
+
+    fetchComments();
+  }, [id]);
 
   // trigger get saved post
   useEffect(() => {
@@ -43,12 +52,20 @@ const Post = () => {
   }, [authUser, status]);
 
   // handle delete
-  const handleDeleteComment = async (id: string) => {
+  const handleDeleteComment = async (commentID: string) => {
     try {
       // check commments data
-      if (!comments.data || !comments.data[id] || !posts.data) return;
+      if (
+        !comments.data ||
+        !comments.data[commentID] ||
+        !posts.data ||
+        !posts.data[id] ||
+        !authUser
+      )
+        return;
 
-      const comment = comments.data[id];
+      const comment = comments.data[commentID];
+      const post = posts.data[id];
       const idList = [comment.id];
 
       // look for comment replyies
@@ -60,12 +77,24 @@ const Post = () => {
           }
         });
       }
+      // delete comment
+      await deleteComment(idList);
 
-      await deleteComment(idList).unwrap();
-      await removeMultiNotif({
-        uid: posts.data[id].authorUID,
-        idList,
-      }).unwrap();
+      // // delete comment from post author
+      // if (authUser.uid !== comment.authorUID) {
+      //   await removeMultiNotif({
+      //     uid: post.authorUID,
+      //     idList,
+      //   });
+      // }
+      // // delete comment notification from comment author
+      // if (post.authorUID !== comment.authorUID) {
+      //   await removeMultiNotif({
+      //     uid: comment.authorUID,
+      //     idList,
+      //   });
+      // }
+      // console.log("hello");
     } catch (e) {
       console.log(e);
     }
@@ -138,7 +167,9 @@ const Post = () => {
                       {...comment}
                       author={commentAuthor}
                       replay
-                      handleDeleteComment={handleDeleteComment}
+                      handleDeleteComment={async () =>
+                        await handleDeleteComment(comment.id)
+                      }
                     >
                       {commentRepliesId.map((replayId) => {
                         const replay = comments.data[replayId];
@@ -151,7 +182,9 @@ const Post = () => {
                             {...replay}
                             author={replayAuthor}
                             replay={false}
-                            handleDeleteComment={handleDeleteComment}
+                            handleDeleteComment={async () =>
+                              await handleDeleteComment(comment.id)
+                            }
                           />
                         );
                       })}

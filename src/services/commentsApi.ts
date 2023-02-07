@@ -4,7 +4,9 @@ import {
   createDocument,
   deleteMultiDocument,
   getCollection,
+  getCollectionRealtime,
   getQueryResult,
+  getQueryResultRealtime,
 } from "../lib/database";
 import { CommentType } from "../types/CommentType";
 import { arrayToObject } from "../utilities/arrayToObject";
@@ -12,7 +14,6 @@ import { arrayToObject } from "../utilities/arrayToObject";
 export const commentsApi = createApi({
   reducerPath: "commentsApi",
   baseQuery: fakeBaseQuery(),
-  tagTypes: ["Comment"],
   endpoints: (builder) => ({
     getAllComments: builder.query({
       queryFn: async () => {
@@ -30,16 +31,33 @@ export const commentsApi = createApi({
           return { error };
         }
       },
-      providesTags: (result) => {
-        return result
-          ? [
-              ...Object.keys(result).map((id) => ({
-                type: "Comment" as const,
-                id,
-              })),
-              "Comment",
-            ]
-          : ["Comment"];
+      onCacheEntryAdded: async (
+        args,
+        { cacheDataLoaded, updateCachedData, cacheEntryRemoved }
+      ) => {
+        let unsubscribe = () => {};
+        try {
+          await cacheDataLoaded;
+
+          unsubscribe = getCollectionRealtime<CommentType>(COMMENTS, (data) => {
+            updateCachedData((draft) => {
+              // sorting by time
+              const sortedResponse = data.sort((a, b) => {
+                return (
+                  new Date(b.createdAt).getTime() -
+                  new Date(a.createdAt).getTime()
+                );
+              });
+              draft = arrayToObject<CommentType>(sortedResponse, "id");
+
+              return draft;
+            });
+          });
+        } catch (error) {
+          console.log(error);
+        }
+
+        await cacheEntryRemoved;
       },
     }),
     getPostComments: builder.query({
@@ -61,16 +79,38 @@ export const commentsApi = createApi({
           return { error };
         }
       },
-      providesTags: (result) => {
-        return result
-          ? [
-              ...Object.keys(result).map((id) => ({
-                type: "Comment" as const,
-                id,
-              })),
-              "Comment",
-            ]
-          : ["Comment"];
+      onCacheEntryAdded: async (
+        id: string,
+        { cacheDataLoaded, updateCachedData, cacheEntryRemoved }
+      ) => {
+        let unsubscribe = () => {};
+        try {
+          await cacheDataLoaded;
+
+          unsubscribe = getQueryResultRealtime<CommentType>(
+            [{ key: "postID", value: id, condition: "==" }],
+            COMMENTS,
+            (data) => {
+              updateCachedData((draft) => {
+                // sorting by time
+                const sortedResponse = data.sort((a, b) => {
+                  return (
+                    new Date(b.createdAt).getTime() -
+                    new Date(a.createdAt).getTime()
+                  );
+                });
+
+                draft = arrayToObject<CommentType>(sortedResponse, "id");
+
+                return draft;
+              });
+            }
+          );
+        } catch (error) {
+          console.log(error);
+        }
+
+        await cacheEntryRemoved;
       },
     }),
     createComment: builder.mutation({
@@ -82,18 +122,18 @@ export const commentsApi = createApi({
           return { error };
         }
       },
-      invalidatesTags: ["Comment"],
     }),
     deleteComment: builder.mutation({
       queryFn: async (idList: string[]) => {
         try {
           const response = await deleteMultiDocument(idList, COMMENTS);
+          // console.log(response);
+
           return { data: response };
         } catch (error) {
           return { error };
         }
       },
-      invalidatesTags: ["Comment"],
     }),
   }),
 });
@@ -105,4 +145,5 @@ export const {
   useCreateCommentMutation,
   useDeleteCommentMutation,
   useGetPostCommentsQuery,
+  useLazyGetPostCommentsQuery,
 } = commentsApi;

@@ -47,4 +47,5 @@
 .btn.btn-theme,
 .btn-icon.btn-theme {
   @apply border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 hover:bg-neutral-300 dark:hover:bg-neutral-700 text-neutral-900 dark:text-neutral-50 focus:ring-neutral-200 dark:focus:ring-neutral-500;
+  @apply disabled:hover:bg-inherit disabled:cursor-auto !important;
 }

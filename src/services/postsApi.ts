@@ -4,6 +4,7 @@ import {
   createDocument,
   deleteDocument,
   getCollection,
+  getCollectionRealtime,
   getQueryResult,
   updateDocument,
 } from "../lib/database";
@@ -13,7 +14,6 @@ import { arrayToObject } from "../utilities/arrayToObject";
 export const postsApi = createApi({
   reducerPath: "postsApi",
   baseQuery: fakeBaseQuery(),
-  tagTypes: ["Post"],
   endpoints: (builder) => ({
     getAllPosts: builder.query({
       queryFn: async () => {
@@ -31,16 +31,31 @@ export const postsApi = createApi({
           return { error };
         }
       },
-      providesTags: (result) => {
-        return result
-          ? [
-              ...Object.keys(result).map((id) => ({
-                type: "Post" as const,
-                id,
-              })),
-              "Post",
-            ]
-          : ["Post"];
+      onCacheEntryAdded: async (
+        args,
+        { cacheDataLoaded, updateCachedData, cacheEntryRemoved }
+      ) => {
+        try {
+          await cacheDataLoaded;
+
+          const unsubscribe = getCollectionRealtime<PostType>(POSTS, (data) => {
+            updateCachedData((draft) => {
+              // sorting by time
+              const sortedResponse = data.sort((a, b) => {
+                return (
+                  new Date(b.createdAt).getTime() -
+                  new Date(a.createdAt).getTime()
+                );
+              });
+              draft = arrayToObject<PostType>(sortedResponse, "id");
+              return draft;
+            });
+          });
+        } catch (error) {
+          console.log(error);
+        }
+
+        await cacheEntryRemoved;
       },
     }),
     createPost: builder.mutation({
@@ -52,7 +67,6 @@ export const postsApi = createApi({
           return { error };
         }
       },
-      invalidatesTags: ["Post"],
     }),
     deletePost: builder.mutation({
       queryFn: async (id: string) => {
@@ -63,7 +77,6 @@ export const postsApi = createApi({
           return { error };
         }
       },
-      invalidatesTags: ["Post"],
     }),
     updatePost: builder.mutation({
       queryFn: async ({
@@ -117,17 +130,6 @@ export const postsApi = createApi({
         } catch (error) {
           return { error };
         }
-      },
-      providesTags: (result) => {
-        return result
-          ? [
-              ...Object.keys(result).map((id) => ({
-                type: "Post" as const,
-                id,
-              })),
-              "Post",
-            ]
-          : ["Post"];
       },
     }),
   }),

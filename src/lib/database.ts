@@ -30,11 +30,24 @@ export const getCollection = <T>(name: string) =>
     }
   });
 
-export const getDocument = <T>(documentId: string, collectionName: string) =>
+export const getDocument = <T>(
+  documentId: string,
+  collectionName: string,
+  forceCreate: boolean = false
+) =>
   new Promise<T>(async (resolve, reject) => {
     try {
-      const snapshot = await getDoc(doc(db, collectionName, documentId));
-      if (!snapshot.exists()) throw Error("document not found");
+      const docRef = doc(db, collectionName, documentId);
+      let snapshot = await getDoc(docRef);
+      if (!snapshot.exists()) {
+        // force to create document if not found
+        if (forceCreate) {
+          await setDoc(docRef, {});
+          snapshot = await getDoc(docRef);
+        } else {
+          throw Error("document not found");
+        }
+      }
 
       const data: T = snapshot.data() as T;
       resolve(data);
@@ -126,10 +139,13 @@ export const deleteDocumentFields = (
     try {
       const docRef = doc(db, collectionName, documentId);
       const fields = fieldNames.reduce(
-        (prev: { [key: string]: any }, current) =>
-          (prev[current] = deleteField()),
+        (prev: { [key: string]: any }, current) => {
+          prev[current] = deleteField();
+          return prev;
+        },
         {}
       );
+
       await updateDoc(docRef, { ...fields });
 
       resolve(true);
@@ -160,9 +176,10 @@ export const getCollectionRealtime = <T>(
   name: string,
   callback: (data: T[]) => void
 ): Unsubscribe => {
-  let data: T[] = [];
   const unsubscribe = onSnapshot(collection(db, name), (snapshot) => {
+    let data: T[] = [];
     data = snapshot.docs.map((docRef) => docRef.data() as T);
+
     callback(data);
   });
 
@@ -182,6 +199,24 @@ export const getDocumentRealtime = <T>(
       callback(data);
     }
   );
+
+  return unsubscribe;
+};
+
+export const getQueryResultRealtime = <T>(
+  queryParams: QueryParams,
+  collectionName: string,
+  callback: (data: T[]) => void
+): Unsubscribe => {
+  const qParamList = queryParams.map((i) => where(i.key, i.condition, i.value));
+  const queryRef = query(collection(db, collectionName), ...qParamList);
+  const unsubscribe = onSnapshot(queryRef, (snapshot) => {
+    let data: T[] = [];
+    snapshot.forEach((doc) => {
+      data.push(doc.data() as T);
+    });
+    callback(data);
+  });
 
   return unsubscribe;
 };

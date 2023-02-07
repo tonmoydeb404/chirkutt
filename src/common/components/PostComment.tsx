@@ -11,7 +11,7 @@ type PostCommentProps = {
   author: UserType;
   children?: ReactNode;
   replay: boolean;
-  handleDeleteComment: (id: string) => Promise<void>;
+  handleDeleteComment: () => {};
   postAuthorUID: string;
 } & CommentType;
 
@@ -60,7 +60,7 @@ const PostComment = ({
                 authUser.uid === postAuthorUID) ? (
                 <button
                   className="btn btn-sm btn-theme comment_thread_delete_btn"
-                  onClick={async () => await handleDeleteComment(id)}
+                  onClick={handleDeleteComment}
                 >
                   delete
                 </button>

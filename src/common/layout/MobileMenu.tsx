@@ -34,8 +34,6 @@ const MobileMenu = ({ notifications }: { notifications: boolean }) => {
     { title: "Sign in", path: "/signin", icon: "signin" },
   ];
 
-  console.log(notifications);
-
   return (
     <div className="px-6 w-full fixed bottom-0 left-0 h-[55px] bg-white dark:bg-neutral-800 shadow border-t border-t-neutral-300 dark:border-t-neutral-700 min-[501px]:hidden min-[401px]:px-12">
       <ul className="flex items-center justify-between w-full h-full">

@@ -17,8 +17,11 @@ const NotificationBox = ({
   readNotif,
 }: NotificationBoxType) => {
   return (
-    <div className="flex items-center py-3 px-3 box rounded gap-3">
-      <span className="text-xl">
+    <div
+      className="flex items-center py-3 px-3 box rounded gap-3 group"
+      data-seen={status === "SEEN"}
+    >
+      <span className="text-xl group-data-[seen='true']:opacity-70">
         {
           iconList[
             type === "LIKE"
@@ -30,10 +33,15 @@ const NotificationBox = ({
         }
       </span>
       <div className="flex flex-col gap-0.5">
-        <HashLink smooth to={path} className="text-sm max-w-full">
+        <HashLink
+          smooth
+          to={path}
+          className="text-sm max-w-full group-data-[seen='true']:opacity-70"
+          onClick={status !== "SEEN" ? readNotif : () => {}}
+        >
           {text}
         </HashLink>
-        <span className="text-xs opacity-70">
+        <span className="text-xs opacity-70 group-data-[seen='true']:opacity-50">
           {formatDistanceToNow(parseISO(new Date(createdAt).toISOString()))} ago
         </span>
       </div>

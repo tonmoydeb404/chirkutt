@@ -23,7 +23,8 @@ export const notificationsApi = createApi({
         try {
           const response = await getDocument<NotificationDocument>(
             uiid,
-            NOTIFICATIONS
+            NOTIFICATIONS,
+            true
           );
 
           // sort object
