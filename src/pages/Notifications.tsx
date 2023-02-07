@@ -97,6 +97,13 @@ const Notifications = () => {
               );
             })
           : null}
+
+        {allNotifications.isLoading ? "loading..." : null}
+        {allNotifications.isSuccess &&
+        !Object.keys(allNotifications.data).length
+          ? "nothing here"
+          : null}
+        {allNotifications.isError ? "something wents to wrong" : null}
       </div>
     </div>
   );
