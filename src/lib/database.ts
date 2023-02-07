@@ -57,8 +57,8 @@ export const getDocument = <T>(
     }
   });
 
-type QueryParams = {
-  key: string;
+type QueryParam<T> = {
+  key: keyof T;
   value: string;
   condition:
     | "<"
@@ -71,15 +71,15 @@ type QueryParams = {
     | "not-in"
     | "array-contains"
     | "array-contains-any";
-}[];
-export const getQueryResult = <T>(
-  queryParams: QueryParams,
+};
+export const getQueryResult = <T extends { [key: string]: any }>(
+  queryParams: QueryParam<T>[],
   collectionName: string
 ) =>
   new Promise<T[]>(async (resolve, reject) => {
     try {
       const qParamList = queryParams.map((i) =>
-        where(i.key, i.condition, i.value)
+        where(i.key as string, i.condition, i.value)
       );
       const queryRef = query(collection(db, collectionName), ...qParamList);
       const snapshot = await getDocs(queryRef);
@@ -98,12 +98,13 @@ export const getQueryResult = <T>(
 export const updateDocument = <T>(
   documentId: string,
   collectionName: string,
-  updates: { [key: string]: any }
+  updates: Partial<T>
 ) =>
   new Promise<T>(async (resolve, reject) => {
     try {
+      if (!Object.keys(updates).length) throw Error("updates not provided");
       const docRef = doc(db, collectionName, documentId);
-      await updateDoc(docRef, updates);
+      await updateDoc(docRef, updates as object);
 
       // get updated data
       const snapshot = await getDoc(docRef);
@@ -111,6 +112,31 @@ export const updateDocument = <T>(
 
       const data: T = snapshot.data() as T;
       resolve(data);
+    } catch (error: any) {
+      const errorMsg = error.code || error.message || "something went wrong";
+      return reject(errorMsg);
+    }
+  });
+
+export const updateDocuments = <T>(
+  documentIdList: string[],
+  collectionName: string,
+  updates: Partial<T>
+) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      if (!Object.keys(updates).length) throw Error("updates not provided");
+
+      const batch = writeBatch(db);
+
+      documentIdList.forEach((id) => {
+        const docRef = doc(db, collectionName, id);
+        batch.update(docRef, updates as {});
+      });
+
+      await batch.commit();
+
+      resolve(true);
     } catch (error: any) {
       const errorMsg = error.code || error.message || "something went wrong";
       return reject(errorMsg);
@@ -204,11 +230,13 @@ export const getDocumentRealtime = <T>(
 };
 
 export const getQueryResultRealtime = <T>(
-  queryParams: QueryParams,
+  queryParams: QueryParam<T>[],
   collectionName: string,
   callback: (data: T[]) => void
 ): Unsubscribe => {
-  const qParamList = queryParams.map((i) => where(i.key, i.condition, i.value));
+  const qParamList = queryParams.map((i) =>
+    where(i.key as string, i.condition, i.value)
+  );
   const queryRef = query(collection(db, collectionName), ...qParamList);
   const unsubscribe = onSnapshot(queryRef, (snapshot) => {
     let data: T[] = [];
@@ -272,6 +300,33 @@ export const updateFields = <T extends { [key: string]: any }>(
       await updateDoc(docRef, { ...updatedData });
 
       resolve(true);
+    } catch (error: any) {
+      const errorMsg = error.code || error.message || "something went wrong";
+      return reject(errorMsg);
+    }
+  });
+
+// delete by query
+export const deleteDocumentByQuery = <T extends { [key: string]: any }>(
+  queryParams: QueryParam<T>[],
+  collectionName: string
+) =>
+  new Promise<T[]>(async (resolve, reject) => {
+    try {
+      const qParamList = queryParams.map((i) =>
+        where(i.key as string, i.condition, i.value)
+      );
+      const queryRef = query(collection(db, collectionName), ...qParamList);
+      const snapshot = await getDocs(queryRef);
+      const data: T[] = [];
+      const batch = writeBatch(db);
+      snapshot.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+
+      await batch.commit();
+
+      resolve(data);
     } catch (error: any) {
       const errorMsg = error.code || error.message || "something went wrong";
       return reject(errorMsg);
