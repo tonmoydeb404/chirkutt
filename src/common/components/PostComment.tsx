@@ -55,7 +55,9 @@ const PostComment = ({
             </div>
 
             <div className="flex items-center gap-1 justify-end mt-1">
-              {authUser && author.uid === authUser?.uid ? (
+              {authUser &&
+              (author.uid === authUser?.uid ||
+                authUser.uid === postAuthorUID) ? (
                 <button
                   className="btn btn-sm btn-theme comment_thread_delete_btn"
                   onClick={async () => await handleDeleteComment(id)}
