@@ -6,6 +6,7 @@ import PrivateOutlet from "../common/outlet/PrivateOutlet";
 import PublicOutlet from "../common/outlet/PublicOutlet";
 import AuthStateChanged from "../features/auth/AuthStateChanged";
 import Home from "../pages/Home";
+import Notifications from "../pages/Notifications";
 import Post from "../pages/Post";
 import Profile from "../pages/Profile";
 import Saved from "../pages/Saved";
@@ -34,6 +35,7 @@ const App = () => {
           <Route element={<PrivateOutlet />}>
             <Route element={<Layout sidebar={true} />}>
               <Route path="/profile" element={<Profile />} />
+              <Route path="/notifications" element={<Notifications />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/saved" element={<Saved />} />
             </Route>

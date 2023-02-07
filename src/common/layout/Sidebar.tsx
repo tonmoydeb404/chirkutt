@@ -6,7 +6,7 @@ import { ListItemType } from "../../types/ListType";
 import LinkList from "../components/List";
 import UserCard from "../components/UserCard";
 
-const Sidebar = () => {
+const Sidebar = ({ notifications }: { notifications: boolean }) => {
   const dispatch = useAppDispatch();
   const { user } = useAppSelector(selectAuth);
 
@@ -17,6 +17,12 @@ const Sidebar = () => {
       title: "New Post",
       action: () => dispatch(openPostForm({ type: "CREATE" })),
       icon: "add",
+    },
+    {
+      title: "Notifications",
+      path: "/notifications",
+      icon: "notification",
+      badge: notifications ? "WARNING" : undefined,
     },
     { title: "Saved", path: "/saved", icon: "bookmarks" },
     { title: "Settings", path: "/settings", icon: "settings" },

@@ -6,17 +6,24 @@ import { useAppSelector } from "../../app/hooks";
 import { selectAuth } from "../../features/auth/authSlice";
 import iconList from "../../lib/iconList";
 import { useCreateCommentMutation } from "../../services/commentsApi";
+import { useAddNotificationMutation } from "../../services/notificationsApi";
 import { CommentType } from "../../types/CommentType";
+import { NotificationType } from "../../types/NotificationType";
 
 const ReplayForm = ({
   postID,
   parentID,
+  commentAuthorUID,
+  postAuthorUID,
 }: {
+  postAuthorUID: string;
+  commentAuthorUID: string;
   postID: string;
   parentID: string;
 }) => {
   const { user: authUser } = useAppSelector(selectAuth);
-  const [createComment, createResult] = useCreateCommentMutation();
+  const [createComment] = useCreateCommentMutation();
+  const [createNotification] = useAddNotificationMutation();
 
   // submit handler
   const submitHandler = async (
@@ -34,6 +41,37 @@ const ReplayForm = ({
         createdAt: new Date().toISOString(),
       };
       await createComment(newComment);
+      // create notification
+      const newNotification: NotificationType = {
+        id: newComment.id,
+        createdAt: new Date().toISOString(),
+        path: `/post/${postID}#${newComment.id}`,
+        status: "UNSEEN",
+        text: ``,
+        type: "COMMENT",
+      };
+      // create notification for post author
+      if (authUser.uid !== postAuthorUID) {
+        const postAuthorNotification: NotificationType = {
+          ...newNotification,
+          text: `${authUser.name} replied to a comment on your post`,
+        };
+        await createNotification({
+          uid: postAuthorUID,
+          notification: postAuthorNotification,
+        }).unwrap();
+      }
+      // create notification for comment author
+      if (authUser.uid !== commentAuthorUID) {
+        const commentAuthorNotification: NotificationType = {
+          ...newNotification,
+          text: `${authUser.name} replied to your comment`,
+        };
+        await createNotification({
+          uid: commentAuthorUID,
+          notification: commentAuthorNotification,
+        }).unwrap();
+      }
     } catch (error) {
       toast.error("something went to wrong!");
     }

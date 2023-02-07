@@ -6,7 +6,7 @@ import { signout } from "../../lib/auth";
 import iconList from "../../lib/iconList";
 import { ListItemType } from "../../types/ListType";
 
-const MobileMenu = () => {
+const MobileMenu = ({ notifications }: { notifications: boolean }) => {
   const dispatch = useAppDispatch();
   const { user } = useAppSelector(selectAuth);
 
@@ -18,6 +18,12 @@ const MobileMenu = () => {
       action: () => dispatch(openPostForm({ type: "CREATE" })),
       icon: "add",
     },
+    {
+      title: "Notifications",
+      path: "/notifications",
+      icon: "notification",
+      badge: notifications ? "WARNING" : undefined,
+    },
     { title: "Profile", path: "/profile", icon: "person" },
     { title: "Sign Out", action: signout, icon: "signout" },
   ];
@@ -28,12 +34,21 @@ const MobileMenu = () => {
     { title: "Sign in", path: "/signin", icon: "signin" },
   ];
 
+  console.log(notifications);
+
   return (
     <div className="px-6 w-full fixed bottom-0 left-0 h-[55px] bg-white dark:bg-neutral-800 shadow border-t border-t-neutral-300 dark:border-t-neutral-700 min-[501px]:hidden min-[401px]:px-12">
       <ul className="flex items-center justify-between w-full h-full">
         {(user ? authorizedLinks : unauthorizedLinks).map((link) =>
           "path" in link ? (
-            <li className="inline-flex" key={link.path}>
+            <li
+              key={link.path} // TODO: make badge classes
+              className={`inline-flex ${
+                link?.badge === "WARNING"
+                  ? "relative after:absolute after:top-5 after:left-2.5 after:w-2 after:h-2 after:rounded-full after:overflow-hidden after:bg-warning-400"
+                  : ""
+              }`}
+            >
               <NavLink
                 to={link.path}
                 className={({ isActive }) =>

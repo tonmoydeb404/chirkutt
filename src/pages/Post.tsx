@@ -9,6 +9,7 @@ import {
   useDeleteCommentMutation,
   useGetPostCommentsQuery,
 } from "../services/commentsApi";
+import { useRemoveMultiNotificationMutation } from "../services/notificationsApi";
 import { useGetAllPostsQuery } from "../services/postsApi";
 import { useLazyGetSavedPostsQuery } from "../services/savedApi";
 import { useGetAllUsersQuery } from "../services/usersApi";
@@ -23,6 +24,8 @@ const Post = () => {
   const comments = useGetPostCommentsQuery(id);
   const [deleteComment, deleteResult] = useDeleteCommentMutation();
   const [getSavedPost, savedPostResult] = useLazyGetSavedPostsQuery();
+  const [removeMultiNotif, removeMultiNotifResult] =
+    useRemoveMultiNotificationMutation();
 
   // trigger get saved post
   useEffect(() => {
@@ -43,7 +46,7 @@ const Post = () => {
   const handleDeleteComment = async (id: string) => {
     try {
       // check commments data
-      if (!comments.data || !comments.data[id]) return;
+      if (!comments.data || !comments.data[id] || !posts.data) return;
 
       const comment = comments.data[id];
       const idList = [comment.id];
@@ -58,8 +61,14 @@ const Post = () => {
         });
       }
 
-      await deleteComment(idList);
-    } catch (e) {}
+      await deleteComment(idList).unwrap();
+      await removeMultiNotif({
+        uid: posts.data[id].authorUID,
+        idList,
+      }).unwrap();
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   // error state
@@ -91,7 +100,7 @@ const Post = () => {
           comments={postComments.length}
         />
 
-        <CommentForm postID={post.id} />
+        <CommentForm postID={post.id} authorUID={post.authorUID} />
 
         <div className="flex items-center justify-between mt-10">
           <h3 className="">All Comments</h3>
@@ -124,6 +133,7 @@ const Post = () => {
 
                   return (
                     <PostComment
+                      postAuthorUID={post.authorUID}
                       key={comment.id}
                       {...comment}
                       author={commentAuthor}
@@ -136,6 +146,7 @@ const Post = () => {
 
                         return (
                           <PostComment
+                            postAuthorUID={post.authorUID}
                             key={replay.id}
                             {...replay}
                             author={replayAuthor}

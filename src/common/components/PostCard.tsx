@@ -7,6 +7,10 @@ import { selectAuth } from "../../features/auth/authSlice";
 import { openPostForm } from "../../features/postFormSlice";
 import iconList from "../../lib/iconList";
 import {
+  useAddNotificationMutation,
+  useRemoveNotificationMutation,
+} from "../../services/notificationsApi";
+import {
   useDeletePostMutation,
   useUpdatePostMutation,
 } from "../../services/postsApi";
@@ -14,6 +18,7 @@ import {
   useAddSavedPostMutation,
   useRemoveSavedPostMutation,
 } from "../../services/savedApi";
+import { NotificationType } from "../../types/NotificationType";
 import { PostType } from "../../types/PostType";
 import { UserType } from "../../types/UserType";
 
@@ -40,6 +45,10 @@ const PostCard = ({
   const [updatePost, updateResult] = useUpdatePostMutation();
   const [savePost, saveResult] = useAddSavedPostMutation();
   const [removePost, removeResult] = useRemoveSavedPostMutation();
+  const [createNotification, createNotificationResult] =
+    useAddNotificationMutation();
+  const [removeNotification, removeNotificationResult] =
+    useRemoveNotificationMutation();
   const navigate = useNavigate();
 
   // dispatch
@@ -83,7 +92,6 @@ const PostCard = ({
     };
     dispatch(openPostForm({ type: "EDIT", value: post }));
   };
-
   // handle save
   const handleBookmark = async () => {
     if (!user) {
@@ -108,7 +116,6 @@ const PostCard = ({
       console.log(err);
     }
   };
-
   // handle post reaction
   const handleReaction = async () => {
     if (!user) {
@@ -116,15 +123,44 @@ const PostCard = ({
       return;
     }
 
-    if (likes.includes(user.uid)) {
-      // remove like
-      await updatePost({
-        id: id,
-        updates: { likes: [...likes.filter((i) => i != user.uid)] },
-      });
-    } else {
-      // add like
-      await updatePost({ id: id, updates: { likes: [...likes, user.uid] } });
+    try {
+      if (likes.includes(user.uid)) {
+        // remove like
+        await updatePost({
+          id: id,
+          updates: { likes: [...likes.filter((i) => i != user.uid)] },
+        }).unwrap();
+        // remove notification
+        if (user.uid !== authorUID) {
+          await removeNotification({
+            uid: authorUID,
+            id: `${user.uid}:${id}`,
+          }).unwrap();
+        }
+      } else {
+        // add like
+        await updatePost({
+          id: id,
+          updates: { likes: [...likes, user.uid] },
+        }).unwrap();
+        // create notification
+        if (user.uid !== authorUID) {
+          const newNotification: NotificationType = {
+            id: `${user.uid}:${id}`,
+            createdAt: new Date().toISOString(),
+            path: `/post/${id}`,
+            status: "UNSEEN",
+            text: `${user.name} liked your post`,
+            type: "LIKE",
+          };
+          await createNotification({
+            uid: authorUID,
+            notification: newNotification,
+          }).unwrap();
+        }
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 

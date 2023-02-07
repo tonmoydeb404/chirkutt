@@ -7,13 +7,23 @@ import { useAppSelector } from "../../app/hooks";
 import { selectAuth } from "../../features/auth/authSlice";
 import iconList from "../../lib/iconList";
 import { useCreateCommentMutation } from "../../services/commentsApi";
+import { useAddNotificationMutation } from "../../services/notificationsApi";
 import { CommentType } from "../../types/CommentType";
+import { NotificationType } from "../../types/NotificationType";
 import TextGroup from "./Forms/TextGroup";
 
 const CREATE_TOAST = "CREATE_COMMENT_TOAST";
-const CommentForm = ({ postID }: { postID: string }) => {
+const CommentForm = ({
+  postID,
+  authorUID,
+}: {
+  postID: string;
+  authorUID: string;
+}) => {
   const { user: authUser } = useAppSelector(selectAuth);
   const [createComment, createResult] = useCreateCommentMutation();
+  const [createNotification, createNotificationResult] =
+    useAddNotificationMutation();
 
   // show toast notification for mutation result
   useEffect(() => {
@@ -49,6 +59,21 @@ const CommentForm = ({ postID }: { postID: string }) => {
         createdAt: new Date().toISOString(),
       };
       await createComment(newComment);
+      // create notification
+      if (authUser.uid !== authorUID) {
+        const newNotification: NotificationType = {
+          id: newComment.id,
+          createdAt: new Date().toISOString(),
+          path: `/post/${postID}#${newComment.id}`,
+          status: "UNSEEN",
+          text: `${authUser.name} commented on your post`,
+          type: "COMMENT",
+        };
+        await createNotification({
+          uid: authorUID,
+          notification: newNotification,
+        }).unwrap();
+      }
     } catch (error) {
       toast.error("something went to wrong!", { id: CREATE_TOAST });
     }

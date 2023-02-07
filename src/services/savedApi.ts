@@ -2,7 +2,7 @@ import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { SAVED } from "../constants/firebase.constant";
 import {
   createDocument,
-  deleteDocumentField,
+  deleteDocumentFields,
   getDocument,
 } from "../lib/database";
 import { SavedPostType } from "../types/SavedPostType";
@@ -73,7 +73,7 @@ export const savedApi = createApi({
     removeSavedPost: builder.mutation({
       queryFn: async ({ uid, id }: { uid: string; id: string }) => {
         try {
-          const response = await deleteDocumentField(uid, SAVED, id);
+          const response = await deleteDocumentFields(uid, SAVED, [id]);
           return { data: response };
         } catch (error) {
           return { error };

@@ -1,4 +1,8 @@
-type CommonTypes = { title: string; icon: string };
+type CommonTypes = {
+  title: string;
+  icon: string;
+  badge?: "INITIAL" | "WARNING" | "DANGER";
+};
 type Link = { path: string } & CommonTypes;
 type Button = { action: () => void } & CommonTypes;
 

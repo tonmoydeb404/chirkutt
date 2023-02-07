@@ -12,6 +12,7 @@ type PostCommentProps = {
   children?: ReactNode;
   replay: boolean;
   handleDeleteComment: (id: string) => Promise<void>;
+  postAuthorUID: string;
 } & CommentType;
 
 const PostComment = ({
@@ -22,13 +23,15 @@ const PostComment = ({
   text,
   createdAt,
   replay = false,
+  authorUID,
+  postAuthorUID,
   handleDeleteComment,
 }: PostCommentProps) => {
   const { user: authUser } = useAppSelector(selectAuth);
   const [showReplay, setShowReplay] = useState(false);
 
   return (
-    <div className="comments_thread_wrapper">
+    <div className="comments_thread_wrapper" id={id}>
       <div className="flex flex-col gap-1 group">
         <div className="comments_thread ">
           <img src={author.avatar} alt={author.name} />
@@ -79,7 +82,12 @@ const PostComment = ({
       ) : null}
 
       {replay && showReplay ? (
-        <ReplayForm postID={postID} parentID={id} />
+        <ReplayForm
+          postID={postID}
+          parentID={id}
+          commentAuthorUID={authorUID}
+          postAuthorUID={postAuthorUID}
+        />
       ) : null}
     </div>
   );

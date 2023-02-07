@@ -1,8 +1,10 @@
 import {
+  BiBell,
   BiBookmarkMinus,
   BiBookmarkPlus,
   BiBookmarks,
   BiCheck,
+  BiCheckDouble,
   BiCog,
   BiComment,
   BiDetail,
@@ -59,9 +61,11 @@ const iconList: { [key: string]: JSX.Element } = {
   eye_slash: <BsEyeSlash />,
   email: <BiEnvelope />,
   check: <BiCheck />,
+  doublecheck: <BiCheckDouble />,
   close: <BiX />,
   send: <BiSend />,
   pencil: <BiPencil />,
+  notification: <BiBell />,
 };
 
 export default iconList;

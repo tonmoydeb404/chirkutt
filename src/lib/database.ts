@@ -117,15 +117,20 @@ export const deleteDocument = (documentId: string, collectionName: string) =>
     }
   });
 
-export const deleteDocumentField = (
+export const deleteDocumentFields = (
   documentId: string,
   collectionName: string,
-  fieldName: string
+  fieldNames: string[]
 ) =>
   new Promise(async (resolve, reject) => {
     try {
       const docRef = doc(db, collectionName, documentId);
-      await updateDoc(docRef, { [fieldName]: deleteField() });
+      const fields = fieldNames.reduce(
+        (prev: { [key: string]: any }, current) =>
+          (prev[current] = deleteField()),
+        {}
+      );
+      await updateDoc(docRef, { ...fields });
 
       resolve(true);
     } catch (error: any) {
@@ -164,6 +169,23 @@ export const getCollectionRealtime = <T>(
   return unsubscribe;
 };
 
+export const getDocumentRealtime = <T>(
+  documentId: string,
+  collectionName: string,
+  callback: (data: T) => void
+): Unsubscribe => {
+  let data: T;
+  const unsubscribe = onSnapshot(
+    doc(db, collectionName, documentId),
+    (snapshot) => {
+      data = snapshot.data() as T;
+      callback(data);
+    }
+  );
+
+  return unsubscribe;
+};
+
 // delete multiple document
 export const deleteMultiDocument = (
   documentId: string[],
@@ -179,6 +201,40 @@ export const deleteMultiDocument = (
       });
 
       await batch.commit();
+
+      resolve(true);
+    } catch (error: any) {
+      const errorMsg = error.code || error.message || "something went wrong";
+      return reject(errorMsg);
+    }
+  });
+
+// update multiple fields
+export const updateFields = <T extends { [key: string]: any }>(
+  documentId: string,
+  collectionName: string,
+  fields: string[],
+  updates: Partial<T>
+) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      if (typeof updates !== "object" || !Object.keys(updates).length) {
+        throw Error("updates not provided");
+      }
+      const docRef = doc(db, collectionName, documentId);
+
+      const updatedData = fields.reduce(
+        (prev: { [key: string]: any }, current) => {
+          Object.keys(updates).forEach((key) => {
+            prev[`${current}.${key}`] = updates[key];
+          });
+
+          return prev;
+        },
+        {}
+      );
+
+      await updateDoc(docRef, { ...updatedData });
 
       resolve(true);
     } catch (error: any) {
