@@ -80,21 +80,20 @@ const Post = () => {
       // delete comment
       await deleteComment(idList);
 
-      // // delete comment from post author
-      // if (authUser.uid !== comment.authorUID) {
-      //   await removeMultiNotif({
-      //     uid: post.authorUID,
-      //     idList,
-      //   });
-      // }
-      // // delete comment notification from comment author
-      // if (post.authorUID !== comment.authorUID) {
-      //   await removeMultiNotif({
-      //     uid: comment.authorUID,
-      //     idList,
-      //   });
-      // }
-      // console.log("hello");
+      // delete comment from post author
+      if (authUser.uid !== comment.authorUID) {
+        await removeMultiNotif({
+          uid: post.authorUID,
+          idList,
+        });
+      }
+      // delete comment notification from comment author
+      if (post.authorUID !== comment.authorUID) {
+        await removeMultiNotif({
+          uid: comment.authorUID,
+          idList,
+        });
+      }
     } catch (e) {
       console.log(e);
     }
