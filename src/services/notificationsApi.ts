@@ -2,41 +2,37 @@ import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { NOTIFICATIONS } from "../constants/firebase.constant";
 import {
   createDocument,
-  deleteDocumentFields,
-  getDocument,
-  getDocumentRealtime,
-  updateFields,
+  deleteDocuments,
+  deleteQuery,
+  readQuery,
+  readQueryRealtime,
+  updateDocuments,
 } from "../lib/database";
-import { NotificationType } from "../types/NotificationType";
+import {
+  NotificationDocumentType,
+  NotificationType,
+} from "../types/NotificationType";
 import { arrayToObject } from "../utilities/arrayToObject";
-import { objectToArray } from "../utilities/objectToArray";
-
-type NotificationDocument = { [key: string]: NotificationType };
 
 export const notificationsApi = createApi({
   reducerPath: "notificationsApi",
   baseQuery: fakeBaseQuery(),
   tagTypes: ["Notification"],
   endpoints: (builder) => ({
-    getNotification: builder.query({
-      queryFn: async (uiid: string) => {
+    getNotifications: builder.query<NotificationDocumentType, string>({
+      queryFn: async (userID: string) => {
         try {
-          const response = await getDocument<NotificationDocument>(
-            uiid,
-            NOTIFICATIONS,
-            true
-          );
+          const response = await readQuery<NotificationType>(NOTIFICATIONS, [
+            { key: "userID", condition: "==", value: userID },
+          ]);
 
-          // sort object
-          const sortedResponseArr = objectToArray<NotificationType>(
-            response
-          ).sort((a, b) => {
+          const sortedResponse = response.sort((a, b) => {
             return (
               new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
             );
           });
 
-          const data = arrayToObject<NotificationType>(sortedResponseArr, "id");
+          const data = arrayToObject<NotificationType>(sortedResponse, "id");
 
           return { data };
         } catch (error) {
@@ -44,30 +40,24 @@ export const notificationsApi = createApi({
         }
       },
       onCacheEntryAdded: async (
-        uiid,
-        { cacheDataLoaded, updateCachedData, cacheEntryRemoved }
+        userID,
+        { updateCachedData, cacheEntryRemoved, cacheDataLoaded }
       ) => {
         try {
           await cacheDataLoaded;
-
-          const unsubscribe = getDocumentRealtime<NotificationDocument>(
-            uiid,
+          const unsubscribe = readQueryRealtime<NotificationType>(
             NOTIFICATIONS,
-            (data) => {
+            [{ key: "userID", condition: "==", value: userID }],
+            (response) => {
               updateCachedData((draft) => {
-                const sortedResponseArr = objectToArray<NotificationType>(
-                  data
-                ).sort((a, b) => {
+                const sortedResponse = response.sort((a, b) => {
                   return (
                     new Date(b.createdAt).getTime() -
                     new Date(a.createdAt).getTime()
                   );
                 });
 
-                draft = arrayToObject<NotificationType>(
-                  sortedResponseArr,
-                  "id"
-                );
+                draft = arrayToObject<NotificationType>(sortedResponse, "id");
 
                 return draft;
               });
@@ -81,21 +71,12 @@ export const notificationsApi = createApi({
       },
     }),
     addNotification: builder.mutation({
-      queryFn: async ({
-        uid,
-        notification,
-      }: {
-        uid: string;
-        notification: NotificationType;
-      }) => {
+      queryFn: async (notification: NotificationType) => {
         try {
           const response = await createDocument(
-            uid,
             NOTIFICATIONS,
-            {
-              [notification.id]: notification,
-            },
-            true
+            notification.id,
+            notification
           );
           return { data: response };
         } catch (error) {
@@ -103,37 +84,22 @@ export const notificationsApi = createApi({
         }
       },
     }),
-    removeNotification: builder.mutation({
-      queryFn: async ({ uid, id }: { uid: string; id: string }) => {
+    removeNotifications: builder.mutation({
+      queryFn: async (notificationID: string[]) => {
         try {
-          const response = await deleteDocumentFields(uid, NOTIFICATIONS, [id]);
+          const response = await deleteDocuments(NOTIFICATIONS, notificationID);
           return { data: response };
         } catch (error) {
           return { error };
         }
       },
     }),
-    removeMultiNotification: builder.mutation({
-      queryFn: async ({ uid, idList }: { uid: string; idList: string[] }) => {
+    readNotifications: builder.mutation({
+      queryFn: async (notificationID: string[]) => {
         try {
-          const response = await deleteDocumentFields(
-            uid,
+          const response = await updateDocuments<NotificationType>(
             NOTIFICATIONS,
-            idList
-          );
-          return { data: response };
-        } catch (error) {
-          return { error };
-        }
-      },
-    }),
-    readNotification: builder.mutation({
-      queryFn: async ({ uid, id }: { uid: string; id: string }) => {
-        try {
-          const response = await updateFields<NotificationType>(
-            uid,
-            NOTIFICATIONS,
-            [id],
+            notificationID,
             { status: "SEEN" }
           );
           return { data: response };
@@ -142,15 +108,12 @@ export const notificationsApi = createApi({
         }
       },
     }),
-    readAllNotifications: builder.mutation({
-      queryFn: async ({ uid, idList }: { uid: string; idList: string[] }) => {
+    removePostNotifications: builder.mutation({
+      queryFn: async (postID: string) => {
         try {
-          const response = await updateFields<NotificationType>(
-            uid,
-            NOTIFICATIONS,
-            idList,
-            { status: "SEEN" }
-          );
+          const response = await deleteQuery<NotificationType>(NOTIFICATIONS, [
+            { key: "id", condition: ">=", value: postID },
+          ]);
           return { data: response };
         } catch (error) {
           return { error };
@@ -162,11 +125,10 @@ export const notificationsApi = createApi({
 
 // hooks
 export const {
-  useGetNotificationQuery,
-  useLazyGetNotificationQuery,
+  useGetNotificationsQuery,
+  useLazyGetNotificationsQuery,
   useAddNotificationMutation,
-  useRemoveNotificationMutation,
-  useRemoveMultiNotificationMutation,
-  useReadAllNotificationsMutation,
-  useReadNotificationMutation,
+  useRemoveNotificationsMutation,
+  useReadNotificationsMutation,
+  useRemovePostNotificationsMutation,
 } = notificationsApi;

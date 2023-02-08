@@ -2,11 +2,12 @@ import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { COMMENTS } from "../constants/firebase.constant";
 import {
   createDocument,
-  deleteMultiDocument,
-  getCollection,
-  getCollectionRealtime,
-  getQueryResult,
-  getQueryResultRealtime,
+  deleteDocument,
+  deleteQuery,
+  readCollection,
+  readCollectionRealtime,
+  readQuery,
+  readQueryRealtime,
 } from "../lib/database";
 import { CommentType } from "../types/CommentType";
 import { arrayToObject } from "../utilities/arrayToObject";
@@ -18,7 +19,7 @@ export const commentsApi = createApi({
     getAllComments: builder.query({
       queryFn: async () => {
         try {
-          const response = await getCollection<CommentType>(COMMENTS);
+          const response = await readCollection<CommentType>(COMMENTS);
           // sorting by time
           const sortedResponse = response.sort((a, b) => {
             return (
@@ -39,20 +40,23 @@ export const commentsApi = createApi({
         try {
           await cacheDataLoaded;
 
-          unsubscribe = getCollectionRealtime<CommentType>(COMMENTS, (data) => {
-            updateCachedData((draft) => {
-              // sorting by time
-              const sortedResponse = data.sort((a, b) => {
-                return (
-                  new Date(b.createdAt).getTime() -
-                  new Date(a.createdAt).getTime()
-                );
-              });
-              draft = arrayToObject<CommentType>(sortedResponse, "id");
+          unsubscribe = readCollectionRealtime<CommentType>(
+            COMMENTS,
+            (data) => {
+              updateCachedData((draft) => {
+                // sorting by time
+                const sortedResponse = data.sort((a, b) => {
+                  return (
+                    new Date(b.createdAt).getTime() -
+                    new Date(a.createdAt).getTime()
+                  );
+                });
+                draft = arrayToObject<CommentType>(sortedResponse, "id");
 
-              return draft;
-            });
-          });
+                return draft;
+              });
+            }
+          );
         } catch (error) {
           console.log(error);
         }
@@ -63,10 +67,9 @@ export const commentsApi = createApi({
     getPostComments: builder.query({
       queryFn: async (id: string) => {
         try {
-          const response = await getQueryResult<CommentType>(
-            [{ key: "postID", value: id, condition: "==" }],
-            COMMENTS
-          );
+          const response = await readQuery<CommentType>(COMMENTS, [
+            { key: "postID", value: id, condition: "==" },
+          ]);
           // sorting by time
           const sortedResponse = response.sort((a, b) => {
             return (
@@ -87,13 +90,13 @@ export const commentsApi = createApi({
         try {
           await cacheDataLoaded;
 
-          unsubscribe = getQueryResultRealtime<CommentType>(
-            [{ key: "postID", value: id, condition: "==" }],
+          unsubscribe = readQueryRealtime<CommentType>(
             COMMENTS,
-            (data) => {
+            [{ key: "postID", value: id, condition: "==" }],
+            (response) => {
               updateCachedData((draft) => {
                 // sorting by time
-                const sortedResponse = data.sort((a, b) => {
+                const sortedResponse = response.sort((a, b) => {
                   return (
                     new Date(b.createdAt).getTime() -
                     new Date(a.createdAt).getTime()
@@ -116,7 +119,7 @@ export const commentsApi = createApi({
     createComment: builder.mutation({
       queryFn: async (params: CommentType) => {
         try {
-          const response = await createDocument(params.id, COMMENTS, params);
+          const response = await createDocument(COMMENTS, params.id, params);
           return { data: response };
         } catch (error) {
           return { error };
@@ -124,11 +127,29 @@ export const commentsApi = createApi({
       },
     }),
     deleteComment: builder.mutation({
-      queryFn: async (idList: string[]) => {
+      queryFn: async (comment: CommentType) => {
         try {
-          const response = await deleteMultiDocument(idList, COMMENTS);
-          // console.log(response);
+          let response: CommentType[] = [];
+          await deleteDocument(COMMENTS, comment.id);
+          if (comment.parentID === null) {
+            // delete replies also
+            response = await deleteQuery<CommentType>(COMMENTS, [
+              { key: "parentID", condition: "==", value: comment.id },
+            ]);
+          }
 
+          return { data: response };
+        } catch (error) {
+          return { error };
+        }
+      },
+    }),
+    deleteReplies: builder.mutation({
+      queryFn: async (parentID: string) => {
+        try {
+          const response = await deleteQuery<CommentType>(COMMENTS, [
+            { key: "parentID", condition: "==", value: parentID },
+          ]);
           return { data: response };
         } catch (error) {
           return { error };
@@ -144,6 +165,7 @@ export const {
   useLazyGetAllCommentsQuery,
   useCreateCommentMutation,
   useDeleteCommentMutation,
+  useDeleteRepliesMutation,
   useGetPostCommentsQuery,
   useLazyGetPostCommentsQuery,
 } = commentsApi;

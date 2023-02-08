@@ -11,7 +11,7 @@ import { useLazyGetSavedPostsQuery } from "../services/savedApi";
 const Profile = () => {
   const dispatch = useAppDispatch();
   const { user: authUser, status } = useAppSelector(selectAuth);
-  const posts = useGetAllPostsQuery({});
+  const posts = useGetAllPostsQuery();
   const comments = useGetAllCommentsQuery({});
 
   const [getSavedPost, savedPostResult] = useLazyGetSavedPostsQuery();

@@ -2,7 +2,7 @@ import { ReactNode, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { selectAuth } from "../../features/auth/authSlice";
-import { useLazyGetNotificationQuery } from "../../services/notificationsApi";
+import { useLazyGetNotificationsQuery } from "../../services/notificationsApi";
 import PostForm from "../components/PostForm";
 import Footer from "./Footer";
 import MobileMenu from "./MobileMenu";
@@ -16,7 +16,7 @@ type propTypes = {
 
 const Layout = ({ children, sidebar }: propTypes) => {
   const { user: authUser, status } = useAppSelector(selectAuth);
-  const [getNotifications, allNotifications] = useLazyGetNotificationQuery();
+  const [getNotifications, allNotifications] = useLazyGetNotificationsQuery();
 
   // trigger get saved post
   useEffect(() => {

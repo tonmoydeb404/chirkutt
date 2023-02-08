@@ -5,11 +5,7 @@ import CommentForm from "../common/components/CommentForm";
 import PostCard from "../common/components/PostCard";
 import PostComment from "../common/components/PostComment";
 import { selectAuth } from "../features/auth/authSlice";
-import {
-  useDeleteCommentMutation,
-  useLazyGetPostCommentsQuery,
-} from "../services/commentsApi";
-import { useRemoveMultiNotificationMutation } from "../services/notificationsApi";
+import { useLazyGetPostCommentsQuery } from "../services/commentsApi";
 import { useGetAllPostsQuery } from "../services/postsApi";
 import { useLazyGetSavedPostsQuery } from "../services/savedApi";
 import { useGetAllUsersQuery } from "../services/usersApi";
@@ -19,13 +15,10 @@ const Post = () => {
   if (!id) return <Navigate to={"/404"} />;
 
   const { user: authUser, status } = useAppSelector(selectAuth);
-  const posts = useGetAllPostsQuery({});
+  const posts = useGetAllPostsQuery();
   const users = useGetAllUsersQuery({});
   const [getComments, comments] = useLazyGetPostCommentsQuery();
-  const [deleteComment, deleteResult] = useDeleteCommentMutation();
   const [getSavedPost, savedPostResult] = useLazyGetSavedPostsQuery();
-  const [removeMultiNotif, removeMultiNotifResult] =
-    useRemoveMultiNotificationMutation();
 
   // trigger get comments
   useEffect(() => {
@@ -51,54 +44,6 @@ const Post = () => {
     fetchSavedPost();
   }, [authUser, status]);
 
-  // handle delete
-  const handleDeleteComment = async (commentID: string) => {
-    try {
-      // check commments data
-      if (
-        !comments.data ||
-        !comments.data[commentID] ||
-        !posts.data ||
-        !posts.data[id] ||
-        !authUser
-      )
-        return;
-
-      const comment = comments.data[commentID];
-      const post = posts.data[id];
-      const idList = [comment.id];
-
-      // look for comment replyies
-      if (comment.parentID === null) {
-        Object.keys(comments.data).forEach((key) => {
-          const replay = comments.data?.[key];
-          if (replay?.parentID === comment.id) {
-            idList.push(replay.id);
-          }
-        });
-      }
-      // delete comment
-      await deleteComment(idList);
-
-      // delete comment from post author
-      if (authUser.uid !== comment.authorUID) {
-        await removeMultiNotif({
-          uid: post.authorUID,
-          idList,
-        });
-      }
-      // delete comment notification from comment author
-      if (post.authorUID !== comment.authorUID) {
-        await removeMultiNotif({
-          uid: comment.authorUID,
-          idList,
-        });
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
   // error state
   if (posts.isError || users.isError) {
     return <p>something wents to wrong</p>;
@@ -107,13 +52,14 @@ const Post = () => {
   if (
     posts.isSuccess &&
     posts.data &&
+    posts.data[id] &&
     users.isSuccess &&
     users.data &&
     comments.data &&
     comments.isSuccess
   ) {
     const post = posts.data[id];
-    const user = users.data[post.authorUID];
+    const user = users.data[post?.authorUID];
     const postComments = Object.keys(comments.data).filter(
       (c) => comments.data[c].postID === post.id
     );
@@ -166,9 +112,6 @@ const Post = () => {
                       {...comment}
                       author={commentAuthor}
                       replay
-                      handleDeleteComment={async () =>
-                        await handleDeleteComment(comment.id)
-                      }
                     >
                       {commentRepliesId.map((replayId) => {
                         const replay = comments.data[replayId];
@@ -181,9 +124,6 @@ const Post = () => {
                             {...replay}
                             author={replayAuthor}
                             replay={false}
-                            handleDeleteComment={async () =>
-                              await handleDeleteComment(comment.id)
-                            }
                           />
                         );
                       })}

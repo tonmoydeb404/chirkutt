@@ -9,6 +9,7 @@ import { useCreateCommentMutation } from "../../services/commentsApi";
 import { useAddNotificationMutation } from "../../services/notificationsApi";
 import { CommentType } from "../../types/CommentType";
 import { NotificationType } from "../../types/NotificationType";
+import { UserType } from "../../types/UserType";
 
 const ReplayForm = ({
   postID,
@@ -25,53 +26,75 @@ const ReplayForm = ({
   const [createComment] = useCreateCommentMutation();
   const [createNotification] = useAddNotificationMutation();
 
+  // create comment
+  const createCommentHandler = async (text: string, replayAuthor: UserType) => {
+    try {
+      const newComment: CommentType = {
+        id: nanoid(),
+        text,
+        authorUID: replayAuthor.uid,
+        parentID,
+        postID,
+        createdAt: Date.now(),
+      };
+      const response = await createComment(newComment);
+
+      return newComment.id;
+    } catch (error) {
+      return false;
+    }
+  };
+  // create notification handler
+  const createNotificationHandler = async (
+    replayID: string,
+    replayAuthor: UserType
+  ) => {
+    try {
+      // don't create notification for the post author own comments
+      if (replayAuthor.uid !== postAuthorUID) {
+        const postAuthorNotification: NotificationType = {
+          id: `${postID}:${postAuthorUID}:${replayID}`,
+          eventID: replayID,
+          userID: postAuthorUID,
+          createdAt: Date.now(),
+          path: `/post/${postID}#${replayID}`,
+          status: "UNSEEN",
+          text: `${replayAuthor.name} replied to a comment on your post`,
+          type: "COMMENT",
+        };
+        await createNotification(postAuthorNotification).unwrap();
+      }
+      // don't create notification for the comment author own comments
+      if (replayAuthor.uid !== commentAuthorUID) {
+        const commentAuthorNotification: NotificationType = {
+          id: `${postID}:${commentAuthorUID}:${replayID}`,
+          eventID: replayID,
+          userID: commentAuthorUID,
+          createdAt: Date.now(),
+          path: `/post/${postID}#${replayID}`,
+          status: "UNSEEN",
+          text: `${replayAuthor.name} replied to your comment`,
+          type: "COMMENT",
+        };
+        await createNotification(commentAuthorNotification).unwrap();
+      }
+
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
+
   // submit handler
   const submitHandler = async (
     { replay }: { replay: string },
     { resetForm }: { resetForm: () => void }
   ) => {
     try {
-      if (!authUser) throw Error("authentication failed");
-      const newComment: CommentType = {
-        id: nanoid(),
-        text: replay,
-        authorUID: authUser.uid,
-        parentID,
-        postID,
-        createdAt: new Date().toISOString(),
-      };
-      await createComment(newComment);
-      // create notification
-      const newNotification: NotificationType = {
-        id: newComment.id,
-        createdAt: new Date().toISOString(),
-        path: `/post/${postID}#${newComment.id}`,
-        status: "UNSEEN",
-        text: ``,
-        type: "COMMENT",
-      };
-      // create notification for post author
-      if (authUser.uid !== postAuthorUID) {
-        const postAuthorNotification: NotificationType = {
-          ...newNotification,
-          text: `${authUser.name} replied to a comment on your post`,
-        };
-        await createNotification({
-          uid: postAuthorUID,
-          notification: postAuthorNotification,
-        }).unwrap();
-      }
-      // create notification for comment author
-      if (authUser.uid !== commentAuthorUID) {
-        const commentAuthorNotification: NotificationType = {
-          ...newNotification,
-          text: `${authUser.name} replied to your comment`,
-        };
-        await createNotification({
-          uid: commentAuthorUID,
-          notification: commentAuthorNotification,
-        }).unwrap();
-      }
+      if (!authUser) throw "authentication failed";
+      const replayID = await createCommentHandler(replay, authUser);
+      if (replayID === false) throw "error: cannot create replay";
+      await createNotificationHandler(replayID, authUser);
     } catch (error) {
       toast.error("something went to wrong!");
     }

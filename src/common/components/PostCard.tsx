@@ -8,7 +8,8 @@ import { openPostForm } from "../../features/postFormSlice";
 import iconList from "../../lib/iconList";
 import {
   useAddNotificationMutation,
-  useRemoveNotificationMutation,
+  useRemoveNotificationsMutation,
+  useRemovePostNotificationsMutation,
 } from "../../services/notificationsApi";
 import {
   useDeletePostMutation,
@@ -39,27 +40,23 @@ const PostCard = ({
   comments,
   isSaved,
 }: PostCardType) => {
-  const { user, status } = useAppSelector(selectAuth);
-  const isAuthorized = user?.uid === author.uid;
+  const { user: authUser, status } = useAppSelector(selectAuth);
+  const isAuthorized = authUser?.uid === author.uid;
   const [deletePost, result] = useDeletePostMutation();
   const [updatePost, updateResult] = useUpdatePostMutation();
   const [savePost, saveResult] = useAddSavedPostMutation();
   const [removePost, removeResult] = useRemoveSavedPostMutation();
   const [createNotification, createNotificationResult] =
     useAddNotificationMutation();
-  const [removeNotification, removeNotificationResult] =
-    useRemoveNotificationMutation();
+  const [removeNotifications] = useRemoveNotificationsMutation();
+  const [removePostNotifications] = useRemovePostNotificationsMutation();
   const navigate = useNavigate();
 
   // dispatch
   const dispatch = useAppDispatch();
-
   // effects
   useEffect(() => {
     // toasts
-    if (!result.isUninitialized && result.isLoading) {
-      toast.loading("deleting post", { id: "deletepost" });
-    }
     if (!result.isUninitialized && result.isSuccess) {
       toast.success("successfully deleted post", { id: "deletepost" });
     }
@@ -76,6 +73,7 @@ const PostCard = ({
   const handleDelete = async () => {
     try {
       await deletePost(id);
+      await removePostNotifications(id);
     } catch (error) {
       toast.error("error in deleting post!", { id: "deletepost" });
     }
@@ -94,7 +92,7 @@ const PostCard = ({
   };
   // handle save
   const handleBookmark = async () => {
-    if (!user) {
+    if (!authUser) {
       return;
     }
 
@@ -102,13 +100,13 @@ const PostCard = ({
       if (isSaved) {
         // remove bookmark
         await removePost({
-          uid: user.uid,
+          uid: authUser.uid,
           id,
         }).unwrap();
       } else {
         // add bookmark
         await savePost({
-          uid: user.uid,
+          uid: authUser.uid,
           post: { postID: id, savedAt: new Date().toISOString() },
         }).unwrap();
       }
@@ -116,48 +114,70 @@ const PostCard = ({
       console.log(err);
     }
   };
+
+  // create notification handler
+  const createLikeNotification = async (user: UserType) => {
+    try {
+      // don't create notification for the post author own like
+      if (user.uid === authorUID) return true;
+
+      const newNotification: NotificationType = {
+        id: `${id}:${authorUID}`,
+        eventID: id,
+        userID: authorUID,
+        createdAt: Date.now(),
+        path: `/post/${id}`,
+        status: "UNSEEN",
+        text: `${user.name} is liked your post`,
+        type: "LIKE",
+      };
+      const response = await createNotification(newNotification).unwrap();
+
+      return newNotification.id;
+    } catch (error) {
+      return false;
+    }
+  };
+
+  // add like
+  const addLike = async (user: UserType) => {
+    try {
+      await updatePost({
+        id: id,
+        updates: { likes: [...likes, user.uid] },
+      }).unwrap();
+      await createLikeNotification(user);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // remove like
+  const removeLike = async (user: UserType) => {
+    try {
+      // remove like
+      await updatePost({
+        id: id,
+        updates: { likes: [...likes.filter((i) => i != user.uid)] },
+      }).unwrap();
+      await removeNotifications([`${id}:${authorUID}`]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   // handle post reaction
   const handleReaction = async () => {
-    if (!user) {
+    if (!authUser) {
       navigate("/signin");
       return;
     }
 
     try {
-      if (likes.includes(user.uid)) {
-        // remove like
-        await updatePost({
-          id: id,
-          updates: { likes: [...likes.filter((i) => i != user.uid)] },
-        }).unwrap();
-        // remove notification
-        if (user.uid !== authorUID) {
-          await removeNotification({
-            uid: authorUID,
-            id: `${user.uid}:${id}`,
-          }).unwrap();
-        }
+      if (!likes.includes(authUser.uid)) {
+        await addLike(authUser);
       } else {
-        // add like
-        await updatePost({
-          id: id,
-          updates: { likes: [...likes, user.uid] },
-        }).unwrap();
-        // create notification
-        if (user.uid !== authorUID) {
-          const newNotification: NotificationType = {
-            id: `${user.uid}:${id}`,
-            createdAt: new Date().toISOString(),
-            path: `/post/${id}`,
-            status: "UNSEEN",
-            text: `${user.name} liked your post`,
-            type: "LIKE",
-          };
-          await createNotification({
-            uid: authorUID,
-            notification: newNotification,
-          }).unwrap();
-        }
+        await removeLike(authUser);
       }
     } catch (error) {
       console.log(error);
@@ -170,11 +190,11 @@ const PostCard = ({
       <section className="flex items-center gap-2 mb-3">
         {/* author */}
         <div className="flex items-center gap-2">
-          <Link to={`/user/${author.username}`}>
+          <Link to={`/authUser/${author.username}`}>
             <img src={author.avatar} alt={author.name} className="w-[38px]" />
           </Link>
           <div className="flex flex-col gap-0">
-            <Link className="font-medium" to={`/user/${author.username}`}>
+            <Link className="font-medium" to={`/authUser/${author.username}`}>
               {author.name}
             </Link>
             <span className="text-xs inline-block opacity-70">
@@ -217,10 +237,14 @@ const PostCard = ({
           {likes.length}
           <span
             className={`text-base  ${
-              user && likes.includes(user.uid) ? "text-primary-600" : ""
+              authUser && likes.includes(authUser.uid) ? "text-primary-600" : ""
             }`}
           >
-            {iconList[user && likes.includes(user.uid) ? "liked" : "like"]}
+            {
+              iconList[
+                authUser && likes.includes(authUser.uid) ? "liked" : "like"
+              ]
+            }
           </span>
         </button>
         <Link to={`/post/${id}`} className="btn px-2 py-1.5 btn-theme">
@@ -231,7 +255,7 @@ const PostCard = ({
         <button className="btn-icon btn-sm btn-theme ml-auto">
           {iconList.share}
         </button>
-        {user ? (
+        {authUser ? (
           <button
             className="btn-icon btn-theme btn-sm"
             onClick={handleBookmark}

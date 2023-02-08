@@ -10,8 +10,6 @@ import { useLazyGetSavedPostsQuery } from "../services/savedApi";
 import { useGetUserQuery } from "../services/usersApi";
 
 const User = () => {
-  const comments = useGetAllCommentsQuery({});
-
   const { username } = useParams();
   // navigate to error page
   if (!username) return <Navigate to={"/404"}></Navigate>;
@@ -24,7 +22,8 @@ const User = () => {
     error,
     isSuccess,
   } = useGetUserQuery({ username });
-  const posts = useGetAllPostsQuery({});
+  const comments = useGetAllCommentsQuery({});
+  const posts = useGetAllPostsQuery();
 
   const [getSavedPost, savedPostResult] = useLazyGetSavedPostsQuery();
 

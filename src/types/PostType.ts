@@ -6,3 +6,7 @@ export type PostType = {
   likes: (string | number)[];
   authorUID: string;
 };
+
+export type PostDocumentType = {
+  [key: string]: PostType;
+};

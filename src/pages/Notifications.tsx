@@ -3,17 +3,18 @@ import { useAppSelector } from "../app/hooks";
 import NotificationBox from "../common/components/NotificationBox";
 import { selectAuth } from "../features/auth/authSlice";
 import {
-  useLazyGetNotificationQuery,
-  useReadAllNotificationsMutation,
-  useReadNotificationMutation,
+  useLazyGetNotificationsQuery,
+  useReadNotificationsMutation,
 } from "../services/notificationsApi";
-import { NotificationType } from "../types/NotificationType";
+import {
+  NotificationDocumentType,
+  NotificationType,
+} from "../types/NotificationType";
 
 const Notifications = () => {
   const { user: authUser, status } = useAppSelector(selectAuth);
-  const [getNotifications, allNotifications] = useLazyGetNotificationQuery();
-  const [readAllNotifications] = useReadAllNotificationsMutation();
-  const [readNotifications] = useReadNotificationMutation();
+  const [getNotifications, allNotifications] = useLazyGetNotificationsQuery();
+  const [readNotifications] = useReadNotificationsMutation();
 
   // trigger get saved post
   useEffect(() => {
@@ -31,37 +32,32 @@ const Notifications = () => {
   }, [authUser, status]);
 
   // handle read all notification
-  const handleReadAllNotif = async (notifs: {
-    [key: string]: NotificationType;
-  }) => {
+  const handleReadAllNotifications = async (
+    notifications: NotificationDocumentType
+  ) => {
     if (!authUser) return;
     try {
-      const unreadNotifs = Object.keys(notifs).filter(
-        (notifID) => notifs[notifID].status === "UNSEEN"
+      const unreadNotifications = Object.keys(notifications).filter(
+        (id) => notifications[id].status === "UNSEEN"
       );
-      await readAllNotifications({
-        uid: authUser.uid,
-        idList: unreadNotifs,
-      }).unwrap();
+      await readNotifications(unreadNotifications).unwrap();
     } catch (error) {
       console.log(error);
     }
   };
   // handle read notification
-  const handleReadNotif = async (id: string) => {
-    if (!authUser) return;
+  const handleReadNotificaton = async (notification: NotificationType) => {
+    if (!authUser || notification.status === "SEEN") return;
     try {
-      await readNotifications({ uid: authUser.uid, id }).unwrap();
+      await readNotifications([notification.id]).unwrap();
     } catch (error) {
       console.log(error);
     }
   };
 
-  const allReaded =
-    allNotifications.isSuccess &&
-    Object.keys(allNotifications.data).every(
-      (key) => allNotifications.data[key].status === "SEEN"
-    );
+  const isAllReaded = Object.keys(allNotifications?.data || {}).every(
+    (key) => allNotifications?.data?.[key]?.status === "SEEN"
+  );
 
   return (
     <div>
@@ -69,11 +65,11 @@ const Notifications = () => {
         <h3 className="text-lg font-medium">Notifications</h3>
 
         <div className="flex items-center gap-1">
-          {!allReaded && allNotifications.isSuccess ? (
+          {allNotifications.isSuccess && !isAllReaded ? (
             <button
               className="btn btn-sm btn-theme"
               onClick={async () =>
-                await handleReadAllNotif(allNotifications?.data || {})
+                await handleReadAllNotifications(allNotifications?.data || {})
               }
             >
               mark all as read
@@ -92,7 +88,7 @@ const Notifications = () => {
                 <NotificationBox
                   key={notif.id}
                   {...notif}
-                  readNotif={async () => await handleReadNotif(notif.id)}
+                  readNotif={async () => await handleReadNotificaton(notif)}
                 />
               );
             })

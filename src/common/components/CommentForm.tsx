@@ -22,8 +22,7 @@ const CommentForm = ({
 }) => {
   const { user: authUser } = useAppSelector(selectAuth);
   const [createComment, createResult] = useCreateCommentMutation();
-  const [createNotification, createNotificationResult] =
-    useAddNotificationMutation();
+  const [createNotification] = useAddNotificationMutation();
 
   // show toast notification for mutation result
   useEffect(() => {
@@ -43,13 +42,10 @@ const CommentForm = ({
     };
   }, [createResult]);
 
-  // submit handler
-  const submitHandler = async (
-    { text }: { text: string },
-    { resetForm }: { resetForm: () => void }
-  ) => {
+  // create comment
+  const createCommentHandler = async (text: string) => {
     try {
-      if (!authUser) throw Error("authentication failed");
+      if (!authUser) throw "user not authorized";
       const newComment: CommentType = {
         id: nanoid(),
         text,
@@ -58,22 +54,48 @@ const CommentForm = ({
         postID,
         createdAt: new Date().toISOString(),
       };
-      await createComment(newComment);
-      // create notification
-      if (authUser.uid !== authorUID) {
-        const newNotification: NotificationType = {
-          id: newComment.id,
-          createdAt: new Date().toISOString(),
-          path: `/post/${postID}#${newComment.id}`,
-          status: "UNSEEN",
-          text: `${authUser.name} commented on your post`,
-          type: "COMMENT",
-        };
-        await createNotification({
-          uid: authorUID,
-          notification: newNotification,
-        }).unwrap();
-      }
+      const response = await createComment(newComment);
+
+      return newComment.id;
+    } catch (error) {
+      return false;
+    }
+  };
+  // create notification handler
+  const createNotificationHandler = async (commentID: string) => {
+    try {
+      if (!authUser) throw Error("user not authorized");
+      // don't create notification for the post author own comments
+      if (authUser.uid === authorUID) return true;
+
+      const newNotification: NotificationType = {
+        id: `${postID}:${authorUID}:${commentID}`,
+        eventID: commentID,
+        userID: authorUID,
+        createdAt: Date.now(),
+        path: `/post/${postID}#${commentID}`,
+        status: "UNSEEN",
+        text: `${authUser.name} is commented on your post`,
+        type: "COMMENT",
+      };
+      const response = await createNotification(newNotification).unwrap();
+
+      return newNotification.id;
+    } catch (error) {
+      return false;
+    }
+  };
+
+  // submit handler
+  const submitHandler = async (
+    { text }: { text: string },
+    { resetForm }: { resetForm: () => void }
+  ) => {
+    try {
+      const commentID = await createCommentHandler(text);
+      if (commentID === false) throw "comment not created";
+      const notificationID = await createNotificationHandler(commentID);
+      if (notificationID === false) throw "notification not created";
     } catch (error) {
       toast.error("something went to wrong!", { id: CREATE_TOAST });
     }

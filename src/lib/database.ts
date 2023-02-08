@@ -15,11 +15,55 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase";
 
-export const getCollection = <T>(name: string) =>
+// types
+type QueryParam<T> = {
+  key: keyof T;
+  value: string;
+  condition:
+    | "<"
+    | "<="
+    | "=="
+    | ">"
+    | ">="
+    | "!="
+    | "in"
+    | "not-in"
+    | "array-contains"
+    | "array-contains-any";
+};
+
+/* ############################### */
+/* ###### CREATE OPERATIONS ###### */
+/* ############################### */
+
+// create a single document
+export const createDocument = (
+  collectionName: string,
+  documentId: string,
+  data: { [key: string]: any },
+  merge: boolean = false
+) =>
+  new Promise<boolean>(async (resolve, reject) => {
+    try {
+      const docRef = doc(db, collectionName, documentId);
+      await setDoc(docRef, data, { merge });
+      resolve(true);
+    } catch (error: any) {
+      const errorMsg = error.code || error.message || "something went wrong";
+      return reject(errorMsg);
+    }
+  });
+
+/* ############################### */
+/* ###### READ OPERATIONS ###### */
+/* ############################### */
+
+// read collection data
+export const readCollection = <T>(collectionName: string) =>
   new Promise<T[]>(async (resolve, reject) => {
     try {
       const data: T[] = [];
-      const querySnapshot = await getDocs(collection(db, name));
+      const querySnapshot = await getDocs(collection(db, collectionName));
       querySnapshot.forEach((doc) => {
         data.push(doc.data() as T);
       });
@@ -29,10 +73,25 @@ export const getCollection = <T>(name: string) =>
       return reject(errorMsg);
     }
   });
+// read collection data in realtime
+export const readCollectionRealtime = <T>(
+  name: string,
+  callback: (data: T[]) => void
+): Unsubscribe => {
+  const unsubscribe = onSnapshot(collection(db, name), (snapshot) => {
+    let data: T[] = [];
+    data = snapshot.docs.map((docRef) => docRef.data() as T);
 
-export const getDocument = <T>(
-  documentId: string,
+    callback(data);
+  });
+
+  return unsubscribe;
+};
+
+// read a single document
+export const readDocument = <T>(
   collectionName: string,
+  documentId: string,
   forceCreate: boolean = false
 ) =>
   new Promise<T>(async (resolve, reject) => {
@@ -56,25 +115,28 @@ export const getDocument = <T>(
       return reject(errorMsg);
     }
   });
+// read a single document in realtime
+export const readDocumentRealtime = <T>(
+  documentId: string,
+  collectionName: string,
+  callback: (data: T) => void
+): Unsubscribe => {
+  let data: T;
+  const unsubscribe = onSnapshot(
+    doc(db, collectionName, documentId),
+    (snapshot) => {
+      data = snapshot.data() as T;
+      callback(data);
+    }
+  );
 
-type QueryParam<T> = {
-  key: keyof T;
-  value: string;
-  condition:
-    | "<"
-    | "<="
-    | "=="
-    | ">"
-    | ">="
-    | "!="
-    | "in"
-    | "not-in"
-    | "array-contains"
-    | "array-contains-any";
+  return unsubscribe;
 };
-export const getQueryResult = <T extends { [key: string]: any }>(
-  queryParams: QueryParam<T>[],
-  collectionName: string
+
+// read query data
+export const readQuery = <T extends { [key: string]: any }>(
+  collectionName: string,
+  queryParams: QueryParam<T>[]
 ) =>
   new Promise<T[]>(async (resolve, reject) => {
     try {
@@ -94,10 +156,35 @@ export const getQueryResult = <T extends { [key: string]: any }>(
       return reject(errorMsg);
     }
   });
-
-export const updateDocument = <T>(
-  documentId: string,
+// read query data in realtime
+export const readQueryRealtime = <T>(
   collectionName: string,
+  queryParams: QueryParam<T>[],
+  callback: (data: T[]) => void
+): Unsubscribe => {
+  const qParamList = queryParams.map((i) =>
+    where(i.key as string, i.condition, i.value)
+  );
+  const queryRef = query(collection(db, collectionName), ...qParamList);
+  const unsubscribe = onSnapshot(queryRef, (snapshot) => {
+    let data: T[] = [];
+    snapshot.forEach((doc) => {
+      data.push(doc.data() as T);
+    });
+    callback(data);
+  });
+
+  return unsubscribe;
+};
+
+/* ############################### */
+/* ###### UPDATE OPERATIONS ###### */
+/* ############################### */
+
+// update any single document
+export const updateDocument = <T>(
+  collectionName: string,
+  documentId: string,
   updates: Partial<T>
 ) =>
   new Promise<T>(async (resolve, reject) => {
@@ -118,9 +205,10 @@ export const updateDocument = <T>(
     }
   });
 
+// update multiple document at once
 export const updateDocuments = <T>(
-  documentIdList: string[],
   collectionName: string,
+  documentIdList: string[],
   updates: Partial<T>
 ) =>
   new Promise(async (resolve, reject) => {
@@ -143,139 +231,10 @@ export const updateDocuments = <T>(
     }
   });
 
-export const deleteDocument = (documentId: string, collectionName: string) =>
-  new Promise(async (resolve, reject) => {
-    try {
-      const docRef = doc(db, collectionName, documentId);
-      await deleteDoc(docRef);
-
-      resolve(true);
-    } catch (error: any) {
-      const errorMsg = error.code || error.message || "something went wrong";
-      return reject(errorMsg);
-    }
-  });
-
-export const deleteDocumentFields = (
-  documentId: string,
-  collectionName: string,
-  fieldNames: string[]
-) =>
-  new Promise(async (resolve, reject) => {
-    try {
-      const docRef = doc(db, collectionName, documentId);
-      const fields = fieldNames.reduce(
-        (prev: { [key: string]: any }, current) => {
-          prev[current] = deleteField();
-          return prev;
-        },
-        {}
-      );
-
-      await updateDoc(docRef, { ...fields });
-
-      resolve(true);
-    } catch (error: any) {
-      const errorMsg = error.code || error.message || "something went wrong";
-      return reject(errorMsg);
-    }
-  });
-
-export const createDocument = (
-  documentId: string,
-  collectionName: string,
-  data: { [key: string]: any },
-  merge: boolean = false
-) =>
-  new Promise<boolean>(async (resolve, reject) => {
-    try {
-      const docRef = doc(db, collectionName, documentId);
-      await setDoc(docRef, data, { merge });
-      resolve(true);
-    } catch (error: any) {
-      const errorMsg = error.code || error.message || "something went wrong";
-      return reject(errorMsg);
-    }
-  });
-
-export const getCollectionRealtime = <T>(
-  name: string,
-  callback: (data: T[]) => void
-): Unsubscribe => {
-  const unsubscribe = onSnapshot(collection(db, name), (snapshot) => {
-    let data: T[] = [];
-    data = snapshot.docs.map((docRef) => docRef.data() as T);
-
-    callback(data);
-  });
-
-  return unsubscribe;
-};
-
-export const getDocumentRealtime = <T>(
-  documentId: string,
-  collectionName: string,
-  callback: (data: T) => void
-): Unsubscribe => {
-  let data: T;
-  const unsubscribe = onSnapshot(
-    doc(db, collectionName, documentId),
-    (snapshot) => {
-      data = snapshot.data() as T;
-      callback(data);
-    }
-  );
-
-  return unsubscribe;
-};
-
-export const getQueryResultRealtime = <T>(
-  queryParams: QueryParam<T>[],
-  collectionName: string,
-  callback: (data: T[]) => void
-): Unsubscribe => {
-  const qParamList = queryParams.map((i) =>
-    where(i.key as string, i.condition, i.value)
-  );
-  const queryRef = query(collection(db, collectionName), ...qParamList);
-  const unsubscribe = onSnapshot(queryRef, (snapshot) => {
-    let data: T[] = [];
-    snapshot.forEach((doc) => {
-      data.push(doc.data() as T);
-    });
-    callback(data);
-  });
-
-  return unsubscribe;
-};
-
-// delete multiple document
-export const deleteMultiDocument = (
-  documentId: string[],
-  collectionName: string
-) =>
-  new Promise(async (resolve, reject) => {
-    try {
-      const batch = writeBatch(db);
-
-      documentId.forEach((id) => {
-        const docRef = doc(db, collectionName, id);
-        batch.delete(docRef);
-      });
-
-      await batch.commit();
-
-      resolve(true);
-    } catch (error: any) {
-      const errorMsg = error.code || error.message || "something went wrong";
-      return reject(errorMsg);
-    }
-  });
-
-// update multiple fields
+// update multiple fields from one document
 export const updateFields = <T extends { [key: string]: any }>(
-  documentId: string,
   collectionName: string,
+  documentId: string,
   fields: string[],
   updates: Partial<T>
 ) =>
@@ -306,10 +265,74 @@ export const updateFields = <T extends { [key: string]: any }>(
     }
   });
 
-// delete by query
-export const deleteDocumentByQuery = <T extends { [key: string]: any }>(
-  queryParams: QueryParam<T>[],
-  collectionName: string
+/* ############################### */
+/* ###### DELETE OPERATIONS ###### */
+/* ############################### */
+
+// delete a single document
+export const deleteDocument = (collectionName: string, documentId: string) =>
+  new Promise<boolean>(async (resolve, reject) => {
+    try {
+      const docRef = doc(db, collectionName, documentId);
+      await deleteDoc(docRef);
+
+      resolve(true);
+    } catch (error: any) {
+      const errorMsg = error.code || error.message || "something went wrong";
+      return reject(errorMsg);
+    }
+  });
+
+// delete multiple document at once
+export const deleteDocuments = (collectionName: string, documentId: string[]) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const batch = writeBatch(db);
+
+      documentId.forEach((id) => {
+        const docRef = doc(db, collectionName, id);
+        batch.delete(docRef);
+      });
+
+      await batch.commit();
+
+      resolve(true);
+    } catch (error: any) {
+      const errorMsg = error.code || error.message || "something went wrong";
+      return reject(errorMsg);
+    }
+  });
+
+// delete multiple fields from one document
+export const deleteDocumentFields = (
+  collectionName: string,
+  documentId: string,
+  fieldNames: string[]
+) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const docRef = doc(db, collectionName, documentId);
+      const fields = fieldNames.reduce(
+        (prev: { [key: string]: any }, current) => {
+          prev[current] = deleteField();
+          return prev;
+        },
+        {}
+      );
+
+      await updateDoc(docRef, { ...fields });
+
+      resolve(true);
+    } catch (error: any) {
+      const errorMsg = error.code || error.message || "something went wrong";
+      return reject(errorMsg);
+    }
+  });
+
+// delete by query items
+export const deleteQuery = <T extends { [key: string]: any }>(
+  collectionName: string,
+  queryParams: QueryParam<T>[]
 ) =>
   new Promise<T[]>(async (resolve, reject) => {
     try {
@@ -321,6 +344,7 @@ export const deleteDocumentByQuery = <T extends { [key: string]: any }>(
       const data: T[] = [];
       const batch = writeBatch(db);
       snapshot.forEach((doc) => {
+        data.push(doc.data() as T);
         batch.delete(doc.ref);
       });
 

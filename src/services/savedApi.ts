@@ -3,7 +3,7 @@ import { SAVED } from "../constants/firebase.constant";
 import {
   createDocument,
   deleteDocumentFields,
-  getDocument,
+  readDocument,
 } from "../lib/database";
 import { SavedPostType } from "../types/SavedPostType";
 import { arrayToObject } from "../utilities/arrayToObject";
@@ -19,7 +19,11 @@ export const savedApi = createApi({
     getSavedPosts: builder.query({
       queryFn: async (uid: string) => {
         try {
-          const response = await getDocument<SavedPostDocument>(uid, SAVED);
+          const response = await readDocument<SavedPostDocument>(
+            SAVED,
+            uid,
+            true
+          );
 
           // sort object
           const sortedResponseArr = objectToArray<SavedPostType>(response).sort(
@@ -56,8 +60,8 @@ export const savedApi = createApi({
       queryFn: async ({ uid, post }: { uid: string; post: SavedPostType }) => {
         try {
           const response = await createDocument(
-            uid,
             SAVED,
+            uid,
             {
               [post.postID]: post,
             },

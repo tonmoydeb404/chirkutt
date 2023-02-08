@@ -9,7 +9,7 @@ import { useGetAllUsersQuery } from "../services/usersApi";
 
 const Home = () => {
   const { user: authUser, status } = useAppSelector(selectAuth);
-  const posts = useGetAllPostsQuery({});
+  const posts = useGetAllPostsQuery();
   const users = useGetAllUsersQuery({});
   const comments = useGetAllCommentsQuery({});
   const [getSavedPost, savedPostResult] = useLazyGetSavedPostsQuery();

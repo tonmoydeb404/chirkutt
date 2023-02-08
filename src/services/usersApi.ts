@@ -1,6 +1,6 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { USERS } from "../constants/firebase.constant";
-import { getCollection, getQueryResult, updateDocument } from "../lib/database";
+import { readCollection, readQuery, updateDocument } from "../lib/database";
 import { UserType } from "../types/UserType";
 import { arrayToObject } from "../utilities/arrayToObject";
 
@@ -12,7 +12,7 @@ export const usersApi = createApi({
     getAllUsers: builder.query({
       queryFn: async () => {
         try {
-          const response = await getCollection<UserType>(USERS);
+          const response = await readCollection<UserType>(USERS);
           const data = arrayToObject(response, "uid");
           return { data };
         } catch (error) {
@@ -34,10 +34,9 @@ export const usersApi = createApi({
     getUser: builder.query({
       queryFn: async ({ username }: { username: string }) => {
         try {
-          const response = (await getQueryResult<UserType>(
-            [{ key: "username", value: username, condition: "==" }],
-            USERS
-          )) as UserType[];
+          const response = await readQuery<UserType>(USERS, [
+            { key: "username", value: username, condition: "==" },
+          ]);
 
           if (!response.length) throw "user not found";
 
@@ -57,11 +56,7 @@ export const usersApi = createApi({
         updates: { [key: string]: any };
       }) => {
         try {
-          const response = (await updateDocument(
-            uid,
-            USERS,
-            updates
-          )) as UserType;
+          const response = await updateDocument<UserType>(USERS, uid, updates);
 
           if (!response) throw "something went to wrong";
 

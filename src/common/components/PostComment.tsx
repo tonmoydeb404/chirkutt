@@ -3,6 +3,8 @@ import { ReactNode, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { selectAuth } from "../../features/auth/authSlice";
+import { useDeleteCommentMutation } from "../../services/commentsApi";
+import { useRemoveNotificationsMutation } from "../../services/notificationsApi";
 import { CommentType } from "../../types/CommentType";
 import { UserType } from "../../types/UserType";
 import ReplayForm from "./ReplayForm";
@@ -11,7 +13,6 @@ type PostCommentProps = {
   author: UserType;
   children?: ReactNode;
   replay: boolean;
-  handleDeleteComment: () => {};
   postAuthorUID: string;
 } & CommentType;
 
@@ -25,10 +26,46 @@ const PostComment = ({
   replay = false,
   authorUID,
   postAuthorUID,
-  handleDeleteComment,
+  parentID,
 }: PostCommentProps) => {
   const { user: authUser } = useAppSelector(selectAuth);
   const [showReplay, setShowReplay] = useState(false);
+  const [deleteComment] = useDeleteCommentMutation();
+  const [removeNotifications] = useRemoveNotificationsMutation();
+
+  // handle delete
+  const handleDeleteComment = async () => {
+    const comment: CommentType = {
+      id,
+      text,
+      authorUID,
+      parentID,
+      postID,
+      createdAt,
+    };
+    try {
+      const response = await deleteComment(comment).unwrap();
+      // delete notifications too
+      const deletedID = [];
+      // current post notification
+      if (comment.parentID === null && comment.authorUID !== postAuthorUID)
+        deletedID.push(`${comment.postID}:${postAuthorUID}:${comment.id}`);
+
+      if (response !== undefined) {
+        response.forEach((item) => {
+          if (item.authorUID !== comment.authorUID) {
+            deletedID.push(`${item.postID}:${authorUID}:${item.id}`);
+          }
+          if (item.authorUID !== postAuthorUID) {
+            deletedID.push(`${item.postID}:${postAuthorUID}:${item.id}`);
+          }
+        });
+      }
+      await removeNotifications(deletedID);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   return (
     <div className="comments_thread_wrapper" id={id}>
