@@ -42,7 +42,10 @@ export const themePreloader = (): themeState => {
   let state = { ...initialState };
   const localTheme = localStorage.getItem(website.themeKey);
   if (localTheme !== null) {
-    state = JSON.parse(localTheme);
+    const localState = JSON.parse(localTheme);
+    if (typeof localState?.isDark == "boolean") {
+      state = localState;
+    }
   }
   return state;
 };
