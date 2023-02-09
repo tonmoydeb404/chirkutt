@@ -1,13 +1,14 @@
 import { BiLogIn, BiUser } from "react-icons/bi";
 import { Link } from "react-router-dom";
-import { useAppSelector } from "../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectAuth } from "../../features/auth/authSlice";
+import { selectTheme, toggleTheme } from "../../features/theme/themeSlice";
 import iconList from "../../lib/iconList";
 import SearchBox from "../components/SearchBox";
-import useTheme from "../hooks/useTheme";
 
 const Navbar = () => {
-  const { theme, toggleTheme } = useTheme();
+  const dispatch = useAppDispatch();
+  const theme = useAppSelector(selectTheme);
   const { user } = useAppSelector(selectAuth);
 
   return (
@@ -40,8 +41,11 @@ const Navbar = () => {
               {user.username}
             </Link>
           ) : null}
-          <button className="btn-icon btn-ghost" onClick={toggleTheme}>
-            {theme == "dark" ? iconList.light : iconList.dark}
+          <button
+            className="btn-icon btn-ghost"
+            onClick={() => dispatch(toggleTheme())}
+          >
+            {theme.isDark ? iconList.light : iconList.dark}
           </button>
         </div>
       </div>
