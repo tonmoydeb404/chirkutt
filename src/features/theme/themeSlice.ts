@@ -39,13 +39,15 @@ themeListener.startListening({
 });
 // preloader
 export const themePreloader = (): themeState => {
-  let state = { ...initialState };
   const localTheme = localStorage.getItem(website.themeKey);
-  if (localTheme !== null) {
+  try {
+    if (localTheme === null)
+      throw Error("error: cannot find value in localstorage");
     const localState = JSON.parse(localTheme);
-    if (typeof localState?.isDark == "boolean") {
-      state = localState;
-    }
+    if (typeof localState?.isDark !== "boolean")
+      throw Error("error: invalid theme state");
+    return localState as themeState;
+  } catch (error) {
+    return initialState;
   }
-  return state;
 };
