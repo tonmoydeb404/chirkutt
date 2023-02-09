@@ -1,10 +1,9 @@
 import { useEffect } from "react";
 import { Navigate, useParams } from "react-router-dom";
-import { useAppSelector } from "../app/hooks";
 import CommentForm from "../common/components/CommentForm";
 import PostCard from "../common/components/PostCard";
 import PostComment from "../common/components/PostComment";
-import { selectAuth } from "../features/auth/authSlice";
+import { useAuth } from "../common/outlet/PrivateOutlet";
 import { useLazyGetPostCommentsQuery } from "../services/commentsApi";
 import { useGetAllPostsQuery } from "../services/postsApi";
 import { useLazyGetSavedPostsQuery } from "../services/savedApi";
@@ -14,7 +13,7 @@ const Post = () => {
   const { id } = useParams();
   if (!id) return <Navigate to={"/404"} />;
 
-  const { user: authUser, status } = useAppSelector(selectAuth);
+  const auth = useAuth();
   const posts = useGetAllPostsQuery();
   const users = useGetAllUsersQuery({});
   const [getComments, comments] = useLazyGetPostCommentsQuery();
@@ -32,9 +31,9 @@ const Post = () => {
   // trigger get saved post
   useEffect(() => {
     const fetchSavedPost = async () => {
-      if (status === "AUTHORIZED" && authUser) {
+      if (auth && auth.status === "AUTHORIZED" && auth.user) {
         try {
-          await getSavedPost(authUser.uid).unwrap();
+          await getSavedPost(auth.user.uid).unwrap();
         } catch (err) {
           console.log(err);
         }
@@ -42,7 +41,7 @@ const Post = () => {
     };
 
     fetchSavedPost();
-  }, [authUser, status]);
+  }, [auth]);
 
   // error state
   if (posts.isError || users.isError) {

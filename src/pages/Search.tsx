@@ -1,8 +1,7 @@
 import { useEffect } from "react";
 import { Navigate, useSearchParams } from "react-router-dom";
-import { useAppSelector } from "../app/hooks";
 import PostCard from "../common/components/PostCard";
-import { selectAuth } from "../features/auth/authSlice";
+import { useAuth } from "../common/outlet/PrivateOutlet";
 import { useGetAllCommentsQuery } from "../services/commentsApi";
 import { useLazySearchPostsQuery } from "../services/postsApi";
 import { useLazyGetSavedPostsQuery } from "../services/savedApi";
@@ -14,7 +13,7 @@ const Search = () => {
 
   if (!query) return <Navigate to={"/"} />;
 
-  const { user: authUser, status } = useAppSelector(selectAuth);
+  const auth = useAuth();
   const [getSearchPosts, posts] = useLazySearchPostsQuery();
   const users = useGetAllUsersQuery({});
   const comments = useGetAllCommentsQuery({});
@@ -38,9 +37,9 @@ const Search = () => {
   // trigger get saved post
   useEffect(() => {
     const fetchSavedPost = async () => {
-      if (status === "AUTHORIZED" && authUser) {
+      if (auth?.user?.uid) {
         try {
-          await getSavedPost(authUser.uid).unwrap();
+          await getSavedPost(auth.user.uid).unwrap();
         } catch (err) {
           console.log(err);
         }
@@ -48,7 +47,7 @@ const Search = () => {
     };
 
     fetchSavedPost();
-  }, [authUser, status]);
+  }, [auth]);
 
   if (posts.isError || users.isError) {
     return <p>something wents to wrong</p>;

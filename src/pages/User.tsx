@@ -14,7 +14,7 @@ const User = () => {
   // navigate to error page
   if (!username) return <Navigate to={"/404"}></Navigate>;
 
-  const { user: authUser, status } = useAppSelector(selectAuth);
+  const auth = useAppSelector(selectAuth);
   const {
     data: user,
     isLoading,
@@ -30,19 +30,19 @@ const User = () => {
   // trigger get saved post
   useEffect(() => {
     const fetchSavedPost = async () => {
-      if (status === "AUTHORIZED" && authUser) {
+      if (auth?.user?.uid) {
         try {
-          await getSavedPost(authUser.uid).unwrap();
+          await getSavedPost(auth.user.uid).unwrap();
         } catch (err) {
           console.log(err);
         }
       }
     };
     fetchSavedPost();
-  }, [authUser, status]);
+  }, [auth]);
 
   // navigate to profile page if authorized username and page username matched
-  if (status === "AUTHORIZED" && authUser?.username === username)
+  if (auth?.user?.username === username)
     return <Navigate to={"/profile"}></Navigate>;
 
   // success state

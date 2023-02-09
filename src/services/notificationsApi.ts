@@ -43,9 +43,10 @@ export const notificationsApi = createApi({
         userID,
         { updateCachedData, cacheEntryRemoved, cacheDataLoaded }
       ) => {
+        let unsubscribe = () => {};
         try {
           await cacheDataLoaded;
-          const unsubscribe = readQueryRealtime<NotificationType>(
+          unsubscribe = readQueryRealtime<NotificationType>(
             NOTIFICATIONS,
             [{ key: "userID", condition: "==", value: userID }],
             (response) => {
@@ -68,7 +69,9 @@ export const notificationsApi = createApi({
         }
 
         await cacheEntryRemoved;
+        unsubscribe();
       },
+      keepUnusedDataFor: 0,
     }),
     addNotification: builder.mutation({
       queryFn: async (notification: NotificationType) => {

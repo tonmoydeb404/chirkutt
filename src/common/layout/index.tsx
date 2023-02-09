@@ -1,9 +1,8 @@
 import { ReactNode, useEffect } from "react";
 import { Outlet } from "react-router-dom";
-import { useAppSelector } from "../../app/hooks";
-import { selectAuth } from "../../features/auth/authSlice";
 import { useLazyGetNotificationsQuery } from "../../services/notificationsApi";
 import PostForm from "../components/PostForm";
+import { useAuth } from "../outlet/PrivateOutlet";
 import Footer from "./Footer";
 import MobileMenu from "./MobileMenu";
 import Navbar from "./Navbar";
@@ -15,15 +14,14 @@ type propTypes = {
 };
 
 const Layout = ({ children, sidebar }: propTypes) => {
-  const { user: authUser, status } = useAppSelector(selectAuth);
+  const auth = useAuth();
   const [getNotifications, allNotifications] = useLazyGetNotificationsQuery();
-
   // trigger get saved post
   useEffect(() => {
     const fetchSavedPost = async () => {
-      if (status === "AUTHORIZED" && authUser) {
+      if (auth && auth.status === "AUTHORIZED" && auth.user) {
         try {
-          await getNotifications(authUser.uid).unwrap();
+          await getNotifications(auth.user.uid).unwrap();
         } catch (err) {
           console.log(err);
         }
@@ -31,7 +29,7 @@ const Layout = ({ children, sidebar }: propTypes) => {
     };
 
     fetchSavedPost();
-  }, [authUser, status]);
+  }, [auth]);
 
   // is all notifications are readed
   const isNotReaded = Boolean(
@@ -46,7 +44,9 @@ const Layout = ({ children, sidebar }: propTypes) => {
     <>
       <Navbar />
       <div className="container py-5 flex gap-3 md:gap-5">
-        <div className="flex-1">{children ? children : <Outlet />}</div>
+        <div className="flex-1">
+          {children ? children : <Outlet context={auth} />}
+        </div>
         {sidebar ? <Sidebar notifications={isNotReaded} /> : null}
       </div>
       <MobileMenu notifications={isNotReaded} />

@@ -1,7 +1,6 @@
 import { useEffect } from "react";
-import { useAppSelector } from "../app/hooks";
 import NotificationBox from "../common/components/NotificationBox";
-import { selectAuth } from "../features/auth/authSlice";
+import { useAuth } from "../common/outlet/PrivateOutlet";
 import {
   useLazyGetNotificationsQuery,
   useReadNotificationsMutation,
@@ -12,30 +11,30 @@ import {
 } from "../types/NotificationType";
 
 const Notifications = () => {
-  const { user: authUser, status } = useAppSelector(selectAuth);
+  const auth = useAuth();
   const [getNotifications, allNotifications] = useLazyGetNotificationsQuery();
   const [readNotifications] = useReadNotificationsMutation();
 
   // trigger get saved post
   useEffect(() => {
-    const fetchSavedPost = async () => {
-      if (status === "AUTHORIZED" && authUser) {
+    const fetchFn = async () => {
+      if (auth && auth.status === "AUTHORIZED" && auth.user) {
         try {
-          await getNotifications(authUser.uid).unwrap();
+          await getNotifications(auth.user.uid).unwrap();
         } catch (err) {
           console.log(err);
         }
       }
     };
 
-    fetchSavedPost();
-  }, [authUser, status]);
+    fetchFn();
+  }, [auth]);
 
   // handle read all notification
   const handleReadAllNotifications = async (
     notifications: NotificationDocumentType
   ) => {
-    if (!authUser) return;
+    if (!auth?.user) return;
     try {
       const unreadNotifications = Object.keys(notifications).filter(
         (id) => notifications[id].status === "UNSEEN"
@@ -47,7 +46,7 @@ const Notifications = () => {
   };
   // handle read notification
   const handleReadNotificaton = async (notification: NotificationType) => {
-    if (!authUser || notification.status === "SEEN") return;
+    if (!auth?.user || notification.status === "SEEN") return;
     try {
       await readNotifications([notification.id]).unwrap();
     } catch (error) {

@@ -1,15 +1,19 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useOutletContext } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { selectAuth } from "../../features/auth/authSlice";
+import { AuthType } from "../../types/AuthType";
 
 const PrivateOutlet = () => {
-    const { status } = useAppSelector(selectAuth);
+  const auth = useAppSelector(selectAuth);
 
-    return status !== "UNAUTHORIZED" ? (
-        <Outlet />
-    ) : (
-        <Navigate to={"/"} replace />
-    );
+  return auth.status !== "UNAUTHORIZED" ? (
+    <Outlet context={auth} />
+  ) : (
+    <Navigate to={"/"} replace />
+  );
 };
 
 export default PrivateOutlet;
+
+// context
+export const useAuth = () => useOutletContext<AuthType>();

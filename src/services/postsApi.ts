@@ -20,30 +20,29 @@ export const postsApi = createApi({
         args,
         { cacheDataLoaded, updateCachedData, cacheEntryRemoved }
       ) => {
+        let unsubscribe = () => {};
         try {
           await cacheDataLoaded;
 
-          const unsubscribe = readCollectionRealtime<PostType>(
-            POSTS,
-            (data) => {
-              updateCachedData((draft) => {
-                // sorting by time
-                const sortedResponse = data.sort((a, b) => {
-                  return (
-                    new Date(b.createdAt).getTime() -
-                    new Date(a.createdAt).getTime()
-                  );
-                });
-                draft = arrayToObject<PostType>(sortedResponse, "id");
-                return draft;
+          unsubscribe = readCollectionRealtime<PostType>(POSTS, (data) => {
+            updateCachedData((draft) => {
+              // sorting by time
+              const sortedResponse = data.sort((a, b) => {
+                return (
+                  new Date(b.createdAt).getTime() -
+                  new Date(a.createdAt).getTime()
+                );
               });
-            }
-          );
+              draft = arrayToObject<PostType>(sortedResponse, "id");
+              return draft;
+            });
+          });
         } catch (error) {
           console.log(error);
         }
 
         await cacheEntryRemoved;
+        unsubscribe();
       },
     }),
     createPost: builder.mutation({

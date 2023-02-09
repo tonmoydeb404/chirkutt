@@ -1,14 +1,13 @@
 import { useEffect } from "react";
-import { useAppSelector } from "../app/hooks";
 import PostCard from "../common/components/PostCard";
-import { selectAuth } from "../features/auth/authSlice";
+import { useAuth } from "../common/outlet/PrivateOutlet";
 import { useGetAllCommentsQuery } from "../services/commentsApi";
 import { useGetAllPostsQuery } from "../services/postsApi";
 import { useLazyGetSavedPostsQuery } from "../services/savedApi";
 import { useGetAllUsersQuery } from "../services/usersApi";
 
 const Home = () => {
-  const { user: authUser, status } = useAppSelector(selectAuth);
+  const auth = useAuth();
   const posts = useGetAllPostsQuery();
   const users = useGetAllUsersQuery({});
   const comments = useGetAllCommentsQuery({});
@@ -17,9 +16,9 @@ const Home = () => {
   // trigger get saved post
   useEffect(() => {
     const fetchSavedPost = async () => {
-      if (status === "AUTHORIZED" && authUser) {
+      if (auth && auth.status === "AUTHORIZED" && auth.user) {
         try {
-          await getSavedPost(authUser.uid).unwrap();
+          await getSavedPost(auth.user.uid).unwrap();
         } catch (err) {
           console.log(err);
         }
@@ -27,7 +26,7 @@ const Home = () => {
     };
 
     fetchSavedPost();
-  }, [authUser, status]);
+  }, [auth]);
 
   if (posts.isError || users.isError) {
     return <p>something wents to wrong</p>;

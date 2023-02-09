@@ -62,6 +62,7 @@ export const commentsApi = createApi({
         }
 
         await cacheEntryRemoved;
+        unsubscribe();
       },
     }),
     getPostComments: builder.query({

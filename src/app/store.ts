@@ -1,6 +1,4 @@
 import { Store, configureStore } from "@reduxjs/toolkit";
-import { authSlice } from "../features/auth/authSlice";
-import { postFormReducer } from "../features/postFormSlice";
 import {
   themeListener,
   themePreloader,
@@ -11,20 +9,12 @@ import { notificationsApi } from "../services/notificationsApi";
 import { postsApi } from "../services/postsApi";
 import { savedApi } from "../services/savedApi";
 import { usersApi } from "../services/usersApi";
+import rootReducer from "./rootReducer";
 // check dev server
 const isDev = import.meta.env.DEV;
 
 export const store: Store = configureStore({
-  reducer: {
-    [themeSlice.name]: themeSlice.reducer,
-    post_form: postFormReducer,
-    [authSlice.name]: authSlice.reducer,
-    [usersApi.reducerPath]: usersApi.reducer,
-    [postsApi.reducerPath]: postsApi.reducer,
-    [commentsApi.reducerPath]: commentsApi.reducer,
-    [savedApi.reducerPath]: savedApi.reducer,
-    [notificationsApi.reducerPath]: notificationsApi.reducer,
-  },
+  reducer: rootReducer,
   devTools: isDev,
   preloadedState: {
     [themeSlice.name]: themePreloader(),
