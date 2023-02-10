@@ -5,6 +5,7 @@ import Layout from "../common/layout";
 import PrivateOutlet from "../common/outlet/PrivateOutlet";
 import PublicOutlet from "../common/outlet/PublicOutlet";
 import AuthStateChanged from "../features/auth/AuthStateChanged";
+import Share from "../features/share/Share";
 import ThemeStateChanged from "../features/theme/ThemeStateChanged";
 import Home from "../pages/Home";
 import Notifications from "../pages/Notifications";
@@ -55,9 +56,9 @@ const App = () => {
             {/* error */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <Share />
         </ThemeStateChanged>
       </AuthStateChanged>
-
       <Toaster />
     </Provider>
   );

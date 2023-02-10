@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectAuth } from "../../features/auth/authSlice";
 import { openPostForm } from "../../features/postFormSlice";
+import { showShare } from "../../features/share/shareSlice";
 import iconList from "../../lib/iconList";
 import {
   useAddNotificationMutation,
@@ -253,7 +254,10 @@ const PostCard = ({
           <span className="text-base">{iconList.comment}</span>
         </Link>
 
-        <button className="btn-icon btn-sm btn-theme ml-auto">
+        <button
+          className="btn-icon btn-sm btn-theme ml-auto"
+          onClick={() => dispatch(showShare({ text, author: author.name }))}
+        >
           {iconList.share}
         </button>
         {authUser ? (

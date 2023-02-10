@@ -14,6 +14,9 @@ module.exports = {
       // => @media (min-width: 900px) { ... }
     },
     extend: {
+      fontFamily: {
+        body: ['"Hind Siliguri"', "sans-serif"],
+      },
       container: {
         center: true,
         padding: {
@@ -36,5 +39,8 @@ module.exports = {
       },
     },
   },
-  plugins: [require("@tailwindcss/forms")],
+  plugins: [
+    require("@tailwindcss/forms"),
+    require("@tailwindcss/aspect-ratio"),
+  ],
 };
