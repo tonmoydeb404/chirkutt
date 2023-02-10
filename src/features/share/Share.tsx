@@ -1,4 +1,4 @@
-import { toJpeg } from "html-to-image";
+import { toPng } from "html-to-image";
 import { useCallback, useRef } from "react";
 import { toast } from "react-hot-toast";
 import { BiCopyAlt, BiDownload } from "react-icons/bi";
@@ -35,7 +35,7 @@ const Share = () => {
     const imageElement = imageRef.current;
 
     if (imageElement && downloadElement) {
-      toJpeg(imageElement, {
+      toPng(imageElement, {
         cacheBust: true,
         canvasWidth: imageElement.offsetWidth * 3,
         canvasHeight: imageElement.offsetHeight * 3,
@@ -123,8 +123,8 @@ const Share = () => {
         ref={downloadRef}
         download={
           text
-            ? `${text.slice(0, 15).split(" ").join("-")}.jpeg`
-            : "CHIRKUTT.jpeg"
+            ? `${text.slice(0, 15).split(" ").join("-")}.png`
+            : "CHIRKUTT.png"
         }
         className="hidden"
       ></a>
