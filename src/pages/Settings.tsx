@@ -1,4 +1,5 @@
 import { Formik } from "formik";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import * as yup from "yup";
 import { useAppDispatch } from "../app/hooks";
@@ -7,13 +8,32 @@ import TextGroup from "../common/components/Forms/TextGroup";
 import { useAuth } from "../common/outlet/PrivateOutlet";
 import { authSignIn } from "../features/auth/authSlice";
 import iconList from "../lib/iconList";
-import { useUpdateUserMutation } from "../services/usersApi";
+import {
+  useLazyGetUserQuery,
+  useUpdateUserMutation,
+} from "../services/usersApi";
 
 const Settings = () => {
+  const [getUser, user] = useLazyGetUserQuery();
   const [updateUser, result] = useUpdateUserMutation();
-
   const dispatch = useAppDispatch();
   const auth = useAuth();
+
+  // trigger get saved post
+  useEffect(() => {
+    const fetchSavedPost = async () => {
+      if (auth?.user) {
+        try {
+          await getUser(auth.user.uid).unwrap();
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    };
+
+    fetchSavedPost();
+  }, [auth]);
+
   const onSubmitHandler = async ({
     name,
     bio,
@@ -22,22 +42,23 @@ const Settings = () => {
     bio: string;
   }) => {
     try {
-      if (!auth?.user) return;
+      if (!user.isSuccess || !auth?.user) throw "user not authorized";
       const updates: { [key: string]: string } = {};
-      if (name !== auth.user.name) updates.name = name;
-      if (bio !== auth.user.bio) updates.bio = bio;
+      if (name !== user.data.name) updates.name = name;
+      if (bio !== user.data.bio) updates.bio = bio;
       if (Object.keys(updates).length == 0) return;
       // reset previous result
       result.reset();
       // request for update
-      const response = await updateUser({
-        uid: auth.user.uid,
+      await updateUser({
+        uid: user.data.uid,
         updates,
       }).unwrap();
 
       if (result.isError) throw "something wents to wrong";
+
       // update auth info
-      dispatch(authSignIn(response));
+      dispatch(authSignIn({ ...auth.user, ...updates }));
       // reset automatic after some time
       setTimeout(() => {
         if (!result.isError) result.reset();
@@ -47,22 +68,20 @@ const Settings = () => {
     }
   };
 
-  if (auth?.user?.uid) {
+  if (user.isSuccess) {
     return (
       <>
         <Formik
           initialValues={{
-            name: auth.user.name,
-            username: auth.user.username,
-            email: auth.user.email,
-            bio: auth.user.bio,
+            name: user.data.name,
+            email: user.data.email,
+            bio: user.data.bio,
           }}
           validationSchema={() =>
             yup.object().shape({
               name: yup.string().min(2).required(),
               bio: yup.string().min(6).max(200),
               email: yup.string().email().required(),
-              username: yup.string().min(2).required(),
             })
           }
           onSubmit={onSubmitHandler}
@@ -123,17 +142,6 @@ const Settings = () => {
                   onChange={handleChange}
                   errorText={errors.name}
                   onBlur={handleBlur}
-                />
-                <InputGroup
-                  label="Username"
-                  id="username"
-                  containerClass="max-w-full"
-                  value={values.username}
-                  onChange={handleChange}
-                  errorText={errors.username}
-                  onBlur={handleBlur}
-                  disabled
-                  readOnly
                 />
                 <InputGroup
                   label="Email"

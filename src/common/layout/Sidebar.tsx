@@ -1,14 +1,34 @@
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { selectAuth } from "../../features/auth/authSlice";
+import { useAppDispatch } from "../../app/hooks";
 import { openPostForm } from "../../features/postFormSlice";
 import { signout } from "../../lib/auth";
+import { AuthType } from "../../types/AuthType";
 import { ListItemType } from "../../types/ListType";
 import LinkList from "../components/List";
 import UserCard from "../components/UserCard";
 
-const Sidebar = ({ notifications }: { notifications: boolean }) => {
+const SidebarSkeleton = () => (
+  <div className="animate-pulse">
+    <div className="flex flex-col gap-3 md:gap-4 items-stretch w-full">
+      <div className="h-[45px] md:h-[60px] box rounded p-0.5 md:p-2 flex items-stretch gap-2">
+        <div className="w-full md:w-[45px] rounded-sm dark:bg-white/5"></div>
+        <div className=" flex-col gap-1.5 mt-1 md:flex hidden">
+          <div className="self-stretch w-[100px] h-2 dark:bg-white/5 rounded-sm"></div>
+          <div className="self-stretch w-[60px] h-2 dark:bg-white/5 rounded-sm"></div>
+        </div>
+      </div>
+      <div className="h-[200px] box rounded p-2 flex flex-col gap-2"></div>
+    </div>
+  </div>
+);
+
+const Sidebar = ({
+  notifications,
+  auth,
+}: {
+  notifications: boolean;
+  auth: AuthType;
+}) => {
   const dispatch = useAppDispatch();
-  const { user } = useAppSelector(selectAuth);
 
   const authorizedLinks: ListItemType[] = [
     { title: "Home", path: "/", icon: "home" },
@@ -36,15 +56,21 @@ const Sidebar = ({ notifications }: { notifications: boolean }) => {
   ];
 
   return (
-    <aside className="flex flex-col gap-3 md:gap-5 w-[50px] md:w-[220px] max-[500px]:hidden">
-      {user ? (
-        <UserCard
-          title={user?.name}
-          username={user?.username}
-          avatar={user?.avatar}
-        />
-      ) : null}
-      <LinkList items={user ? authorizedLinks : unauthorizedLinks} />
+    <aside className="flex flex-col gap-3 md:gap-4 w-[50px] md:w-[220px] max-[500px]:hidden">
+      {auth?.status === "AUTHORIZED" && auth.user ? (
+        <>
+          <UserCard
+            title={auth.user.name}
+            uid={auth.user.uid}
+            avatar={auth.user.avatar}
+          />
+          <LinkList items={authorizedLinks} />
+        </>
+      ) : auth?.status === "UNAUTHORIZED" ? (
+        <LinkList items={unauthorizedLinks} />
+      ) : (
+        <SidebarSkeleton />
+      )}
     </aside>
   );
 };

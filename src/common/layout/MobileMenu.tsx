@@ -1,14 +1,20 @@
+// TODO: organize codes
 import { NavLink } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { selectAuth } from "../../features/auth/authSlice";
+import { useAppDispatch } from "../../app/hooks";
 import { openPostForm } from "../../features/postFormSlice";
 import { signout } from "../../lib/auth";
 import iconList from "../../lib/iconList";
+import { AuthType } from "../../types/AuthType";
 import { ListItemType } from "../../types/ListType";
 
-const MobileMenu = ({ notifications }: { notifications: boolean }) => {
+const MobileMenu = ({
+  notifications,
+  auth,
+}: {
+  notifications: boolean;
+  auth: AuthType;
+}) => {
   const dispatch = useAppDispatch();
-  const { user } = useAppSelector(selectAuth);
 
   const authorizedLinks: ListItemType[] = [
     { title: "Home", path: "/", icon: "home" },
@@ -34,10 +40,10 @@ const MobileMenu = ({ notifications }: { notifications: boolean }) => {
     { title: "Sign in", path: "/signin", icon: "signin" },
   ];
 
-  return (
+  return ["AUTHORIZED", "UNAUTHORIZED"].includes(auth?.status) ? (
     <div className="px-6 w-full fixed bottom-0 left-0 h-[55px] bg-white dark:bg-neutral-800 shadow border-t border-t-neutral-300 dark:border-t-neutral-700 min-[501px]:hidden min-[401px]:px-12">
       <ul className="flex items-center justify-between w-full h-full">
-        {(user ? authorizedLinks : unauthorizedLinks).map((link) =>
+        {(auth?.user ? authorizedLinks : unauthorizedLinks).map((link) =>
           "path" in link ? (
             <li
               key={link.path} // TODO: make badge classes
@@ -73,7 +79,7 @@ const MobileMenu = ({ notifications }: { notifications: boolean }) => {
         )}
       </ul>
     </div>
-  );
+  ) : null;
 };
 
 export default MobileMenu;

@@ -1,6 +1,11 @@
-import { UserType } from "./UserType";
+export type AuthUserType = {
+  email: string;
+  name: string;
+  avatar: string;
+  uid: string;
+};
 
 export type AuthType = {
-    user: UserType | null;
-    status: "INTIAL" | "LOADING" | "AUTHORIZED" | "UNAUTHORIZED";
+  user: AuthUserType | null;
+  status: "INTIAL" | "LOADING" | "AUTHORIZED" | "UNAUTHORIZED";
 };

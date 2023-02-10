@@ -1,8 +1,9 @@
 import { ReactNode, useEffect } from "react";
 import { Outlet } from "react-router-dom";
+import { useAppSelector } from "../../app/hooks";
+import { selectAuth } from "../../features/auth/authSlice";
 import { useLazyGetNotificationsQuery } from "../../services/notificationsApi";
 import PostForm from "../components/PostForm";
-import { useAuth } from "../outlet/PrivateOutlet";
 import Footer from "./Footer";
 import MobileMenu from "./MobileMenu";
 import Navbar from "./Navbar";
@@ -14,7 +15,7 @@ type propTypes = {
 };
 
 const Layout = ({ children, sidebar }: propTypes) => {
-  const auth = useAuth();
+  const auth = useAppSelector(selectAuth);
   const [getNotifications, allNotifications] = useLazyGetNotificationsQuery();
   // trigger get saved post
   useEffect(() => {
@@ -42,14 +43,14 @@ const Layout = ({ children, sidebar }: propTypes) => {
 
   return (
     <>
-      <Navbar />
+      <Navbar auth={auth} />
       <div className="container py-5 flex gap-3 md:gap-5">
         <div className="flex-1">
           {children ? children : <Outlet context={auth} />}
         </div>
-        {sidebar ? <Sidebar notifications={isNotReaded} /> : null}
+        {sidebar ? <Sidebar notifications={isNotReaded} auth={auth} /> : null}
       </div>
-      <MobileMenu notifications={isNotReaded} />
+      <MobileMenu notifications={isNotReaded} auth={auth} />
       <Footer />
       <PostForm />
     </>

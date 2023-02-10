@@ -1,6 +1,6 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { USERS } from "../constants/firebase.constant";
-import { readCollection, readQuery, updateDocument } from "../lib/database";
+import { readCollection, readDocument, updateDocument } from "../lib/database";
 import { UserType } from "../types/UserType";
 import { arrayToObject } from "../utilities/arrayToObject";
 
@@ -32,15 +32,11 @@ export const usersApi = createApi({
       },
     }),
     getUser: builder.query({
-      queryFn: async ({ username }: { username: string }) => {
+      queryFn: async (uid: string) => {
         try {
-          const response = await readQuery<UserType>(USERS, [
-            { key: "username", value: username, condition: "==" },
-          ]);
+          const response = await readDocument<UserType>(USERS, uid);
 
-          if (!response.length) throw "user not found";
-
-          return { data: response[0] };
+          return { data: response };
         } catch (error) {
           return { error };
         }
@@ -71,5 +67,9 @@ export const usersApi = createApi({
 });
 
 // hooks
-export const { useGetUserQuery, useUpdateUserMutation, useGetAllUsersQuery } =
-  usersApi;
+export const {
+  useGetUserQuery,
+  useUpdateUserMutation,
+  useGetAllUsersQuery,
+  useLazyGetUserQuery,
+} = usersApi;

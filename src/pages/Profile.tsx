@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { BiCopyAlt } from "react-icons/bi";
 import { useAppDispatch } from "../app/hooks";
 import PostCard from "../common/components/PostCard";
 import { useAuth } from "../common/outlet/PrivateOutlet";
@@ -7,12 +8,14 @@ import iconList from "../lib/iconList";
 import { useGetAllCommentsQuery } from "../services/commentsApi";
 import { useGetAllPostsQuery } from "../services/postsApi";
 import { useLazyGetSavedPostsQuery } from "../services/savedApi";
+import { useLazyGetUserQuery } from "../services/usersApi";
 
 const Profile = () => {
   const dispatch = useAppDispatch();
   const auth = useAuth();
   const posts = useGetAllPostsQuery();
   const comments = useGetAllCommentsQuery({});
+  const [getUser, user] = useLazyGetUserQuery();
 
   const [getSavedPost, savedPostResult] = useLazyGetSavedPostsQuery();
 
@@ -22,6 +25,7 @@ const Profile = () => {
       if (auth?.user) {
         try {
           await getSavedPost(auth.user.uid).unwrap();
+          await getUser(auth.user.uid).unwrap();
         } catch (err) {
           console.log(err);
         }
@@ -31,30 +35,30 @@ const Profile = () => {
     fetchSavedPost();
   }, [auth]);
 
-  if (auth?.user) {
+  if (user.data) {
     return (
       <>
         <div className="flex flex-col">
           <div className="flex flex-col sm:flex-row items-start gap-3 box p-3 sm:p-4 rounded">
             <img
-              src={auth.user?.avatar}
-              alt={auth.user?.name}
+              src={user.data?.avatar}
+              alt={user.data?.name}
               className="w-[60px] rounded"
             />
 
             <div className="flex flex-col gap-1 w-full">
               <div className="flex items-center gap-2">
-                <h2 className="text-2xl font-semibold">{auth.user?.name}</h2>
+                <h2 className="text-2xl font-semibold">{user.data?.name}</h2>
                 <span>-</span>
                 <span
                   title="copy profile link"
                   className="text-primary-600 text-sm hover:text-primary-700 cursor-copy"
                 >
-                  @{auth.user?.username}
+                  <BiCopyAlt />
                 </span>
               </div>
-              {auth.user?.bio ? (
-                <p className="text-sm w-full">{auth.user?.bio}</p>
+              {user.data?.bio ? (
+                <p className="text-sm w-full">{user.data?.bio}</p>
               ) : (
                 <span className="opacity-50 inline-flex gap-0.5 items-center text-xs">
                   {iconList.pencil}
@@ -64,7 +68,7 @@ const Profile = () => {
 
               <div className="flex items-center gap-1 mt-3">
                 <a
-                  href={`mailto:${auth.user?.email}`}
+                  href={`mailto:${user.data?.email}`}
                   target={"_blank"}
                   className="btn btn-sm btn-theme ml-auto"
                 >
@@ -133,11 +137,11 @@ const Profile = () => {
                       (c) => comments.data[c].postID === post.id
                     );
                     const isSaved = !!savedPostResult?.data?.[post.id];
-                    return post.authorUID === auth.user?.uid ? (
+                    return post.authorUID === user.data?.uid ? (
                       <PostCard
                         key={post.id}
                         {...post}
-                        author={auth.user}
+                        author={user.data}
                         comments={postComments.length}
                         isSaved={isSaved}
                       />

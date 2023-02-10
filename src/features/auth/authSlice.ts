@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
-import { AuthType } from "../../types/AuthType";
+import { AuthType, AuthUserType } from "../../types/AuthType";
 
 const initialState: AuthType = { user: null, status: "INTIAL" };
 
@@ -12,8 +12,8 @@ export const authSlice = createSlice({
       state.user = null;
       state.status = "LOADING";
     },
-    authSignIn: (state, action) => {
-      state.user = action.payload;
+    authSignIn: (state, { payload }: { payload: AuthUserType }) => {
+      state.user = payload;
       state.status = "AUTHORIZED";
     },
     authSignOut: (state) => {

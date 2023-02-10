@@ -47,7 +47,7 @@ const App = () => {
               <Route path="/" element={<Home />} />
               <Route path="/search" element={<Search />} />
               <Route path="/post/:id" element={<Post />} />
-              <Route path="/user/:username" element={<User />} />
+              <Route path="/user/:uid" element={<User />} />
             </Route>
             <Route element={<Layout sidebar={false} />}>
               <Route path="/reset" element={<Reset />} />

@@ -7,9 +7,9 @@ import { selectAuth } from "../../features/auth/authSlice";
 import iconList from "../../lib/iconList";
 import { useCreateCommentMutation } from "../../services/commentsApi";
 import { useAddNotificationMutation } from "../../services/notificationsApi";
+import { AuthUserType } from "../../types/AuthType";
 import { CommentType } from "../../types/CommentType";
 import { NotificationType } from "../../types/NotificationType";
-import { UserType } from "../../types/UserType";
 
 const ReplayForm = ({
   postID,
@@ -27,7 +27,10 @@ const ReplayForm = ({
   const [createNotification] = useAddNotificationMutation();
 
   // create comment
-  const createCommentHandler = async (text: string, replayAuthor: UserType) => {
+  const createCommentHandler = async (
+    text: string,
+    replayAuthor: AuthUserType
+  ) => {
     try {
       const newComment: CommentType = {
         id: nanoid(),
@@ -47,7 +50,7 @@ const ReplayForm = ({
   // create notification handler
   const createNotificationHandler = async (
     replayID: string,
-    replayAuthor: UserType
+    replayAuthor: AuthUserType
   ) => {
     try {
       // don't create notification for the post author own comments

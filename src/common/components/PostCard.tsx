@@ -19,6 +19,7 @@ import {
   useAddSavedPostMutation,
   useRemoveSavedPostMutation,
 } from "../../services/savedApi";
+import { AuthUserType } from "../../types/AuthType";
 import { NotificationType } from "../../types/NotificationType";
 import { PostType } from "../../types/PostType";
 import { UserType } from "../../types/UserType";
@@ -116,7 +117,7 @@ const PostCard = ({
   };
 
   // create notification handler
-  const createLikeNotification = async (user: UserType) => {
+  const createLikeNotification = async (user: AuthUserType) => {
     try {
       // don't create notification for the post author own like
       if (user.uid === authorUID) return true;
@@ -140,7 +141,7 @@ const PostCard = ({
   };
 
   // add like
-  const addLike = async (user: UserType) => {
+  const addLike = async (user: AuthUserType) => {
     try {
       await updatePost({
         id: id,
@@ -153,7 +154,7 @@ const PostCard = ({
   };
 
   // remove like
-  const removeLike = async (user: UserType) => {
+  const removeLike = async (user: AuthUserType) => {
     try {
       // remove like
       await updatePost({
@@ -190,11 +191,11 @@ const PostCard = ({
       <section className="flex items-center gap-2 mb-3">
         {/* author */}
         <div className="flex items-center gap-2">
-          <Link to={`/authUser/${author.username}`}>
+          <Link to={`/user/${author.uid}`}>
             <img src={author.avatar} alt={author.name} className="w-[38px]" />
           </Link>
           <div className="flex flex-col gap-0">
-            <Link className="font-medium" to={`/authUser/${author.username}`}>
+            <Link className="font-medium" to={`/user/${author.uid}`}>
               {author.name}
             </Link>
             <span className="text-xs inline-block opacity-70">

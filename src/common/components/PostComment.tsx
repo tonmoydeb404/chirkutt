@@ -75,7 +75,7 @@ const PostComment = ({
           <div className="comments_thread_body">
             <div className="flex justify-between items-center gap-1">
               <Link
-                to={`/user/${author.username}`}
+                to={`/user/${author.uid}`}
                 className="comments_thread_title"
               >
                 {author.name}
