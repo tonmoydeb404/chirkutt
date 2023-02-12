@@ -186,6 +186,16 @@ const PostCard = ({
     }
   };
 
+  // handle share
+  const handleShare = () => {
+    const sharePost = {
+      text,
+      avatar: author.avatar,
+      author: author.name,
+    };
+    dispatch(showShare(sharePost));
+  };
+
   return author ? (
     <article className="flex flex-col p-3 bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded shadow-sm">
       {/* header part */}
@@ -256,7 +266,7 @@ const PostCard = ({
 
         <button
           className="btn-icon btn-sm btn-theme ml-auto"
-          onClick={() => dispatch(showShare({ text, author: author.name }))}
+          onClick={handleShare}
         >
           {iconList.share}
         </button>

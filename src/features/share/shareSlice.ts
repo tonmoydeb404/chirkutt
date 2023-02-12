@@ -1,16 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 
-type shareType = {
-  show: boolean;
-  text: null | string;
-  author: string | null;
+type SharePostType = {
+  avatar: string;
+  author: string;
+  text: string;
 };
 
-const initialState: shareType = {
+type ShareType = {
+  show: boolean;
+  post: SharePostType | null;
+};
+
+const initialState: ShareType = {
   show: false,
-  text: null,
-  author: null,
+  post: null,
 };
 
 export const shareSlice = createSlice({
@@ -19,16 +23,11 @@ export const shareSlice = createSlice({
   reducers: {
     hideShare: (state) => {
       state.show = false;
-      state.text = null;
-      state.author = null;
+      state.post = null;
     },
-    showShare: (
-      state,
-      action: { payload: { text: string; author: string } }
-    ) => {
+    showShare: (state, action: { payload: SharePostType }) => {
       state.show = true;
-      state.text = action.payload.text;
-      state.author = action.payload.author;
+      state.post = action.payload;
     },
   },
 });
@@ -36,4 +35,4 @@ export const shareSlice = createSlice({
 // actions
 export const { hideShare, showShare } = shareSlice.actions;
 // selector
-export const selectShare = (state: RootState): shareType => state.share;
+export const selectShare = (state: RootState): ShareType => state.share;

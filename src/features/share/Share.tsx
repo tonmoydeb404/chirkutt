@@ -14,9 +14,9 @@ const Share = () => {
   const imageRef = useRef<HTMLDivElement>(null);
   // states
   const dispatch = useAppDispatch();
-  const { show, text, author } = useAppSelector(selectShare);
+  const { show, post } = useAppSelector(selectShare);
 
-  const links = text ? socialShare(text) : null;
+  const links = post ? socialShare(post.text) : null;
 
   // copy to clipboard
   const copyToClipboard = async (text: string) => {
@@ -45,7 +45,7 @@ const Share = () => {
           downloadElement.click();
         })
         .catch((err) => {
-          console.log("error");
+          // console.log("error");
         });
     }
   }, [imageRef, downloadRef]);
@@ -53,7 +53,7 @@ const Share = () => {
   return (
     <div
       className={`fixed top-0 left-0 w-full h-full min-h-full bg-neutral-900/60 flex-col items-center justify-center ${
-        show && text ? "flex" : "hidden"
+        show ? "flex" : "hidden"
       }`}
     >
       <div className="flex flex-col rounded box w-full max-w-[300px] sm:max-w-[400px] py-1.5 sm:py-3 px-2 sm:px-4 gap-3">
@@ -76,13 +76,18 @@ const Share = () => {
           className="bg-white text-neutral-800 py-2 px-3 flex flex-col justify-center items-stretch gap-3 h-[350px] relative "
           ref={imageRef}
         >
-          <p className="text-base text-center mt-auto font-medium">{text}</p>
-          <div className="flex items-center mt-auto justify-between mb-1">
-            <span className="font-semibold  text-sm text-center">
-              @{author}
-            </span>
-            <span className="inline-block text-sm font-semibold tracking-wide opacity-60">
+          <p className="text-base text-center mt-auto font-medium">
+            {post?.text}
+          </p>
+          <div className="flex items-center mt-auto mb-1 gap-1 justify-center">
+            <span className="inline-block text-xs uppercase font-bold tracking-wide">
               #chirkutt
+            </span>
+            <span className="font-semibold text-xs uppercase opacity-80">
+              By
+            </span>
+            <span className="font-bold text-xs uppercase opacity-80">
+              {post?.author}
             </span>
           </div>
         </div>
@@ -104,7 +109,7 @@ const Share = () => {
           </a>
           <button
             className="btn btn-theme btn-icon text-xl sm:text-2xl"
-            onClick={async () => await copyToClipboard(text || "")}
+            onClick={async () => await copyToClipboard(post?.text || "")}
           >
             <BiCopyAlt />
           </button>
@@ -122,8 +127,8 @@ const Share = () => {
         href="#"
         ref={downloadRef}
         download={
-          text
-            ? `${text.slice(0, 15).split(" ").join("-")}.png`
+          post?.text
+            ? `${post?.text.slice(0, 15).split(" ").join("-")}.png`
             : "CHIRKUTT.png"
         }
         className="hidden"
