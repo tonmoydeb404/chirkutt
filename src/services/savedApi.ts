@@ -14,7 +14,6 @@ type SavedPostDocument = { [key: string]: SavedPostType };
 export const savedApi = createApi({
   reducerPath: "savedApi",
   baseQuery: fakeBaseQuery(),
-  tagTypes: ["Saved"],
   endpoints: (builder) => ({
     getSavedPosts: builder.query({
       queryFn: async (uid: string) => {
@@ -44,17 +43,6 @@ export const savedApi = createApi({
           return { error };
         }
       },
-      providesTags: (result) => {
-        return result
-          ? [
-              ...Object.keys(result).map((id) => ({
-                type: "Saved" as const,
-                id,
-              })),
-              "Saved",
-            ]
-          : ["Saved"];
-      },
     }),
     addSavedPost: builder.mutation({
       queryFn: async ({ uid, post }: { uid: string; post: SavedPostType }) => {
@@ -72,18 +60,56 @@ export const savedApi = createApi({
           return { error };
         }
       },
-      invalidatesTags: ["Saved"],
+      onQueryStarted: async ({ uid, post }, { dispatch, queryFulfilled }) => {
+        try {
+          await queryFulfilled;
+          const patchResult = dispatch(
+            savedApi.util.updateQueryData("getSavedPosts", uid, (draft) => {
+              if (draft) {
+                Object.assign(draft, { [post.postID]: post });
+              }
+            })
+          );
+        } catch (error) {}
+      },
     }),
     removeSavedPost: builder.mutation({
       queryFn: async ({ uid, id }: { uid: string; id: string }) => {
         try {
-          const response = await deleteDocumentFields(uid, SAVED, [id]);
+          const response = await deleteDocumentFields(SAVED, uid, [id]);
           return { data: response };
         } catch (error) {
           return { error };
         }
       },
-      invalidatesTags: ["Saved"],
+      onQueryStarted: async ({ uid, id }, { dispatch, queryFulfilled }) => {
+        try {
+          await queryFulfilled;
+          const patchResult = dispatch(
+            savedApi.util.updateQueryData("getSavedPosts", uid, (draft) => {
+              delete draft?.[id];
+            })
+          );
+        } catch (error) {}
+      },
+    }),
+    clearSavedPost: builder.mutation({
+      queryFn: async ({ uid }: { uid: string }) => {
+        try {
+          const response = await createDocument(SAVED, uid, {});
+          return { data: response };
+        } catch (error) {
+          return { error };
+        }
+      },
+      onQueryStarted: async ({ uid }, { dispatch, queryFulfilled }) => {
+        try {
+          await queryFulfilled;
+          const patchResult = dispatch(savedApi.util.resetApiState());
+        } catch (error) {
+          console.log(error);
+        }
+      },
     }),
   }),
 });
@@ -94,4 +120,5 @@ export const {
   useGetSavedPostsQuery,
   useAddSavedPostMutation,
   useRemoveSavedPostMutation,
+  useClearSavedPostMutation,
 } = savedApi;

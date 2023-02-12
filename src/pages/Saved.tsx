@@ -4,7 +4,10 @@ import { useAuth } from "../common/outlet/PrivateOutlet";
 import iconList from "../lib/iconList";
 import { useGetAllCommentsQuery } from "../services/commentsApi";
 import { useGetAllPostsQuery } from "../services/postsApi";
-import { useLazyGetSavedPostsQuery } from "../services/savedApi";
+import {
+  useClearSavedPostMutation,
+  useLazyGetSavedPostsQuery,
+} from "../services/savedApi";
 import { useGetAllUsersQuery } from "../services/usersApi";
 
 const Saved = () => {
@@ -14,6 +17,7 @@ const Saved = () => {
   const users = useGetAllUsersQuery({});
   const comments = useGetAllCommentsQuery({});
   const [getSavedPost, savedPostResult] = useLazyGetSavedPostsQuery();
+  const [clearSavedPost, clearSavedPostResult] = useClearSavedPostMutation();
 
   // trigger get saved post
   useEffect(() => {
@@ -30,6 +34,14 @@ const Saved = () => {
     fetchSavedPost();
   }, [auth]);
 
+  // clear all saved posts
+  const handleClear = async () => {
+    try {
+      if (!auth.user) throw "authorization error";
+      await clearSavedPost({ uid: auth.user.uid });
+    } catch (error) {}
+  };
+
   if (posts.isError || users.isError) {
     return <p>something wents to wrong</p>;
   }
@@ -39,9 +51,11 @@ const Saved = () => {
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-medium">Saved Posts</h3>
 
-        <button className="btn btn-sm btn-theme">
-          remove all <span>{iconList.remove}</span>
-        </button>
+        {Object.keys(savedPostResult?.data || {}).length ? (
+          <button className="btn btn-sm btn-theme" onClick={handleClear}>
+            remove all <span>{iconList.remove}</span>
+          </button>
+        ) : null}
       </div>
 
       <div className="flex flex-col gap-3 mt-5">
