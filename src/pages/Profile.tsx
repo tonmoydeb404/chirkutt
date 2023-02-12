@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { BiCopyAlt } from "react-icons/bi";
 import { useAppDispatch } from "../app/hooks";
 import PostCard from "../common/components/PostCard";
+import PostCardSekeleton from "../common/components/skeletons/PostCardSkeleton";
 import { useAuth } from "../common/outlet/PrivateOutlet";
 import { openPostForm } from "../features/postFormSlice";
 import iconList from "../lib/iconList";
@@ -124,7 +125,13 @@ const Profile = () => {
             </div>
 
             <div className="flex flex-col gap-3 mt-3">
-              {posts.isLoading ? <p>loading...</p> : null}
+              {posts.isLoading ? (
+                <>
+                  <PostCardSekeleton />
+                  <PostCardSekeleton />
+                  <PostCardSekeleton />
+                </>
+              ) : null}
               {posts.isError ? <p>something wents to wrong...</p> : null}
               {posts.data &&
               posts.isSuccess &&

@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import PostCard from "../common/components/PostCard";
+import PostCardSekeleton from "../common/components/skeletons/PostCardSkeleton";
 import { useAuth } from "../common/outlet/PrivateOutlet";
 import { useGetAllCommentsQuery } from "../services/commentsApi";
 import { useGetAllPostsQuery } from "../services/postsApi";
@@ -65,7 +66,14 @@ const Home = () => {
     );
   }
 
-  return <p>loading...</p>;
+  return (
+    <div className="flex flex-col gap-3">
+      <PostCardSekeleton />
+      <PostCardSekeleton />
+      <PostCardSekeleton />
+      <PostCardSekeleton />
+    </div>
+  );
 };
 
 export default Home;

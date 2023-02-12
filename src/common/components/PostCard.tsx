@@ -197,7 +197,7 @@ const PostCard = ({
   };
 
   return author ? (
-    <article className="flex flex-col p-3 bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded shadow-sm">
+    <article className="flex flex-col p-3 box rounded shadow-sm">
       {/* header part */}
       <section className="flex items-center gap-2 mb-3">
         {/* author */}

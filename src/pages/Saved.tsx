@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import PostCard from "../common/components/PostCard";
+import PostCardSekeleton from "../common/components/skeletons/PostCardSkeleton";
 import { useAuth } from "../common/outlet/PrivateOutlet";
 import iconList from "../lib/iconList";
 import { useGetAllCommentsQuery } from "../services/commentsApi";
@@ -85,9 +86,14 @@ const Saved = () => {
         {savedPostResult.isLoading ||
         posts.isLoading ||
         users.isLoading ||
-        comments.isLoading
-          ? "loading"
-          : null}
+        comments.isLoading ? (
+          <>
+            <PostCardSekeleton />
+            <PostCardSekeleton />
+            <PostCardSekeleton />
+            <PostCardSekeleton />
+          </>
+        ) : null}
 
         {savedPostResult.isError ||
         (savedPostResult.data && !Object.keys(savedPostResult?.data).length)
