@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Helmet } from "react-helmet";
 import { BiCopyAlt } from "react-icons/bi";
 import { useAppDispatch } from "../app/hooks";
 import PostCard from "../common/components/PostCard";
@@ -39,6 +40,9 @@ const Profile = () => {
   if (user.data) {
     return (
       <>
+        <Helmet>
+          <title>Profile - Chirkutt</title>
+        </Helmet>
         <div className="flex flex-col">
           <div className="flex flex-col sm:flex-row items-start gap-3 box p-3 sm:p-4 rounded">
             <img

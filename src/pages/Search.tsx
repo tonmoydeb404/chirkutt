@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Helmet } from "react-helmet";
 import { Navigate, useSearchParams } from "react-router-dom";
 import PostCard from "../common/components/PostCard";
 import { useAuth } from "../common/outlet/PrivateOutlet";
@@ -47,33 +48,38 @@ const Search = () => {
     comments.data
   ) {
     return (
-      <div className="flex flex-col gap-3">
-        {Object.keys(posts.data).length
-          ? Object.keys(posts.data)
-              .filter((key) => {
-                const post = posts.data[key];
-                if (!post) return false;
-                return post.text.toLowerCase().includes(query.toLowerCase());
-              })
-              .map((key: string) => {
-                const post = posts.data[key];
-                const author = users.data[post.authorUID];
-                const postComments = Object.keys(comments.data).filter(
-                  (c) => comments.data[c].postID === post.id
-                );
-                const isSaved = !!savedPostResult?.data?.[post.id];
-                return (
-                  <PostCard
-                    key={post.id}
-                    {...post}
-                    author={author}
-                    comments={postComments.length}
-                    isSaved={isSaved}
-                  />
-                );
-              })
-          : "cannot find any posts"}
-      </div>
+      <>
+        <Helmet>
+          <title>Search - Chirkutt</title>
+        </Helmet>
+        <div className="flex flex-col gap-3">
+          {Object.keys(posts.data).length
+            ? Object.keys(posts.data)
+                .filter((key) => {
+                  const post = posts.data[key];
+                  if (!post) return false;
+                  return post.text.toLowerCase().includes(query.toLowerCase());
+                })
+                .map((key: string) => {
+                  const post = posts.data[key];
+                  const author = users.data[post.authorUID];
+                  const postComments = Object.keys(comments.data).filter(
+                    (c) => comments.data[c].postID === post.id
+                  );
+                  const isSaved = !!savedPostResult?.data?.[post.id];
+                  return (
+                    <PostCard
+                      key={post.id}
+                      {...post}
+                      author={author}
+                      comments={postComments.length}
+                      isSaved={isSaved}
+                    />
+                  );
+                })
+            : "cannot find any posts"}
+        </div>
+      </>
     );
   }
 

@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Helmet } from "react-helmet";
 import NotificationBox from "../common/components/NotificationBox";
 import { useAuth } from "../common/outlet/PrivateOutlet";
 import {
@@ -59,48 +60,53 @@ const Notifications = () => {
   );
 
   return (
-    <div>
-      <div className="flex items-center mb-5 justify-between">
-        <h3 className="text-lg font-medium">Notifications</h3>
+    <>
+      <Helmet>
+        <title>Notifications - Chirkutt</title>
+      </Helmet>
+      <div>
+        <div className="flex items-center mb-5 justify-between">
+          <h3 className="text-lg font-medium">Notifications</h3>
 
-        <div className="flex items-center gap-1">
-          {allNotifications.isSuccess && !isAllReaded ? (
-            <button
-              className="btn btn-sm btn-theme"
-              onClick={async () =>
-                await handleReadAllNotifications(allNotifications?.data || {})
-              }
-            >
-              mark all as read
-            </button>
-          ) : null}
+          <div className="flex items-center gap-1">
+            {allNotifications.isSuccess && !isAllReaded ? (
+              <button
+                className="btn btn-sm btn-theme"
+                onClick={async () =>
+                  await handleReadAllNotifications(allNotifications?.data || {})
+                }
+              >
+                mark all as read
+              </button>
+            ) : null}
+          </div>
+        </div>
+        <div className="flex flex-col gap-1">
+          {allNotifications.isSuccess
+            ? Object.keys(allNotifications.data).map((notifID) => {
+                const notif = allNotifications.data?.[notifID];
+
+                if (!notif) return null;
+
+                return (
+                  <NotificationBox
+                    key={notif.id}
+                    {...notif}
+                    readNotif={async () => await handleReadNotificaton(notif)}
+                  />
+                );
+              })
+            : null}
+
+          {allNotifications.isLoading ? "loading..." : null}
+          {allNotifications.isSuccess &&
+          !Object.keys(allNotifications.data).length
+            ? "nothing here"
+            : null}
+          {allNotifications.isError ? "something wents to wrong" : null}
         </div>
       </div>
-      <div className="flex flex-col gap-1">
-        {allNotifications.isSuccess
-          ? Object.keys(allNotifications.data).map((notifID) => {
-              const notif = allNotifications.data?.[notifID];
-
-              if (!notif) return null;
-
-              return (
-                <NotificationBox
-                  key={notif.id}
-                  {...notif}
-                  readNotif={async () => await handleReadNotificaton(notif)}
-                />
-              );
-            })
-          : null}
-
-        {allNotifications.isLoading ? "loading..." : null}
-        {allNotifications.isSuccess &&
-        !Object.keys(allNotifications.data).length
-          ? "nothing here"
-          : null}
-        {allNotifications.isError ? "something wents to wrong" : null}
-      </div>
-    </div>
+    </>
   );
 };
 

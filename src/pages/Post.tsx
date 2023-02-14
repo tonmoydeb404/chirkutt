@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Helmet } from "react-helmet";
 import { Navigate, useParams } from "react-router-dom";
 import CommentForm from "../common/components/CommentForm";
 import PostCard from "../common/components/PostCard";
@@ -66,6 +67,9 @@ const Post = () => {
 
     return (
       <>
+        <Helmet>
+          <title>{post.text.split(" ").slice(0, 5).join(" ")} - Chirkutt</title>
+        </Helmet>
         <PostCard
           isSaved={isSaved}
           {...post}

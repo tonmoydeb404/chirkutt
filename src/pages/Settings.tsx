@@ -1,5 +1,6 @@
 import { Formik } from "formik";
 import { useEffect } from "react";
+import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 import * as yup from "yup";
 import { useAppDispatch } from "../app/hooks";
@@ -71,6 +72,9 @@ const Settings = () => {
   if (user.isSuccess) {
     return (
       <>
+        <Helmet>
+          <title>Settings - Chirkutt</title>
+        </Helmet>
         <Formik
           initialValues={{
             name: user.data.name,

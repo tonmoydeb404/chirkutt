@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Helmet } from "react-helmet";
 import { BiCopyAlt } from "react-icons/bi";
 import { Navigate, useParams } from "react-router-dom";
 import { useAppSelector } from "../app/hooks";
@@ -44,6 +45,9 @@ const User = () => {
   if (user.isSuccess) {
     return (
       <>
+        <Helmet>
+          <title>{user.data.name} - Chirkutt</title>
+        </Helmet>
         <div className="flex flex-col">
           <div className="flex flex-col sm:flex-row items-start gap-3 box p-3 sm:p-4 rounded">
             <img
