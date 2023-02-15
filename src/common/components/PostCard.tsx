@@ -196,7 +196,11 @@ const PostCard = ({
         {/* author */}
         <div className="flex items-center gap-2">
           <Link to={`/user/${author.uid}`}>
-            <img src={author.avatar} alt={author.name} className="w-[38px]" />
+            <img
+              src={author.avatar}
+              alt={author.name}
+              className="w-[38px] rounded"
+            />
           </Link>
           <div className="flex flex-col gap-0">
             <Link className="font-medium" to={`/user/${author.uid}`}>
