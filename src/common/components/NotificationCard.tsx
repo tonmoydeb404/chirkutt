@@ -3,11 +3,11 @@ import { HashLink } from "react-router-hash-link";
 import iconList from "../../lib/iconList";
 import { NotificationType } from "../../types/NotificationType";
 
-type NotificationBoxType = {
+type NotificationCardType = {
   readNotif: () => {};
 } & NotificationType;
 
-const NotificationBox = ({
+const NotificationCard = ({
   id,
   path,
   text,
@@ -15,7 +15,7 @@ const NotificationBox = ({
   status,
   createdAt,
   readNotif,
-}: NotificationBoxType) => {
+}: NotificationCardType) => {
   return (
     <div
       className="flex items-center py-3 px-3 box rounded gap-3 group"
@@ -58,4 +58,4 @@ const NotificationBox = ({
   );
 };
 
-export default NotificationBox;
+export default NotificationCard;

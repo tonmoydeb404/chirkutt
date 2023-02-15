@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Helmet } from "react-helmet";
-import NotificationBox from "../common/components/NotificationBox";
+import NotificationCard from "../common/components/NotificationCard";
+import NotificationCardSkeleton from "../common/components/skeletons/NotificationCardSkeleton";
 import { useAuth } from "../common/outlet/PrivateOutlet";
 import {
   useLazyGetNotificationsQuery,
@@ -89,7 +90,7 @@ const Notifications = () => {
                 if (!notif) return null;
 
                 return (
-                  <NotificationBox
+                  <NotificationCard
                     key={notif.id}
                     {...notif}
                     readNotif={async () => await handleReadNotificaton(notif)}
@@ -98,9 +99,16 @@ const Notifications = () => {
               })
             : null}
 
-          {allNotifications.isLoading ? "loading..." : null}
-          {allNotifications.isSuccess &&
-          !Object.keys(allNotifications.data).length
+          {allNotifications.isLoading || !allNotifications.data ? (
+            <>
+              <NotificationCardSkeleton />
+              <NotificationCardSkeleton />
+              <NotificationCardSkeleton />
+              <NotificationCardSkeleton />
+            </>
+          ) : null}
+
+          {allNotifications.isSuccess && !allNotifications.data
             ? "nothing here"
             : null}
           {allNotifications.isError ? "something wents to wrong" : null}
