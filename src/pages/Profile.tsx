@@ -8,14 +8,14 @@ import PostCardSekeleton from "../common/components/skeletons/PostCardSkeleton";
 import ProfileCardSkeleton from "../common/components/skeletons/ProfileCardSkeleton";
 import StatCardSkeleton from "../common/components/skeletons/StatCardSkeleton";
 import useUserPosts from "../common/hooks/useUserPosts";
-import { useAuth } from "../common/outlet/PrivateOutlet";
+import { usePrivateAuth } from "../common/outlet/PrivateOutlet";
 import { openPostForm } from "../features/postFormSlice";
 import iconList from "../lib/iconList";
 import { useLazyGetUserQuery } from "../services/usersApi";
 
 const Profile = () => {
   const dispatch = useAppDispatch();
-  const auth = useAuth();
+  const auth = usePrivateAuth();
   const [getUser, user] = useLazyGetUserQuery();
   const { posts, isLoading, isError } = useUserPosts(auth?.user?.uid);
 

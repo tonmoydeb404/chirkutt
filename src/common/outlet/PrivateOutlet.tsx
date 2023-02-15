@@ -16,4 +16,4 @@ const PrivateOutlet = () => {
 export default PrivateOutlet;
 
 // context
-export const useAuth = () => useOutletContext<AuthType>();
+export const usePrivateAuth = () => useOutletContext<AuthType>();

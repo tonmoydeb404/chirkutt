@@ -4,10 +4,10 @@ import { useGetAllPostsQuery } from "../../services/postsApi";
 import { useLazyGetSavedPostsQuery } from "../../services/savedApi";
 import { useGetAllUsersQuery } from "../../services/usersApi";
 import { PostDetailsType } from "../../types/PostType";
-import { useAuth } from "../outlet/PrivateOutlet";
+import { usePrivateAuth } from "../outlet/PrivateOutlet";
 
 const usePosts = () => {
-  const auth = useAuth();
+  const auth = usePrivateAuth();
   const posts = useGetAllPostsQuery();
   const comments = useGetAllCommentsQuery({});
   const users = useGetAllUsersQuery({});

@@ -8,14 +8,14 @@ import PostCardSekeleton from "../common/components/skeletons/PostCardSkeleton";
 import PostCommentSekeleton from "../common/components/skeletons/PostCommentSkeleton";
 import usePostComments from "../common/hooks/usePostComments";
 import usePosts from "../common/hooks/usePosts";
-import { useAuth } from "../common/outlet/PrivateOutlet";
+import { usePrivateAuth } from "../common/outlet/PrivateOutlet";
 import { PostDetailsType } from "../types/PostType";
 
 const Post = () => {
   const { id } = useParams();
   if (!id) return <Navigate to={"/404"} />;
 
-  const auth = useAuth();
+  const auth = usePrivateAuth();
   const { posts, isLoading, isError } = usePosts();
   const {
     comments,

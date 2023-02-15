@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import * as yup from "yup";
 import { useAppDispatch } from "../../app/hooks";
 import InputGroup from "../../common/components/Forms/InputGroup";
+import { usePublicAuth } from "../../common/outlet/PublicOutlet";
 import { authSignIn } from "../../features/auth/authSlice";
 import { signup } from "../../lib/auth";
 import iconList from "../../lib/iconList";
@@ -20,6 +21,7 @@ type SignUpForm = {
 };
 
 const SignUp = () => {
+  const auth = usePublicAuth();
   const dispatch = useAppDispatch();
   const [viewPass, setViewPass] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<null | string>(null);
@@ -43,6 +45,9 @@ const SignUp = () => {
       setErrorMsg(error);
     }
   };
+
+  // auth status
+  const isLoggedin = ["AUTHORIZED", "LOADING"].includes(auth.status);
 
   return (
     <>
@@ -100,6 +105,7 @@ const SignUp = () => {
                 onChange={handleChange}
                 errorText={errors.name}
                 onBlur={handleBlur}
+                disabled={isLoggedin}
               />
               <InputGroup
                 id="email"
@@ -110,6 +116,7 @@ const SignUp = () => {
                 onChange={handleChange}
                 errorText={errors.email}
                 onBlur={handleBlur}
+                disabled={isLoggedin}
               />
               <div className={`input-group`} data-invalid={!!errors.gender}>
                 <div className="input-group_header">
@@ -172,6 +179,7 @@ const SignUp = () => {
                 onChange={handleChange}
                 errorText={errors.password}
                 onBlur={handleBlur}
+                disabled={isLoggedin}
               >
                 <button
                   type="button"
@@ -191,13 +199,15 @@ const SignUp = () => {
                 onChange={handleChange}
                 errorText={errors.confirmPassword}
                 onBlur={handleBlur}
+                disabled={isLoggedin}
               />
 
               <button
                 className="btn btn-primary max-w-[100px] justify-center mt-5"
                 type="submit"
+                disabled={isLoggedin}
               >
-                Join
+                {isLoggedin ? "Loading..." : "Join"}
               </button>
               <div className="flex items-center gap-2 font-normal text-sm">
                 <p>already have a account?</p>

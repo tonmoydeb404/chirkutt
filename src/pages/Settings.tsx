@@ -6,7 +6,7 @@ import * as yup from "yup";
 import { useAppDispatch } from "../app/hooks";
 import InputGroup from "../common/components/Forms/InputGroup";
 import TextGroup from "../common/components/Forms/TextGroup";
-import { useAuth } from "../common/outlet/PrivateOutlet";
+import { usePrivateAuth } from "../common/outlet/PrivateOutlet";
 import { authSignIn } from "../features/auth/authSlice";
 import iconList from "../lib/iconList";
 import {
@@ -18,7 +18,7 @@ const Settings = () => {
   const [getUser, user] = useLazyGetUserQuery();
   const [updateUser, result] = useUpdateUserMutation();
   const dispatch = useAppDispatch();
-  const auth = useAuth();
+  const auth = usePrivateAuth();
 
   // trigger get saved post
   useEffect(() => {

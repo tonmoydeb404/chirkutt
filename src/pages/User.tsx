@@ -1,20 +1,19 @@
 import { useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { Navigate, useParams } from "react-router-dom";
-import { useAppSelector } from "../app/hooks";
 import PostCard from "../common/components/PostCard";
 import ProfileCard from "../common/components/ProfileCard";
 import PostCardSekeleton from "../common/components/skeletons/PostCardSkeleton";
 import ProfileCardSkeleton from "../common/components/skeletons/ProfileCardSkeleton";
 import useUserPosts from "../common/hooks/useUserPosts";
-import { selectAuth } from "../features/auth/authSlice";
+import { usePrivateAuth } from "../common/outlet/PrivateOutlet";
 import { useLazyGetUserQuery } from "../services/usersApi";
 
 const User = () => {
   const { uid } = useParams();
   // navigate to error page
   if (!uid) return <Navigate to={"/404"}></Navigate>;
-  const auth = useAppSelector(selectAuth);
+  const auth = usePrivateAuth();
   const [getUser, user] = useLazyGetUserQuery();
   const { posts, isLoading, isError } = useUserPosts(uid);
 

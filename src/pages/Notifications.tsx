@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Helmet } from "react-helmet";
 import NotificationCard from "../common/components/NotificationCard";
 import NotificationCardSkeleton from "../common/components/skeletons/NotificationCardSkeleton";
-import { useAuth } from "../common/outlet/PrivateOutlet";
+import { usePrivateAuth } from "../common/outlet/PrivateOutlet";
 import {
   useLazyGetNotificationsQuery,
   useReadNotificationsMutation,
@@ -13,7 +13,7 @@ import {
 } from "../types/NotificationType";
 
 const Notifications = () => {
-  const auth = useAuth();
+  const auth = usePrivateAuth();
   const [getNotifications, allNotifications] = useLazyGetNotificationsQuery();
   const [readNotifications] = useReadNotificationsMutation();
 
