@@ -8,7 +8,7 @@ type userCardType = {
 
 const UserCard = ({ title, uid, avatar }: userCardType) => {
   return (
-    <div className="flex items-center gap-2 dark:bg-neutral-800 dark:border-neutral-700 p-0 md:p-2 border border-neutral-200 rounded shadow-sm">
+    <div className="box flex items-center gap-2 p-0 md:p-2 rounded">
       <Link to={`/user/${uid}`} className="inline-block">
         <img
           src={avatar}

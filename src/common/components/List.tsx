@@ -5,7 +5,7 @@ import type { ListPropsType } from "../../types/ListType";
 const List = ({ items }: ListPropsType) => {
   return items && items.length ? (
     <>
-      <ul className="flex flex-col border border-neutral-200 dark:bg-neutral-800 dark:border-neutral-700 p-1 md:p-2 rounded gap-0.5 shadow-sm">
+      <ul className="box flex flex-col p-1 md:p-2 rounded gap-0.5">
         {items.map((item) => (
           <li
             key={item.title}

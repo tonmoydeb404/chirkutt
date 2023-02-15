@@ -11,7 +11,7 @@ const Navbar = ({ auth }: { auth: AuthType }) => {
   const theme = useAppSelector(selectTheme);
 
   return (
-    <nav className="py-2.5 bg-neutral-50 dark:bg-neutral-900 border-b border-b-neutral-200 dark:border-b-neutral-800 ">
+    <nav className="py-2.5 box shadow-sm border-0 border-b">
       <div className="container flex items-center gap-2">
         {/* brand */}
         <Link to={"/"} className="text-xl font-semibold">
