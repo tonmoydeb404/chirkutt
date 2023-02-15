@@ -49,7 +49,7 @@ const MobileMenu = ({
               key={link.path} // TODO: make badge classes
               className={`inline-flex ${
                 link?.badge === "WARNING"
-                  ? "relative after:absolute after:top-5 after:left-2.5 after:w-2 after:h-2 after:rounded-full after:overflow-hidden after:bg-warning-400"
+                  ? "relative after:absolute after:top-5 after:left-2.5 after:w-2 after:h-2 after:rounded-full after:overflow-hidden after:bg-warning-400 after:animate-bounce"
                   : ""
               }`}
             >
