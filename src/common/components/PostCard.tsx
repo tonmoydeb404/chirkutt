@@ -22,14 +22,7 @@ import {
 } from "../../services/savedApi";
 import { AuthUserType } from "../../types/AuthType";
 import { NotificationType } from "../../types/NotificationType";
-import { PostType } from "../../types/PostType";
-import { UserType } from "../../types/UserType";
-
-type PostCardType = {
-  comments: number;
-  isSaved: boolean;
-  author: UserType;
-} & PostType;
+import { PostDetailsType, PostType } from "../../types/PostType";
 
 const PostCard = ({
   id,
@@ -41,7 +34,7 @@ const PostCard = ({
   authorUID,
   comments,
   isSaved,
-}: PostCardType) => {
+}: PostDetailsType) => {
   const { user: authUser, status } = useAppSelector(selectAuth);
   const isAuthorized = authUser?.uid === author.uid;
   const [deletePost, result] = useDeletePostMutation();
@@ -260,7 +253,7 @@ const PostCard = ({
           </span>
         </button>
         <Link to={`/post/${id}`} className="btn px-2 py-1.5 btn-theme">
-          {comments}
+          {comments.length}
           <span className="text-base">{iconList.comment}</span>
         </Link>
 
