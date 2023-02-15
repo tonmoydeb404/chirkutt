@@ -5,16 +5,14 @@ import { useAppSelector } from "../../app/hooks";
 import { selectAuth } from "../../features/auth/authSlice";
 import { useDeleteCommentMutation } from "../../services/commentsApi";
 import { useRemoveNotificationsMutation } from "../../services/notificationsApi";
-import { CommentType } from "../../types/CommentType";
-import { UserType } from "../../types/UserType";
+import { CommentDetailsType, CommentType } from "../../types/CommentType";
 import ReplayForm from "./ReplayForm";
 
 type PostCommentProps = {
-  author: UserType;
-  children?: ReactNode;
-  replay: boolean;
   postAuthorUID: string;
-} & CommentType;
+  replay: boolean;
+  children?: ReactNode;
+} & CommentDetailsType;
 
 const PostComment = ({
   author,
@@ -23,7 +21,7 @@ const PostComment = ({
   postID,
   text,
   createdAt,
-  replay = false,
+  replay,
   authorUID,
   postAuthorUID,
   parentID,
