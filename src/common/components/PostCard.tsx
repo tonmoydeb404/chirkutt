@@ -235,7 +235,7 @@ const PostCard = ({
       </section>
       {/* body part */}
       <section className="flex flex-col mb-3">
-        <p className="text-base">{text}</p>
+        <p className="text-base whitespace-pre-line">{text}</p>
       </section>
       {/* footer part */}
       <section className="flex items-center gap-1">
