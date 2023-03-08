@@ -31,7 +31,7 @@ const SearchBox = () => {
               id="query"
               type="text"
               name="query"
-              className="w-full  text-sm pr-4 rounded bg-neutral-100 dark:bg-neutral-700/50 focus:outline-none border border-neutral-300 dark:border-neutral-700  focus:ring-1 focus:ring-primary-300 dark:focus:ring-primary-500 dark:placeholder:text-neutral-400"
+              className="w-full  text-sm pr-4 rounded bg-neutral-50 dark:bg-neutral-700/50 focus:outline-none border border-neutral-300 dark:border-neutral-700  focus:ring-1 focus:ring-primary-300 dark:focus:ring-primary-500 dark:placeholder:text-neutral-400"
               placeholder="search here..."
               value={values.query}
               onChange={handleChange}
