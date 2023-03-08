@@ -7,6 +7,7 @@ import {
   getDoc,
   getDocs,
   onSnapshot,
+  orderBy,
   query,
   setDoc,
   updateDoc,
@@ -59,11 +60,18 @@ export const createDocument = (
 /* ############################### */
 
 // read collection data
-export const readCollection = <T>(collectionName: string) =>
+export const readCollection = <T>(
+  collectionName: string,
+  orders: [keyof T, "desc" | "asc"][] = []
+) =>
   new Promise<T[]>(async (resolve, reject) => {
     try {
       const data: T[] = [];
-      const querySnapshot = await getDocs(collection(db, collectionName));
+      const ordersBy = orders.map((order) =>
+        orderBy(order[0] as string, order[1] || "asc")
+      );
+      const collectionRef = collection(db, collectionName);
+      const querySnapshot = await getDocs(query(collectionRef, ...ordersBy));
       querySnapshot.forEach((doc) => {
         data.push(doc.data() as T);
       });
@@ -75,15 +83,23 @@ export const readCollection = <T>(collectionName: string) =>
   });
 // read collection data in realtime
 export const readCollectionRealtime = <T>(
-  name: string,
+  collectionName: string,
+  orders: [keyof T, "desc" | "asc"][] = [],
   callback: (data: T[]) => void
 ): Unsubscribe => {
-  const unsubscribe = onSnapshot(collection(db, name), (snapshot) => {
-    let data: T[] = [];
-    data = snapshot.docs.map((docRef) => docRef.data() as T);
+  const ordersBy = orders.map((order) =>
+    orderBy(order[0] as string, order[1] || "asc")
+  );
+  const collectionRef = collection(db, collectionName);
+  const unsubscribe = onSnapshot(
+    query(collectionRef, ...ordersBy),
+    (snapshot) => {
+      let data: T[] = [];
+      data = snapshot.docs.map((docRef) => docRef.data() as T);
 
-    callback(data);
-  });
+      callback(data);
+    }
+  );
 
   return unsubscribe;
 };
@@ -136,14 +152,22 @@ export const readDocumentRealtime = <T>(
 // read query data
 export const readQuery = <T extends { [key: string]: any }>(
   collectionName: string,
-  queryParams: QueryParam<T>[]
+  queryParams: QueryParam<T>[],
+  orders: [keyof T, "desc" | "asc"][] = []
 ) =>
   new Promise<T[]>(async (resolve, reject) => {
     try {
       const qParamList = queryParams.map((i) =>
         where(i.key as string, i.condition, i.value)
       );
-      const queryRef = query(collection(db, collectionName), ...qParamList);
+      const ordersBy = orders.map((order) =>
+        orderBy(order[0] as string, order[1] || "asc")
+      );
+      const queryRef = query(
+        collection(db, collectionName),
+        ...qParamList,
+        ...ordersBy
+      );
       const snapshot = await getDocs(queryRef);
       const data: T[] = [];
       snapshot.forEach((doc) => {
@@ -160,12 +184,20 @@ export const readQuery = <T extends { [key: string]: any }>(
 export const readQueryRealtime = <T>(
   collectionName: string,
   queryParams: QueryParam<T>[],
+  orders: [keyof T, "desc" | "asc"][] = [],
   callback: (data: T[]) => void
 ): Unsubscribe => {
   const qParamList = queryParams.map((i) =>
     where(i.key as string, i.condition, i.value)
   );
-  const queryRef = query(collection(db, collectionName), ...qParamList);
+  const ordersBy = orders.map((order) =>
+    orderBy(order[0] as string, order[1] || "asc")
+  );
+  const queryRef = query(
+    collection(db, collectionName),
+    ...qParamList,
+    ...ordersBy
+  );
   const unsubscribe = onSnapshot(queryRef, (snapshot) => {
     let data: T[] = [];
     snapshot.forEach((doc) => {

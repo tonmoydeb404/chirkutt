@@ -71,7 +71,7 @@ const PostForm = () => {
       const newPost: PostType = {
         id: nanoid(),
         text,
-        createdAt: new Date().toISOString(),
+        createdAt: Date.now(),
         modifiedAt: null,
         likes: [],
         authorUID: user.uid,
@@ -85,7 +85,7 @@ const PostForm = () => {
   const postUpdateHandler = async (text: string, id: string) => {
     try {
       const postUpdates = {
-        modifiedAt: new Date().toISOString(),
+        modifiedAt: Date.now(),
         text,
       };
       await updatePost({ id, updates: postUpdates });

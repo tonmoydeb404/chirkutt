@@ -3,16 +3,16 @@ import PostCardSekeleton from "../common/components/skeletons/PostCardSkeleton";
 import usePosts from "../common/hooks/usePosts";
 
 const Home = () => {
-  const { posts, isLoading, isError } = usePosts();
+  const { posts, isLoading, isError, error } = usePosts();
 
   if (isError) {
     return <p>something wents to wrong</p>;
   }
 
-  if (posts && !isLoading) {
+  if (posts instanceof Array && !isLoading) {
     return (
       <div className="flex flex-col gap-3">
-        {posts?.length
+        {posts.length
           ? posts?.map((post) => {
               return (
                 <PostCard
@@ -24,7 +24,7 @@ const Home = () => {
                 />
               );
             })
-          : "no more posts"}
+          : "nothing is here"}
       </div>
     );
   }

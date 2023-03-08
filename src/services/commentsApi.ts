@@ -42,6 +42,7 @@ export const commentsApi = createApi({
 
           unsubscribe = readCollectionRealtime<CommentType>(
             COMMENTS,
+            [],
             (data) => {
               updateCachedData((draft) => {
                 // sorting by time
@@ -94,17 +95,10 @@ export const commentsApi = createApi({
           unsubscribe = readQueryRealtime<CommentType>(
             COMMENTS,
             [{ key: "postID", value: id, condition: "==" }],
+            [["createdAt", "asc"]],
             (response) => {
               updateCachedData((draft) => {
-                // sorting by time
-                const sortedResponse = response.sort((a, b) => {
-                  return (
-                    new Date(b.createdAt).getTime() -
-                    new Date(a.createdAt).getTime()
-                  );
-                });
-
-                draft = arrayToObject<CommentType>(sortedResponse, "id");
+                draft = arrayToObject<CommentType>(response, "id");
 
                 return draft;
               });

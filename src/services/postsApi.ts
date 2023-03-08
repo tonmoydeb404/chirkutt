@@ -24,19 +24,16 @@ export const postsApi = createApi({
         try {
           await cacheDataLoaded;
 
-          unsubscribe = readCollectionRealtime<PostType>(POSTS, (data) => {
-            updateCachedData((draft) => {
-              // sorting by time
-              const sortedResponse = data.sort((a, b) => {
-                return (
-                  new Date(b.createdAt).getTime() -
-                  new Date(a.createdAt).getTime()
-                );
+          unsubscribe = readCollectionRealtime<PostType>(
+            POSTS,
+            [["createdAt", "desc"]],
+            (data) => {
+              updateCachedData((draft) => {
+                draft = arrayToObject<PostType>(data, "id");
+                return draft;
               });
-              draft = arrayToObject<PostType>(sortedResponse, "id");
-              return draft;
-            });
-          });
+            }
+          );
         } catch (error) {
           console.log(error);
         }

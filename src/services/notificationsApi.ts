@@ -49,16 +49,10 @@ export const notificationsApi = createApi({
           unsubscribe = readQueryRealtime<NotificationType>(
             NOTIFICATIONS,
             [{ key: "userID", condition: "==", value: userID }],
+            [["createdAt", "desc"]],
             (response) => {
               updateCachedData((draft) => {
-                const sortedResponse = response.sort((a, b) => {
-                  return (
-                    new Date(b.createdAt).getTime() -
-                    new Date(a.createdAt).getTime()
-                  );
-                });
-
-                draft = arrayToObject<NotificationType>(sortedResponse, "id");
+                draft = arrayToObject<NotificationType>(response, "id");
 
                 return draft;
               });

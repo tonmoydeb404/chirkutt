@@ -1,4 +1,4 @@
-import { formatDistanceToNow, parseISO } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import { useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
@@ -207,7 +207,7 @@ const PostCard = ({
               {author.name}
             </Link>
             <span className="text-xs inline-block opacity-70">
-              {formatDistanceToNow(parseISO(createdAt))} ago
+              {formatDistanceToNow(createdAt)} ago
             </span>
           </div>
         </div>

@@ -6,7 +6,6 @@ chirkutt is a kind of social media app. where you can share your thoughts by wri
 
 ### next steps
 
-- change sorting algorithm
 - change settings page
 - delete account
 - change avatar

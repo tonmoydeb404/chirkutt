@@ -35,8 +35,7 @@ const usePosts = () => {
       posts.isSuccess &&
       users.isSuccess &&
       comments.isSuccess &&
-      posts.data &&
-      Object.keys(posts.data).length
+      typeof posts.data == "object"
     ) {
       // empty array
       data = [];

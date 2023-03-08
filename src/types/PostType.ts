@@ -1,8 +1,8 @@
 export type PostType = {
   id: string;
   text: string;
-  createdAt: string;
-  modifiedAt: string | null;
+  createdAt: number;
+  modifiedAt: number | null;
   likes: (string | number)[];
   authorUID: string;
 };
@@ -14,8 +14,8 @@ export type PostDocumentType = {
 export type PostDetailsType = {
   id: string;
   text: string;
-  createdAt: string;
-  modifiedAt: string | null;
+  createdAt: number;
+  modifiedAt: number | null;
   likes: (string | number)[];
   authorUID: string;
   author: {
