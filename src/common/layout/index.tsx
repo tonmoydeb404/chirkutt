@@ -45,10 +45,10 @@ const Layout = ({ children, sidebar }: propTypes) => {
     <>
       <Navbar auth={auth} />
       <div className="container py-5 flex gap-3 md:gap-5 relative">
-        {sidebar ? <Sidebar notifications={isNotReaded} auth={auth} /> : null}
         <div className="flex-1">
           {children ? children : <Outlet context={auth} />}
         </div>
+        {sidebar ? <Sidebar notifications={isNotReaded} auth={auth} /> : null}
       </div>
       <MobileMenu notifications={isNotReaded} auth={auth} />
       <Footer />
