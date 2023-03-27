@@ -155,17 +155,6 @@ const Info = () => {
                   errorText={errors.name}
                   onBlur={handleBlur}
                 />
-                <InputGroup
-                  label="Email"
-                  id="email"
-                  containerClass="max-w-full"
-                  value={values.email}
-                  onChange={handleChange}
-                  errorText={errors.email}
-                  onBlur={handleBlur}
-                  readOnly
-                  disabled
-                />
                 <TextGroup
                   label="Bio"
                   id="bio"
