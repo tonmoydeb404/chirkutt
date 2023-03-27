@@ -20,6 +20,7 @@
     "react-helmet": "^6.1.0",
     "react-hot-toast": "^2.4.0",
     "react-icons": "^4.7.1",
+    "react-image-crop": "^10.0.9",
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.6.1",
     "react-router-hash-link": "^2.4.3",
