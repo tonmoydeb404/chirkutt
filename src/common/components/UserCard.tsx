@@ -9,12 +9,10 @@ type userCardType = {
 const UserCard = ({ title, uid, avatar }: userCardType) => {
   return (
     <div className="box flex items-center gap-2 p-0 md:p-2 rounded">
-      <Link to={`/profile`} className="inline-block">
-        <img
-          src={avatar}
-          alt={title}
-          className="w-full md:w-[45px] inline-block rounded"
-        />
+      <Link to={`/profile`} className="w-full md:w-[41px]">
+        <div className="aspect-w-1 aspect-h-1 w-full rounded overflow-hidden">
+          <img src={avatar} alt={title} className="object-cover" />
+        </div>
       </Link>
 
       <div className="hidden md:flex flex-col gap-0">

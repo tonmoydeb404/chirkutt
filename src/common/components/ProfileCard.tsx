@@ -11,7 +11,11 @@ type ProfileCardType = {
 const ProfileCard = ({ avatar, name, bio, email }: ProfileCardType) => {
   return (
     <div className="flex flex-col sm:flex-row items-start gap-3 box p-3 sm:p-4 rounded">
-      <img src={avatar} alt={name} className="w-[60px] rounded" />
+      <div className="w-[70px]">
+        <div className="aspect-w-1 aspect-h-1 w-full rounded overflow-hidden">
+          <img src={avatar} alt={name} className="object-cover" />
+        </div>
+      </div>
 
       <div className="flex flex-col gap-1 w-full">
         <div className="flex items-center gap-2">
