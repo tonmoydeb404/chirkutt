@@ -13,12 +13,14 @@ import Post from "../pages/Post";
 import Profile from "../pages/Profile";
 import Saved from "../pages/Saved";
 import Search from "../pages/Search";
-import Settings from "../pages/Settings";
 import User from "../pages/User";
 import Reset from "../pages/auth/Reset";
 import SignIn from "../pages/auth/SignIn";
 import SignUp from "../pages/auth/SignUp";
 import NotFound from "../pages/error/NotFound";
+import Settings from "../pages/settings";
+import Avatar from "../pages/settings/Avatar";
+import Info from "../pages/settings/Info";
 import { store } from "./store";
 
 const App = () => {
@@ -39,7 +41,11 @@ const App = () => {
               <Route element={<Layout sidebar={true} />}>
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/notifications" element={<Notifications />} />
-                <Route path="/settings" element={<Settings />} />
+                <Route path="/settings">
+                  <Route index element={<Settings />} />
+                  <Route path="info" element={<Info />} />
+                  <Route path="avatar" element={<Avatar />} />
+                </Route>
                 <Route path="/saved" element={<Saved />} />
               </Route>
             </Route>

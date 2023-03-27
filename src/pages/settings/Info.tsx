@@ -1,28 +1,30 @@
 import { Formik } from "formik";
 import { useEffect } from "react";
 import { Helmet } from "react-helmet";
-import { Link } from "react-router-dom";
+import { BiArrowBack } from "react-icons/bi";
+import { Link, useNavigate } from "react-router-dom";
 import * as yup from "yup";
-import { useAppDispatch } from "../app/hooks";
-import InputGroup from "../common/components/Forms/InputGroup";
-import TextGroup from "../common/components/Forms/TextGroup";
-import { usePrivateAuth } from "../common/outlet/PrivateOutlet";
-import { authSignIn } from "../features/auth/authSlice";
-import iconList from "../lib/iconList";
+import { useAppDispatch } from "../../app/hooks";
+import InputGroup from "../../common/components/Forms/InputGroup";
+import TextGroup from "../../common/components/Forms/TextGroup";
+import { usePrivateAuth } from "../../common/outlet/PrivateOutlet";
+import { authSignIn } from "../../features/auth/authSlice";
+import iconList from "../../lib/iconList";
 import {
   useLazyGetUserQuery,
   useUpdateUserMutation,
-} from "../services/usersApi";
+} from "../../services/usersApi";
 
-const Settings = () => {
+const Info = () => {
   const [getUser, user] = useLazyGetUserQuery();
   const [updateUser, result] = useUpdateUserMutation();
   const dispatch = useAppDispatch();
   const auth = usePrivateAuth();
+  const navigate = useNavigate();
 
   // trigger get saved post
   useEffect(() => {
-    const fetchSavedPost = async () => {
+    const fetchUser = async () => {
       if (auth?.user) {
         try {
           await getUser(auth.user.uid).unwrap();
@@ -32,7 +34,7 @@ const Settings = () => {
       }
     };
 
-    fetchSavedPost();
+    fetchUser();
   }, [auth]);
 
   const onSubmitHandler = async ({
@@ -73,7 +75,7 @@ const Settings = () => {
     return (
       <>
         <Helmet>
-          <title>Settings - Chirkutt</title>
+          <title>Edit Info - Chirkutt</title>
         </Helmet>
         <Formik
           initialValues={{
@@ -100,10 +102,16 @@ const Settings = () => {
             initialValues,
           }) => (
             <form onSubmit={handleSubmit}>
-              <div className="flex items-center mb-5 justify-between">
-                <h3 className="text-lg font-medium">Settings</h3>
+              <div className="flex items-center mb-5 gap-2">
+                <button
+                  onClick={() => navigate(-1)}
+                  className="text-primary-600"
+                >
+                  <BiArrowBack />
+                </button>
+                <h3 className="text-lg font-medium">Edit Info</h3>
 
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 ml-auto">
                   {initialValues !== values ? (
                     <button className="btn btn-sm btn-primary" type="submit">
                       save <span>{iconList.check}</span>
@@ -178,4 +186,4 @@ const Settings = () => {
   return <p>loading...</p>;
 };
 
-export default Settings;
+export default Info;

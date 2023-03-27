@@ -1,8 +1,11 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { USERS } from "../constants/firebase.constant";
+import { updateAuthPhoto } from "../lib/auth";
 import { readCollection, readDocument, updateDocument } from "../lib/database";
+import { uploadImage } from "../lib/storage";
 import { UserType } from "../types/UserType";
 import { arrayToObject } from "../utilities/arrayToObject";
+import { extractAuthUser } from "../utilities/extractAuthUser";
 
 export const usersApi = createApi({
   reducerPath: "usersApi",
@@ -63,6 +66,27 @@ export const usersApi = createApi({
       },
       invalidatesTags: ["User"],
     }),
+    updateAvatar: builder.mutation({
+      queryFn: async ({ uid, file }: { uid: string; file: File }) => {
+        try {
+          // upload imgage and get download user
+          const imageUrl = await uploadImage(`avatars/${uid}`, file);
+          // update user document
+          await updateDocument<UserType>(USERS, uid, {
+            avatar: imageUrl,
+          });
+          // update user auth
+          const authUser = await updateAuthPhoto(imageUrl);
+          const updatedUser = extractAuthUser(authUser);
+          if (!updatedUser) throw "user is not valid";
+
+          return { data: { url: imageUrl, updatedUser } };
+        } catch (error) {
+          return { error };
+        }
+      },
+      invalidatesTags: ["User"],
+    }),
   }),
 });
 
@@ -72,4 +96,5 @@ export const {
   useUpdateUserMutation,
   useGetAllUsersQuery,
   useLazyGetUserQuery,
+  useUpdateAvatarMutation,
 } = usersApi;

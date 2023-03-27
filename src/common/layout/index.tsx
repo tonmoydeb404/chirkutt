@@ -17,6 +17,7 @@ type propTypes = {
 const Layout = ({ children, sidebar }: propTypes) => {
   const auth = useAppSelector(selectAuth);
   const [getNotifications, allNotifications] = useLazyGetNotificationsQuery();
+
   // trigger get saved post
   useEffect(() => {
     const fetchSavedPost = async () => {

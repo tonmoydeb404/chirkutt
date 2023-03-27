@@ -9,7 +9,7 @@ type userCardType = {
 const UserCard = ({ title, uid, avatar }: userCardType) => {
   return (
     <div className="box flex items-center gap-2 p-0 md:p-2 rounded">
-      <Link to={`/user/${uid}`} className="inline-block">
+      <Link to={`/profile`} className="inline-block">
         <img
           src={avatar}
           alt={title}
@@ -18,7 +18,7 @@ const UserCard = ({ title, uid, avatar }: userCardType) => {
       </Link>
 
       <div className="hidden md:flex flex-col gap-0">
-        <Link to={`/user/${uid}`} className="text-lg font-semibold">
+        <Link to={`/profile`} className="text-lg font-semibold">
           {title}
         </Link>
       </div>
