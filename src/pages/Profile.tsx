@@ -9,7 +9,7 @@ import ProfileCardSkeleton from "../common/components/skeletons/ProfileCardSkele
 import StatCardSkeleton from "../common/components/skeletons/StatCardSkeleton";
 import useUserPosts from "../common/hooks/useUserPosts";
 import { usePrivateAuth } from "../common/outlet/PrivateOutlet";
-import { openPostForm } from "../features/postFormSlice";
+import { createPostModal } from "../features/postModal/postModalSlice";
 import iconList from "../lib/iconList";
 import { useLazyGetUserQuery } from "../services/usersApi";
 
@@ -110,7 +110,7 @@ const Profile = () => {
             {user.isSuccess && auth?.user?.uid === user.data.uid ? (
               <button
                 className="btn btn-sm btn-primary"
-                onClick={() => dispatch(openPostForm({ type: "CREATE" }))}
+                onClick={() => dispatch(createPostModal())}
               >
                 add new <span>{iconList.add}</span>
               </button>

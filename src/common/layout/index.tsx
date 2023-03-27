@@ -3,7 +3,8 @@ import { Outlet } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { selectAuth } from "../../features/auth/authSlice";
 import { useLazyGetNotificationsQuery } from "../../services/notificationsApi";
-import PostForm from "../components/PostForm";
+
+import PostModal from "../components/Post/Modal/PostModal";
 import Footer from "./Footer";
 import MobileMenu from "./MobileMenu";
 import Navbar from "./Navbar";
@@ -53,7 +54,7 @@ const Layout = ({ children, sidebar }: propTypes) => {
       </div>
       <MobileMenu notifications={isNotReaded} auth={auth} />
       <Footer />
-      <PostForm />
+      <PostModal />
     </>
   );
 };

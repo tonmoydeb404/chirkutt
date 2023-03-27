@@ -1,7 +1,7 @@
 // TODO: organize codes
 import { NavLink } from "react-router-dom";
 import { useAppDispatch } from "../../app/hooks";
-import { openPostForm } from "../../features/postFormSlice";
+import { createPostModal } from "../../features/postModal/postModalSlice";
 import { signout } from "../../lib/auth";
 import iconList from "../../lib/iconList";
 import { AuthType } from "../../types/AuthType";
@@ -21,7 +21,7 @@ const MobileMenu = ({
     { title: "Saved", path: "/saved", icon: "bookmarks" },
     {
       title: "New post",
-      action: () => dispatch(openPostForm({ type: "CREATE" })),
+      action: () => dispatch(createPostModal()),
       icon: "add",
     },
     {

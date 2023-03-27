@@ -1,5 +1,5 @@
 import { useAppDispatch } from "../../app/hooks";
-import { openPostForm } from "../../features/postFormSlice";
+import { createPostModal } from "../../features/postModal/postModalSlice";
 import { signout } from "../../lib/auth";
 import { AuthType } from "../../types/AuthType";
 import { ListItemType } from "../../types/ListType";
@@ -35,7 +35,7 @@ const Sidebar = ({
     { title: "Profile", path: "/profile", icon: "person" },
     {
       title: "New Post",
-      action: () => dispatch(openPostForm({ type: "CREATE" })),
+      action: () => dispatch(createPostModal()),
       icon: "add",
     },
     {

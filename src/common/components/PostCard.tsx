@@ -4,7 +4,7 @@ import { toast } from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectAuth } from "../../features/auth/authSlice";
-import { openPostForm } from "../../features/postFormSlice";
+import { updatePostModal } from "../../features/postModal/postModalSlice";
 import { showShare } from "../../features/share/shareSlice";
 import iconList from "../../lib/iconList";
 import {
@@ -83,7 +83,7 @@ const PostCard = ({
       likes,
       authorUID,
     };
-    dispatch(openPostForm({ type: "EDIT", value: post }));
+    dispatch(updatePostModal(post));
   };
   // handle save
   const handleBookmark = async () => {

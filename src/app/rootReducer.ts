@@ -1,7 +1,7 @@
 import { AnyAction, combineReducers } from "@reduxjs/toolkit";
 
 import { authSlice } from "../features/auth/authSlice";
-import { postFormReducer } from "../features/postFormSlice";
+import { postModalSlice } from "../features/postModal/postModalSlice";
 import { shareSlice } from "../features/share/shareSlice";
 import { themeSlice } from "../features/theme/themeSlice";
 import { commentsApi } from "../services/commentsApi";
@@ -13,7 +13,7 @@ import { usersApi } from "../services/usersApi";
 const appReducer = combineReducers({
   [themeSlice.name]: themeSlice.reducer,
   [shareSlice.name]: shareSlice.reducer,
-  post_form: postFormReducer,
+  [postModalSlice.name]: postModalSlice.reducer,
   [authSlice.name]: authSlice.reducer,
   [usersApi.reducerPath]: usersApi.reducer,
   [postsApi.reducerPath]: postsApi.reducer,
