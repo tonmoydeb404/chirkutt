@@ -67,6 +67,8 @@ const Avatar = () => {
       // updating local auth
       const user = response.updatedUser;
       dispatch(authSignIn(user));
+      // reset state
+      setAvatar(null);
     } catch (error) {
       console.log(error);
     }
