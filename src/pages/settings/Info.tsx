@@ -7,6 +7,7 @@ import * as yup from "yup";
 import { useAppDispatch } from "../../app/hooks";
 import InputGroup from "../../common/components/Forms/InputGroup";
 import TextGroup from "../../common/components/Forms/TextGroup";
+import StatusText from "../../common/components/StatusText";
 import { usePrivateAuth } from "../../common/outlet/PrivateOutlet";
 import { authSignIn } from "../../features/auth/authSlice";
 import iconList from "../../lib/iconList";
@@ -127,23 +128,14 @@ const Info = () => {
                 </div>
               </div>
 
-              {result.isError ? (
-                <p className="p-4 bg-error-600/30 rounded mb-10">
-                  {typeof result.error === "string"
-                    ? result.error
-                    : "something wents to wrong"}
-                </p>
-              ) : null}
-              {result.isLoading ? (
-                <p className="p-4 bg-warning-600/30 rounded mb-10">
-                  user updating...
-                </p>
-              ) : null}
-              {result.isSuccess ? (
-                <p className="p-4 bg-success-600/30 rounded mb-10">
-                  successfully updated.
-                </p>
-              ) : null}
+              <StatusText
+                isLoading={result.isLoading}
+                loadingText="updating user info!"
+                isError={result.isError}
+                errorText="something wents to wrong!"
+                isSuccess={result.isSuccess}
+                successText="successfully updated user info"
+              />
 
               <div className="flex flex-col gap-3 ">
                 <InputGroup
