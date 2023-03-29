@@ -1,7 +1,11 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { USERS } from "../constants/firebase.constant";
 import { updateAuthPhoto } from "../lib/auth";
-import { readCollection, readDocument, updateDocument } from "../lib/database";
+import {
+  readCollectionRealtime,
+  readDocument,
+  updateDocument,
+} from "../lib/database";
 import { uploadImage } from "../lib/storage";
 import { UserType } from "../types/UserType";
 import { arrayToObject } from "../utilities/arrayToObject";
@@ -10,28 +14,33 @@ import { extractAuthUser } from "../utilities/extractAuthUser";
 export const usersApi = createApi({
   reducerPath: "usersApi",
   baseQuery: fakeBaseQuery(),
-  tagTypes: ["User"],
   endpoints: (builder) => ({
     getAllUsers: builder.query({
-      queryFn: async () => {
+      queryFn: () => ({ data: {} }),
+      onCacheEntryAdded: async (
+        args,
+        { cacheDataLoaded, updateCachedData, cacheEntryRemoved }
+      ) => {
+        let unsubscribe = () => {};
         try {
-          const response = await readCollection<UserType>(USERS);
-          const data = arrayToObject(response, "uid");
-          return { data };
+          await cacheDataLoaded;
+
+          unsubscribe = readCollectionRealtime<UserType>(
+            USERS,
+            [["createdAt", "desc"]],
+            (data) => {
+              updateCachedData((draft) => {
+                draft = arrayToObject<UserType>(data, "uid");
+                return draft;
+              });
+            }
+          );
         } catch (error) {
-          return { error };
+          console.log(error);
         }
-      },
-      providesTags: (result) => {
-        return result
-          ? [
-              ...Object.keys(result).map((id) => ({
-                type: "User" as const,
-                id,
-              })),
-              "User",
-            ]
-          : ["User"];
+
+        await cacheEntryRemoved;
+        unsubscribe();
       },
     }),
     getUser: builder.query({
@@ -44,7 +53,6 @@ export const usersApi = createApi({
           return { error };
         }
       },
-      providesTags: ["User"],
     }),
     updateUser: builder.mutation({
       queryFn: async ({
@@ -64,7 +72,6 @@ export const usersApi = createApi({
           return { error };
         }
       },
-      invalidatesTags: ["User"],
     }),
     updateAvatar: builder.mutation({
       queryFn: async ({ uid, file }: { uid: string; file: File }) => {
@@ -85,7 +92,6 @@ export const usersApi = createApi({
           return { error };
         }
       },
-      invalidatesTags: ["User"],
     }),
   }),
 });
