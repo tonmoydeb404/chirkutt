@@ -7,7 +7,7 @@ import {
   updateDocument,
 } from "../lib/database";
 import { uploadImage } from "../lib/storage";
-import { UserType } from "../types/UserType";
+import { UserDocumentType, UserType } from "../types/UserType";
 import { arrayToObject } from "../utilities/arrayToObject";
 import { extractAuthUser } from "../utilities/extractAuthUser";
 
@@ -16,7 +16,7 @@ export const usersApi = createApi({
   baseQuery: fakeBaseQuery(),
   endpoints: (builder) => ({
     getAllUsers: builder.query({
-      queryFn: () => ({ data: {} }),
+      queryFn: () => ({ data: {} as UserDocumentType }),
       onCacheEntryAdded: async (
         args,
         { cacheDataLoaded, updateCachedData, cacheEntryRemoved }

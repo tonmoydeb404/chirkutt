@@ -7,3 +7,7 @@ export type UserType = {
   email: string;
   createdAt: string;
 };
+
+export type UserDocumentType = {
+  [key: string]: UserType;
+};
