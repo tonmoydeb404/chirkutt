@@ -19,8 +19,10 @@ import SignIn from "../pages/auth/SignIn";
 import SignUp from "../pages/auth/SignUp";
 import NotFound from "../pages/error/NotFound";
 import Settings from "../pages/settings";
-import Avatar from "../pages/settings/Avatar";
-import Info from "../pages/settings/Info";
+import ChangeAvatar from "../pages/settings/ChangeAvatar";
+import ChangeBio from "../pages/settings/ChangeBio";
+import ChangeName from "../pages/settings/ChangeName";
+import ChangePassword from "../pages/settings/ChangePassword";
 import { store } from "./store";
 
 const App = () => {
@@ -43,8 +45,10 @@ const App = () => {
                 <Route path="/notifications" element={<Notifications />} />
                 <Route path="/settings">
                   <Route index element={<Settings />} />
-                  <Route path="info" element={<Info />} />
-                  <Route path="avatar" element={<Avatar />} />
+                  <Route path="change-name" element={<ChangeName />} />
+                  <Route path="change-avatar" element={<ChangeAvatar />} />
+                  <Route path="change-bio" element={<ChangeBio />} />
+                  <Route path="change-password" element={<ChangePassword />} />
                 </Route>
                 <Route path="/saved" element={<Saved />} />
               </Route>

@@ -1,5 +1,11 @@
 import { Helmet } from "react-helmet";
-import { BiEdit, BiImage, BiReset, BiTrash } from "react-icons/bi";
+import {
+  BiImageAlt,
+  BiLockAlt,
+  BiRename,
+  BiText,
+  BiTrash,
+} from "react-icons/bi";
 import SettingsCard from "../../common/components/SettingsCard";
 
 const Settings = () => {
@@ -13,12 +19,25 @@ const Settings = () => {
 
       <div className="flex flex-col gap-1.5">
         <SettingsCard
-          to="/settings/avatar"
-          title="Change Avatar"
-          icon={BiImage}
+          to="/settings/change-name"
+          title="Change Name"
+          icon={BiRename}
         />
-        <SettingsCard to="/settings/info" title="Edit Info" icon={BiEdit} />
-        <SettingsCard to="/reset" title="Reset Password" icon={BiReset} />
+        <SettingsCard
+          to="/settings/change-avatar"
+          title="Change Avatar"
+          icon={BiImageAlt}
+        />
+        <SettingsCard
+          to="/settings/change-bio"
+          title="Change Bio"
+          icon={BiText}
+        />
+        <SettingsCard
+          to="/settings/change-password"
+          title="Change Password"
+          icon={BiLockAlt}
+        />
         <SettingsCard
           to="#"
           title="Delete Account"

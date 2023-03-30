@@ -28,7 +28,7 @@ const StatusText = ({
   return (
     <>
       {isError && show ? (
-        <p className="p-4 dark:bg-error-600/40 bg-error-600/50 rounded mb-10 relative flex items-center gap-1 flex-wrap">
+        <p className="p-4 dark:bg-error-600/40 bg-error-600/50 rounded mb-5 relative flex items-center gap-1 flex-wrap">
           <BiError />
           {errorText}
           <button
@@ -40,7 +40,7 @@ const StatusText = ({
         </p>
       ) : null}
       {isLoading && show ? (
-        <p className="p-4 bg-warning-500/60 dark:bg-warning-500/40 rounded mb-10 relative flex items-center gap-1 flex-wrap">
+        <p className="p-4 bg-warning-500/60 dark:bg-warning-500/40 rounded mb-5 relative flex items-center gap-1 flex-wrap">
           <BiLoader className="animate-spin" />
           {loadingText}
           <button
@@ -52,7 +52,7 @@ const StatusText = ({
         </p>
       ) : null}
       {isSuccess && show ? (
-        <p className="p-4 dark:bg-success-600/40 bg-success-600/50 rounded mb-10 relative flex items-center gap-1 flex-wrap">
+        <p className="p-4 dark:bg-success-600/40 bg-success-600/50 rounded mb-5 relative flex items-center gap-1 flex-wrap">
           <BiCheckDouble />
           {successText}
           <button

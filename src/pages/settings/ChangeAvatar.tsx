@@ -1,20 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet";
 import { toast } from "react-hot-toast";
-import { BiArrowBack, BiImageAlt } from "react-icons/bi";
+import { BiImageAlt } from "react-icons/bi";
 import ReactCrop, { Crop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../../app/hooks";
 import InputGroup from "../../common/components/Forms/InputGroup";
+import SettingsHeader from "../../common/components/Settings/SettingsHeader";
 import StatusText from "../../common/components/StatusText";
 import { usePrivateAuth } from "../../common/outlet/PrivateOutlet";
 import { authSignIn } from "../../features/auth/authSlice";
-import iconList from "../../lib/iconList";
 import { useUpdateAvatarMutation } from "../../services/usersApi";
 import { getDataUrl } from "../../utilities/getDataUrl";
 
-const Avatar = () => {
+const ChangeAvatar = () => {
   const auth = usePrivateAuth();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -149,23 +149,7 @@ const Avatar = () => {
 
       <form onSubmit={handleSubmit}>
         {/* header */}
-        <div className="flex items-center mb-5 gap-2">
-          <button onClick={() => navigate(-1)} className="text-primary-600">
-            <BiArrowBack />
-          </button>
-          <h3 className="text-lg font-medium">Change Avatar</h3>
-
-          <div className="flex items-center gap-1 ml-auto">
-            {isNewAvatar ? (
-              <button className="btn btn-sm btn-primary" type="submit">
-                save <span>{iconList.check}</span>
-              </button>
-            ) : null}
-            <Link to={"/settings"} className="btn btn-sm btn-theme">
-              cancel
-            </Link>
-          </div>
-        </div>
+        <SettingsHeader allow={!!isNewAvatar} title={"Change Avatar"} />
 
         <StatusText
           isLoading={avatarResult.isLoading}
@@ -221,6 +205,4 @@ const Avatar = () => {
   );
 };
 
-export default Avatar;
-
-// TODO: Refactor this code
+export default ChangeAvatar;

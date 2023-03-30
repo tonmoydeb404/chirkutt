@@ -94,3 +94,21 @@ export const updateAuthPhoto = (url: string) =>
       reject(errorMsg);
     }
   });
+
+type UpdateAuth = { photoURL?: string; displayName?: string };
+
+export const updateAuth = ({
+  photoURL = undefined,
+  displayName = undefined,
+}: UpdateAuth) =>
+  new Promise<User>(async (resolve, reject) => {
+    try {
+      if (!auth.currentUser) throw Error("authorization error");
+      await updateProfile(auth.currentUser, { photoURL, displayName });
+      await auth.currentUser.reload();
+      resolve(auth.currentUser);
+    } catch (error: any) {
+      const errorMsg = error.code || error.message || "something went wrong";
+      reject(errorMsg);
+    }
+  });

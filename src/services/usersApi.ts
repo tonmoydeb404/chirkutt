@@ -1,6 +1,6 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { USERS } from "../constants/firebase.constant";
-import { updateAuthPhoto } from "../lib/auth";
+import { updateAuth, updateAuthPhoto } from "../lib/auth";
 import {
   readCollectionRealtime,
   readDocument,
@@ -24,7 +24,6 @@ export const usersApi = createApi({
         let unsubscribe = () => {};
         try {
           await cacheDataLoaded;
-
           unsubscribe = readCollectionRealtime<UserType>(
             USERS,
             [["createdAt", "desc"]],
@@ -54,25 +53,6 @@ export const usersApi = createApi({
         }
       },
     }),
-    updateUser: builder.mutation({
-      queryFn: async ({
-        uid,
-        updates,
-      }: {
-        uid: string;
-        updates: { [key: string]: any };
-      }) => {
-        try {
-          const response = await updateDocument<UserType>(USERS, uid, updates);
-
-          if (!response) throw "something went to wrong";
-
-          return { data: response };
-        } catch (error) {
-          return { error };
-        }
-      },
-    }),
     updateAvatar: builder.mutation({
       queryFn: async ({ uid, file }: { uid: string; file: File }) => {
         try {
@@ -93,14 +73,40 @@ export const usersApi = createApi({
         }
       },
     }),
+    updateBio: builder.mutation({
+      queryFn: async ({ uid, bio }: { uid: string; bio: string }) => {
+        try {
+          const response = await updateDocument<UserType>(USERS, uid, { bio });
+          return { data: response };
+        } catch (error) {
+          return { error };
+        }
+      },
+    }),
+    updateName: builder.mutation({
+      queryFn: async ({ uid, name }: { uid: string; name: string }) => {
+        try {
+          const documentResponse = await updateDocument<UserType>(USERS, uid, {
+            name,
+          });
+          const authUser = await updateAuth({
+            displayName: documentResponse.name,
+          });
+          return { data: extractAuthUser(authUser) };
+        } catch (error) {
+          return { error };
+        }
+      },
+    }),
   }),
 });
 
 // hooks
 export const {
   useGetUserQuery,
-  useUpdateUserMutation,
   useGetAllUsersQuery,
   useLazyGetUserQuery,
   useUpdateAvatarMutation,
+  useUpdateBioMutation,
+  useUpdateNameMutation,
 } = usersApi;
