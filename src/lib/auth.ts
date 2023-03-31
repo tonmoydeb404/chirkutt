@@ -1,9 +1,12 @@
 import {
+  EmailAuthProvider,
   User,
   UserCredential,
   createUserWithEmailAndPassword,
+  reauthenticateWithCredential,
   signInWithEmailAndPassword,
   signOut,
+  updatePassword,
   updateProfile,
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
@@ -94,6 +97,35 @@ export const updateAuth = ({
       await updateProfile(auth.currentUser, { photoURL, displayName });
       await auth.currentUser.reload();
       resolve(auth.currentUser);
+    } catch (error: any) {
+      const errorMsg = error.code || error.message || "something went wrong";
+      reject(errorMsg);
+    }
+  });
+
+type UpdateAuthPassword = {
+  email: string;
+  password: string;
+  new_password: string;
+};
+export const updateAuthPassword = ({
+  email,
+  password,
+  new_password,
+}: UpdateAuthPassword) =>
+  new Promise<User>(async (resolve, reject) => {
+    try {
+      if (!auth.currentUser) throw Error("authorization error");
+      // reauthenticate user
+      const credential = EmailAuthProvider.credential(email, password);
+      const userCredential = await reauthenticateWithCredential(
+        auth.currentUser,
+        credential
+      );
+      await updatePassword(userCredential.user, new_password);
+      await auth.currentUser.reload();
+
+      resolve(userCredential.user);
     } catch (error: any) {
       const errorMsg = error.code || error.message || "something went wrong";
       reject(errorMsg);

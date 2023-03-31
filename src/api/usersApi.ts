@@ -1,6 +1,6 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { USERS } from "../constants/firebase.constant";
-import { updateAuth } from "../lib/auth";
+import { updateAuth, updateAuthPassword } from "../lib/auth";
 import {
   readCollectionRealtime,
   readDocument,
@@ -100,6 +100,29 @@ export const usersApi = createApi({
         }
       },
     }),
+    updatePassword: builder.mutation({
+      queryFn: async ({
+        email,
+        password,
+        new_password,
+      }: {
+        email: string;
+        password: string;
+        new_password: string;
+      }) => {
+        try {
+          const response = await updateAuthPassword({
+            email,
+            password,
+            new_password,
+          });
+
+          return { data: extractAuthUser(response) };
+        } catch (error) {
+          return { error };
+        }
+      },
+    }),
   }),
 });
 
@@ -111,4 +134,5 @@ export const {
   useUpdateAvatarMutation,
   useUpdateBioMutation,
   useUpdateNameMutation,
+  useUpdatePasswordMutation,
 } = usersApi;
