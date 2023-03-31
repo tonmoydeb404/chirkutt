@@ -7,8 +7,9 @@ const PrivateOutlet = () => {
   const auth = useAppSelector(selectAuth);
 
   if (auth.status == "AUTHORIZED") return <Outlet context={auth} />;
+  if (auth.status == "UNAUTHORIZED") return <Navigate to={"/"} replace />;
 
-  return <Navigate to={"/"} replace />;
+  return null;
 };
 
 export default PrivateOutlet;
