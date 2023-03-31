@@ -63,7 +63,7 @@ const ChangePassword = () => {
           })
         }
         onSubmit={async (values) =>
-          updatePasswordHandler(values.old_password, values.new_password)
+          await updatePasswordHandler(values.old_password, values.new_password)
         }
       >
         {({
