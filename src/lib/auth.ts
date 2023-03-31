@@ -82,19 +82,6 @@ export const signout = () =>
     }
   });
 
-export const updateAuthPhoto = (url: string) =>
-  new Promise<User>(async (resolve, reject) => {
-    try {
-      if (!auth.currentUser) throw Error("authorization error");
-      await updateProfile(auth.currentUser, { photoURL: url });
-      await auth.currentUser.reload();
-      resolve(auth.currentUser);
-    } catch (error: any) {
-      const errorMsg = error.code || error.message || "something went wrong";
-      reject(errorMsg);
-    }
-  });
-
 type UpdateAuth = { photoURL?: string; displayName?: string };
 
 export const updateAuth = ({

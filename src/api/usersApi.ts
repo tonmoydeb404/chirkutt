@@ -1,6 +1,6 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { USERS } from "../constants/firebase.constant";
-import { updateAuth, updateAuthPhoto } from "../lib/auth";
+import { updateAuth } from "../lib/auth";
 import {
   readCollectionRealtime,
   readDocument,
@@ -63,7 +63,9 @@ export const usersApi = createApi({
             avatar: imageUrl,
           });
           // update user auth
-          const authUser = await updateAuthPhoto(imageUrl);
+          const authUser = await updateAuth({
+            photoURL: imageUrl,
+          });
           const updatedUser = extractAuthUser(authUser);
           if (!updatedUser) throw "user is not valid";
 
