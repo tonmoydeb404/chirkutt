@@ -5,13 +5,13 @@ import { BiImageAlt } from "react-icons/bi";
 import ReactCrop, { Crop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { useNavigate } from "react-router-dom";
+import { useUpdateAvatarMutation } from "../../api/usersApi";
 import { useAppDispatch } from "../../app/hooks";
 import InputGroup from "../../common/components/Forms/InputGroup";
 import SettingsHeader from "../../common/components/Settings/SettingsHeader";
 import StatusText from "../../common/components/StatusText";
 import { usePrivateAuth } from "../../common/outlet/PrivateOutlet";
 import { authSignIn } from "../../features/auth/authSlice";
-import { useUpdateAvatarMutation } from "../../services/usersApi";
 import { getDataUrl } from "../../utilities/getDataUrl";
 
 const ChangeAvatar = () => {

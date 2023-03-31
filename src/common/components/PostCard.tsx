@@ -2,24 +2,24 @@ import { formatDistanceToNow } from "date-fns";
 import { useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
+import {
+  useAddNotificationMutation,
+  useRemoveNotificationsMutation,
+  useRemovePostNotificationsMutation,
+} from "../../api/notificationsApi";
+import {
+  useDeletePostMutation,
+  useUpdatePostMutation,
+} from "../../api/postsApi";
+import {
+  useAddSavedPostMutation,
+  useRemoveSavedPostMutation,
+} from "../../api/savedApi";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectAuth } from "../../features/auth/authSlice";
 import { updatePostModal } from "../../features/postModal/postModalSlice";
 import { showShare } from "../../features/share/shareSlice";
 import iconList from "../../lib/iconList";
-import {
-  useAddNotificationMutation,
-  useRemoveNotificationsMutation,
-  useRemovePostNotificationsMutation,
-} from "../../services/notificationsApi";
-import {
-  useDeletePostMutation,
-  useUpdatePostMutation,
-} from "../../services/postsApi";
-import {
-  useAddSavedPostMutation,
-  useRemoveSavedPostMutation,
-} from "../../services/savedApi";
 import { AuthUserType } from "../../types/AuthType";
 import { NotificationType } from "../../types/NotificationType";
 import { PostDetailsType, PostType } from "../../types/PostType";

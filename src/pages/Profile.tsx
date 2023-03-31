@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { Helmet } from "react-helmet";
+import { useLazyGetUserQuery } from "../api/usersApi";
 import { useAppDispatch } from "../app/hooks";
 import PostCard from "../common/components/PostCard";
 import ProfileCard from "../common/components/ProfileCard";
@@ -11,7 +12,6 @@ import useUserPosts from "../common/hooks/useUserPosts";
 import { usePrivateAuth } from "../common/outlet/PrivateOutlet";
 import { createPostModal } from "../features/postModal/postModalSlice";
 import iconList from "../lib/iconList";
-import { useLazyGetUserQuery } from "../services/usersApi";
 
 const Profile = () => {
   const dispatch = useAppDispatch();

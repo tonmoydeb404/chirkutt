@@ -1,10 +1,10 @@
 import { Helmet } from "react-helmet";
+import { useClearSavedPostMutation } from "../api/savedApi";
 import PostCard from "../common/components/PostCard";
 import PostCardSekeleton from "../common/components/skeletons/PostCardSkeleton";
 import useSavedPosts from "../common/hooks/useSavedPosts";
 import { usePrivateAuth } from "../common/outlet/PrivateOutlet";
 import iconList from "../lib/iconList";
-import { useClearSavedPostMutation } from "../services/savedApi";
 
 const Saved = () => {
   const auth = usePrivateAuth();

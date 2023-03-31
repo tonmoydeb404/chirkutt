@@ -2,16 +2,13 @@ import { Formik } from "formik";
 import { useEffect } from "react";
 import { Helmet } from "react-helmet";
 import * as yup from "yup";
+import { useLazyGetUserQuery, useUpdateNameMutation } from "../../api/usersApi";
 import { useAppDispatch } from "../../app/hooks";
 import InputGroup from "../../common/components/Forms/InputGroup";
 import SettingsHeader from "../../common/components/Settings/SettingsHeader";
 import StatusText from "../../common/components/StatusText";
 import { usePrivateAuth } from "../../common/outlet/PrivateOutlet";
 import { authSignIn } from "../../features/auth/authSlice";
-import {
-  useLazyGetUserQuery,
-  useUpdateNameMutation,
-} from "../../services/usersApi";
 
 const ChangeName = () => {
   const [getUser, user] = useLazyGetUserQuery();

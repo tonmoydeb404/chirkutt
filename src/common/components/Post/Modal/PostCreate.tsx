@@ -1,9 +1,9 @@
 import { nanoid } from "@reduxjs/toolkit";
 import { useEffect } from "react";
 import { toast } from "react-hot-toast";
+import { useCreatePostMutation } from "../../../../api/postsApi";
 import { useAppSelector } from "../../../../app/hooks";
 import { selectAuth } from "../../../../features/auth/authSlice";
-import { useCreatePostMutation } from "../../../../services/postsApi";
 import { PostType } from "../../../../types/PostType";
 import PostForm from "./PostForm";
 

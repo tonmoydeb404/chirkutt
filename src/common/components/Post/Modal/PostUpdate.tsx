@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { toast } from "react-hot-toast";
-import { useUpdatePostMutation } from "../../../../services/postsApi";
+import { useUpdatePostMutation } from "../../../../api/postsApi";
 import { PostType } from "../../../../types/PostType";
 import PostForm from "./PostForm";
 

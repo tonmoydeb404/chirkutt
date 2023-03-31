@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { useGetAllCommentsQuery } from "../../services/commentsApi";
-import { useGetAllUsersQuery } from "../../services/usersApi";
+import { useGetAllCommentsQuery } from "../../api/commentsApi";
+import { useGetAllUsersQuery } from "../../api/usersApi";
 import { CommentDetailsType } from "../../types/CommentType";
 
 const usePostComments = (postID: string | undefined) => {

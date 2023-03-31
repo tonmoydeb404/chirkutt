@@ -1,14 +1,14 @@
 import { AnyAction, combineReducers } from "@reduxjs/toolkit";
 
+import { commentsApi } from "../api/commentsApi";
+import { notificationsApi } from "../api/notificationsApi";
+import { postsApi } from "../api/postsApi";
+import { savedApi } from "../api/savedApi";
+import { usersApi } from "../api/usersApi";
 import { authSlice } from "../features/auth/authSlice";
 import { postModalSlice } from "../features/postModal/postModalSlice";
 import { shareSlice } from "../features/share/shareSlice";
 import { themeSlice } from "../features/theme/themeSlice";
-import { commentsApi } from "../services/commentsApi";
-import { notificationsApi } from "../services/notificationsApi";
-import { postsApi } from "../services/postsApi";
-import { savedApi } from "../services/savedApi";
-import { usersApi } from "../services/usersApi";
 
 const appReducer = combineReducers({
   [themeSlice.name]: themeSlice.reducer,

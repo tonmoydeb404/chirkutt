@@ -2,14 +2,11 @@ import { Formik } from "formik";
 import { useEffect } from "react";
 import { Helmet } from "react-helmet";
 import * as yup from "yup";
+import { useLazyGetUserQuery, useUpdateBioMutation } from "../../api/usersApi";
 import TextGroup from "../../common/components/Forms/TextGroup";
 import SettingsHeader from "../../common/components/Settings/SettingsHeader";
 import StatusText from "../../common/components/StatusText";
 import { usePrivateAuth } from "../../common/outlet/PrivateOutlet";
-import {
-  useLazyGetUserQuery,
-  useUpdateBioMutation,
-} from "../../services/usersApi";
 
 const ChangeBio = () => {
   const [getUser, user] = useLazyGetUserQuery();

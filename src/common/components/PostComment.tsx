@@ -1,10 +1,10 @@
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { ReactNode, useState } from "react";
 import { Link } from "react-router-dom";
+import { useDeleteCommentMutation } from "../../api/commentsApi";
+import { useRemoveNotificationsMutation } from "../../api/notificationsApi";
 import { useAppSelector } from "../../app/hooks";
 import { selectAuth } from "../../features/auth/authSlice";
-import { useDeleteCommentMutation } from "../../services/commentsApi";
-import { useRemoveNotificationsMutation } from "../../services/notificationsApi";
 import { CommentDetailsType, CommentType } from "../../types/CommentType";
 import ReplayForm from "./ReplayForm";
 

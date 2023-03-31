@@ -1,8 +1,8 @@
 import { useEffect, useMemo } from "react";
-import { useGetAllCommentsQuery } from "../../services/commentsApi";
-import { useGetAllPostsQuery } from "../../services/postsApi";
-import { useLazyGetSavedPostsQuery } from "../../services/savedApi";
-import { useGetAllUsersQuery } from "../../services/usersApi";
+import { useGetAllCommentsQuery } from "../../api/commentsApi";
+import { useGetAllPostsQuery } from "../../api/postsApi";
+import { useLazyGetSavedPostsQuery } from "../../api/savedApi";
+import { useGetAllUsersQuery } from "../../api/usersApi";
 import { PostDetailsType } from "../../types/PostType";
 import { usePrivateAuth } from "../outlet/PrivateOutlet";
 

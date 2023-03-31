@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { Helmet } from "react-helmet";
-import NotificationCard from "../common/components/NotificationCard";
-import NotificationCardSkeleton from "../common/components/skeletons/NotificationCardSkeleton";
-import { usePrivateAuth } from "../common/outlet/PrivateOutlet";
 import {
   useLazyGetNotificationsQuery,
   useReadNotificationsMutation,
-} from "../services/notificationsApi";
+} from "../api/notificationsApi";
+import NotificationCard from "../common/components/NotificationCard";
+import NotificationCardSkeleton from "../common/components/skeletons/NotificationCardSkeleton";
+import { usePrivateAuth } from "../common/outlet/PrivateOutlet";
 import {
   NotificationDocumentType,
   NotificationType,

@@ -1,14 +1,14 @@
 import { Store, configureStore } from "@reduxjs/toolkit";
+import { commentsApi } from "../api/commentsApi";
+import { notificationsApi } from "../api/notificationsApi";
+import { postsApi } from "../api/postsApi";
+import { savedApi } from "../api/savedApi";
+import { usersApi } from "../api/usersApi";
 import {
   themeListener,
   themePreloader,
   themeSlice,
 } from "../features/theme/themeSlice";
-import { commentsApi } from "../services/commentsApi";
-import { notificationsApi } from "../services/notificationsApi";
-import { postsApi } from "../services/postsApi";
-import { savedApi } from "../services/savedApi";
-import { usersApi } from "../services/usersApi";
 import rootReducer from "./rootReducer";
 // check dev server
 const isDev = import.meta.env.DEV;

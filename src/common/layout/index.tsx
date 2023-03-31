@@ -1,8 +1,8 @@
 import { ReactNode, useEffect } from "react";
 import { Outlet } from "react-router-dom";
+import { useLazyGetNotificationsQuery } from "../../api/notificationsApi";
 import { useAppSelector } from "../../app/hooks";
 import { selectAuth } from "../../features/auth/authSlice";
-import { useLazyGetNotificationsQuery } from "../../services/notificationsApi";
 
 import PostModal from "../components/Post/Modal/PostModal";
 import Footer from "./Footer";

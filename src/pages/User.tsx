@@ -1,13 +1,13 @@
 import { useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { Navigate, useParams } from "react-router-dom";
+import { useLazyGetUserQuery } from "../api/usersApi";
 import PostCard from "../common/components/PostCard";
 import ProfileCard from "../common/components/ProfileCard";
 import PostCardSekeleton from "../common/components/skeletons/PostCardSkeleton";
 import ProfileCardSkeleton from "../common/components/skeletons/ProfileCardSkeleton";
 import useUserPosts from "../common/hooks/useUserPosts";
 import { usePrivateAuth } from "../common/outlet/PrivateOutlet";
-import { useLazyGetUserQuery } from "../services/usersApi";
 
 const User = () => {
   const { uid } = useParams();
