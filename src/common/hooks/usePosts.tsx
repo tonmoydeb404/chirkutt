@@ -54,9 +54,12 @@ const usePosts = () => {
         const post: PostDetailsType = {
           ...postContent,
           author: {
-            name: postAuthor.name,
+            name: postAuthor.isDeleted ? "Unknown Author" : postAuthor.name,
             uid: postAuthor.uid,
-            avatar: postAuthor.avatar,
+            avatar: postAuthor.isDeleted
+              ? `https://api.dicebear.com/6.x/shapes/svg?seed=${postAuthor.uid}`
+              : postAuthor.avatar,
+            isDeleted: postAuthor.isDeleted,
           },
           comments: postComments,
           isSaved,

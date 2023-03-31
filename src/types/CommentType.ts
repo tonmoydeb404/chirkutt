@@ -18,5 +18,6 @@ export type CommentDetailsType = {
     uid: string;
     name: string;
     avatar: string;
+    isDeleted?: boolean;
   };
 };

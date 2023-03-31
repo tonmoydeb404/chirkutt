@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Helmet } from "react-helmet";
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useLazyGetUserQuery } from "../api/usersApi";
 import PostCard from "../common/components/PostCard";
 import ProfileCard from "../common/components/ProfileCard";
@@ -11,6 +11,7 @@ import { usePrivateAuth } from "../common/outlet/PrivateOutlet";
 
 const User = () => {
   const { uid } = useParams();
+  const navigate = useNavigate();
   // navigate to error page
   if (!uid) return <Navigate to={"/404"}></Navigate>;
   const auth = usePrivateAuth();
@@ -22,9 +23,11 @@ const User = () => {
     const fetchUser = async () => {
       if (uid) {
         try {
-          await getUser(uid).unwrap();
+          const response = await getUser(uid).unwrap();
+          if (response?.isDeleted) throw new Error("user is deleted");
         } catch (err) {
-          console.log(err);
+          // console.log(err);
+          navigate("/404");
         }
       }
     };

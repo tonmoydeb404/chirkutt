@@ -51,7 +51,7 @@ const Post = () => {
       {/* post success state */}
       {post ? <PostCard {...post} /> : null}
 
-      {post ? (
+      {post && !post.author?.isDeleted ? (
         <CommentForm postID={post.id} authorUID={post.authorUID} />
       ) : null}
 
@@ -80,7 +80,7 @@ const Post = () => {
                     postAuthorUID={post.authorUID}
                     key={comment.id}
                     {...comment}
-                    replay
+                    replay={!post.author?.isDeleted}
                   >
                     {commentReplies.map((replay) => {
                       return (

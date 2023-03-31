@@ -30,8 +30,12 @@ const usePostComments = (postID: string | undefined) => {
             ...commentData,
             author: {
               uid: commentAuthor.uid,
-              name: commentAuthor.name,
-              avatar: commentAuthor.avatar,
+              name: commentAuthor.isDeleted
+                ? "Unknown Author"
+                : commentAuthor.name,
+              avatar: commentAuthor.isDeleted
+                ? `https://api.dicebear.com/6.x/shapes/svg?seed=${commentAuthor.uid}`
+                : commentAuthor.avatar,
             },
           };
           // push

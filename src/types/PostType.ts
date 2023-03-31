@@ -22,6 +22,7 @@ export type PostDetailsType = {
     uid: string;
     name: string;
     avatar: string;
+    isDeleted?: boolean | undefined;
   };
   comments: string[];
   isSaved: boolean;

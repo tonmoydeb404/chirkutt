@@ -39,7 +39,7 @@ const Settings = () => {
           icon={BiLockAlt}
         />
         <SettingsCard
-          to="#"
+          to="/settings/delete-account"
           title="Delete Account"
           icon={BiTrash}
           iconClass="text-red-600"

@@ -3,6 +3,7 @@ import {
   User,
   UserCredential,
   createUserWithEmailAndPassword,
+  deleteUser,
   reauthenticateWithCredential,
   signInWithEmailAndPassword,
   signOut,
@@ -86,7 +87,6 @@ export const signout = () =>
   });
 
 type UpdateAuth = { photoURL?: string; displayName?: string };
-
 export const updateAuth = ({
   photoURL = undefined,
   displayName = undefined,
@@ -103,29 +103,55 @@ export const updateAuth = ({
     }
   });
 
-type UpdateAuthPassword = {
+type ReAuthenticate = {
   email: string;
   password: string;
-  new_password: string;
 };
-export const updateAuthPassword = ({
-  email,
-  password,
-  new_password,
-}: UpdateAuthPassword) =>
+export const reAuthenticate = ({ email, password }: ReAuthenticate) =>
   new Promise<User>(async (resolve, reject) => {
     try {
       if (!auth.currentUser) throw Error("authorization error");
-      // reauthenticate user
       const credential = EmailAuthProvider.credential(email, password);
       const userCredential = await reauthenticateWithCredential(
         auth.currentUser,
         credential
       );
-      await updatePassword(userCredential.user, new_password);
-      await auth.currentUser.reload();
 
       resolve(userCredential.user);
+    } catch (error: any) {
+      const errorMsg = error.code || error.message || "something went wrong";
+      reject(errorMsg);
+    }
+  });
+
+type UpdateAuthPassword = {
+  user: User;
+  new_password: string;
+};
+export const updateAuthPassword = ({
+  user,
+  new_password,
+}: UpdateAuthPassword) =>
+  new Promise<User>(async (resolve, reject) => {
+    try {
+      if (!auth.currentUser) throw Error("authorization error");
+      await updatePassword(user, new_password);
+      resolve(user);
+    } catch (error: any) {
+      const errorMsg = error.code || error.message || "something went wrong";
+      reject(errorMsg);
+    }
+  });
+
+type DeleteAuth = {
+  user: User;
+};
+export const deleteAuth = ({ user }: DeleteAuth) =>
+  new Promise<User>(async (resolve, reject) => {
+    try {
+      if (!auth.currentUser) throw Error("authorization error");
+      await deleteUser(user);
+      resolve(user);
     } catch (error: any) {
       const errorMsg = error.code || error.message || "something went wrong";
       reject(errorMsg);

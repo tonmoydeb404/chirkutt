@@ -242,6 +242,7 @@ const PostCard = ({
         <button
           className={`btn px-2 py-1.5 btn-theme`}
           onClick={handleReaction}
+          disabled={author.isDeleted}
         >
           {likes.length}
           <span
@@ -261,20 +262,24 @@ const PostCard = ({
           <span className="text-base">{iconList.comment}</span>
         </Link>
 
-        <button
-          className="btn-icon btn-sm btn-theme ml-auto"
-          onClick={handleShare}
-        >
-          {iconList.share}
-        </button>
-        {authUser ? (
-          <button
-            className="btn-icon btn-theme btn-sm"
-            onClick={handleBookmark}
-          >
-            {iconList[isSaved ? "remove_bookmark" : "add_bookmark"]}
-          </button>
-        ) : null}
+        {author.isDeleted ? null : (
+          <>
+            <button
+              className="btn-icon btn-sm btn-theme ml-auto"
+              onClick={handleShare}
+            >
+              {iconList.share}
+            </button>
+            {authUser ? (
+              <button
+                className="btn-icon btn-theme btn-sm"
+                onClick={handleBookmark}
+              >
+                {iconList[isSaved ? "remove_bookmark" : "add_bookmark"]}
+              </button>
+            ) : null}
+          </>
+        )}
       </section>
     </article>
   ) : null;

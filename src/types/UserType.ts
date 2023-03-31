@@ -6,6 +6,7 @@ export type UserType = {
   bio: string;
   email: string;
   createdAt: string;
+  isDeleted?: boolean | undefined;
 };
 
 export type UserDocumentType = {

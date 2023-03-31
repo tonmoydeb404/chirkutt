@@ -1,6 +1,11 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { USERS } from "../constants/firebase.constant";
-import { updateAuth, updateAuthPassword } from "../lib/auth";
+import {
+  deleteAuth,
+  reAuthenticate,
+  updateAuth,
+  updateAuthPassword,
+} from "../lib/auth";
 import {
   readCollectionRealtime,
   readDocument,
@@ -111,11 +116,33 @@ export const usersApi = createApi({
         new_password: string;
       }) => {
         try {
-          const response = await updateAuthPassword({
-            email,
-            password,
-            new_password,
-          });
+          const user = await reAuthenticate({ email, password });
+          const response = await updateAuthPassword({ user, new_password });
+
+          return { data: extractAuthUser(response) };
+        } catch (error) {
+          return { error };
+        }
+      },
+    }),
+    deleteUser: builder.mutation({
+      queryFn: async ({
+        email,
+        password,
+      }: {
+        email: string;
+        password: string;
+      }) => {
+        try {
+          const user = await reAuthenticate({ email, password });
+          const documentResponse = await updateDocument<UserType>(
+            USERS,
+            user.uid,
+            {
+              isDeleted: true,
+            }
+          );
+          const response = await deleteAuth({ user });
 
           return { data: extractAuthUser(response) };
         } catch (error) {
@@ -135,4 +162,5 @@ export const {
   useUpdateBioMutation,
   useUpdateNameMutation,
   useUpdatePasswordMutation,
+  useDeleteUserMutation,
 } = usersApi;

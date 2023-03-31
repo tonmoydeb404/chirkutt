@@ -1,6 +1,7 @@
 import { Toaster } from "react-hot-toast";
 import { Provider } from "react-redux";
 import { Route, Routes } from "react-router-dom";
+import HandlePreloader from "../common/components/HandlePreloader";
 import Layout from "../common/layout";
 import PrivateOutlet from "../common/outlet/PrivateOutlet";
 import PublicOutlet from "../common/outlet/PublicOutlet";
@@ -23,6 +24,7 @@ import ChangeAvatar from "../pages/settings/ChangeAvatar";
 import ChangeBio from "../pages/settings/ChangeBio";
 import ChangeName from "../pages/settings/ChangeName";
 import ChangePassword from "../pages/settings/ChangePassword";
+import DeleteAccount from "../pages/settings/DeleteAccount";
 import { store } from "./store";
 
 const App = () => {
@@ -49,6 +51,7 @@ const App = () => {
                   <Route path="change-avatar" element={<ChangeAvatar />} />
                   <Route path="change-bio" element={<ChangeBio />} />
                   <Route path="change-password" element={<ChangePassword />} />
+                  <Route path="delete-account" element={<DeleteAccount />} />
                 </Route>
                 <Route path="/saved" element={<Saved />} />
               </Route>
@@ -67,6 +70,7 @@ const App = () => {
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Share />
+          <HandlePreloader />
         </ThemeStateChanged>
       </AuthStateChanged>
       <Toaster />
