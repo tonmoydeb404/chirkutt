@@ -3,9 +3,9 @@ import { useEffect } from "react";
 import { Helmet } from "react-helmet";
 import * as yup from "yup";
 import { useLazyGetUserQuery, useUpdateBioMutation } from "../../api/usersApi";
-import SettingsHeader from "../../common/components/Settings/SettingsHeader";
 import StatusText from "../../common/components/StatusText";
 import TextGroup from "../../common/components/forms/TextGroup";
+import SettingsHeader from "../../common/components/settings/SettingsHeader";
 import { usePrivateAuth } from "../../common/outlet/PrivateOutlet";
 
 const ChangeBio = () => {
