@@ -1,7 +1,7 @@
 type CommonTypes = {
   title: string;
   icon: string;
-  badge?: "INITIAL" | "WARNING" | "DANGER";
+  badge?: "PRIMARY" | "WARNING" | "ERROR";
 };
 type Link = { path: string } & CommonTypes;
 type Button = { action: () => void } & CommonTypes;

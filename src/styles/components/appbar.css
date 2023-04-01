@@ -1,0 +1,27 @@
+.appbar_icon {
+  @apply inline-block text-2xl py-2 px-2 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded relative;
+}
+
+.appbar_icon[data-badge="WARNING"]::after,
+.appbar_icon[data-badge="ERROR"]::after,
+.appbar_icon[data-badge="PRIMARY"]::after {
+  content: "";
+  @apply absolute top-0 right-0 p-1.5 rounded-full;
+}
+.appbar_icon[data-badge="WARNING"]::after {
+  @apply bg-warning-400;
+}
+.appbar_icon[data-badge="PRIMARY"]::after {
+  @apply bg-primary-600;
+}
+.appbar_icon[data-badge="ERROR"]::after {
+  @apply bg-error-500;
+}
+
+.appbar_icon.active {
+  @apply bg-neutral-300 dark:bg-neutral-700;
+}
+
+.appbar_option {
+  @apply px-3 py-2 border border-neutral-400 dark:border-neutral-700 rounded flex items-center gap-1 hover:bg-neutral-200 dark:hover:bg-neutral-700;
+}

@@ -1,0 +1,29 @@
+.sidebar_menu_item {
+  @apply flex items-center justify-center md:justify-start gap-1.5 px-2 md:px-3 py-2 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded relative;
+}
+
+.sidebar_menu_item[data-badge]::after {
+  content: "";
+  @apply absolute top-0 right-0 md:static md:ml-auto p-1.5 rounded-full;
+}
+.sidebar_menu_item[data-badge="WARNING"]::after {
+  @apply bg-warning-400;
+}
+.sidebar_menu_item[data-badge="PRIMARY"]::after {
+  @apply bg-primary-600;
+}
+.sidebar_menu_item[data-badge="ERROR"]::after {
+  @apply bg-error-500;
+}
+
+.sidebar_menu_item.active {
+  @apply bg-neutral-300 dark:bg-neutral-700;
+}
+
+.sidebar_menu_item-icon {
+  @apply inline-block text-xl md:text-base;
+}
+
+.sidebar_menu_item-title {
+  @apply hidden md:inline-block font-medium text-sm tracking-wide;
+}

@@ -4,18 +4,17 @@ import { useLazyGetNotificationsQuery } from "../../api/notificationsApi";
 import { useAppSelector } from "../../app/hooks";
 import { selectAuth } from "../../features/auth/authSlice";
 
+import Appbar from "../components/layout/Appbar";
+import Navbar from "../components/layout/Navbar";
+import Sidebar from "../components/layout/Sidebar";
 import PostModal from "../components/post/modal/PostModal";
-import Footer from "./Footer";
-import MobileMenu from "./MobileMenu";
-import Navbar from "./Navbar";
-import Sidebar from "./Sidebar";
 
-type propTypes = {
+type AppLayoutProps = {
   children?: ReactNode;
   sidebar: boolean;
 };
 
-const Layout = ({ children, sidebar }: propTypes) => {
+const AppLayout = ({ children, sidebar }: AppLayoutProps) => {
   const auth = useAppSelector(selectAuth);
   const [getNotifications, allNotifications] = useLazyGetNotificationsQuery();
 
@@ -52,11 +51,10 @@ const Layout = ({ children, sidebar }: propTypes) => {
         </div>
         {sidebar ? <Sidebar notifications={isNotReaded} auth={auth} /> : null}
       </div>
-      <MobileMenu notifications={isNotReaded} auth={auth} />
-      <Footer />
+      <Appbar notifications={isNotReaded} auth={auth} />
       <PostModal />
     </>
   );
 };
 
-export default Layout;
+export default AppLayout;
