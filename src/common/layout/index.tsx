@@ -4,7 +4,7 @@ import { useLazyGetNotificationsQuery } from "../../api/notificationsApi";
 import { useAppSelector } from "../../app/hooks";
 import { selectAuth } from "../../features/auth/authSlice";
 
-import PostModal from "../components/Post/Modal/PostModal";
+import PostModal from "../components/post/modal/PostModal";
 import Footer from "./Footer";
 import MobileMenu from "./MobileMenu";
 import Navbar from "./Navbar";
