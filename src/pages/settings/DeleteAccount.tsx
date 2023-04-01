@@ -4,9 +4,9 @@ import { Helmet } from "react-helmet";
 import * as yup from "yup";
 import { useDeleteUserMutation } from "../../api/usersApi";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import InputGroup from "../../common/components/Forms/InputGroup";
 import SettingsHeader from "../../common/components/Settings/SettingsHeader";
 import StatusText from "../../common/components/StatusText";
+import InputGroup from "../../common/components/forms/InputGroup";
 import { authSignOut, selectAuth } from "../../features/auth/authSlice";
 import iconList from "../../lib/iconList";
 

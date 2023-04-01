@@ -4,7 +4,7 @@ import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 import * as yup from "yup";
 import { useAppDispatch } from "../../app/hooks";
-import InputGroup from "../../common/components/Forms/InputGroup";
+import InputGroup from "../../common/components/forms/InputGroup";
 import { usePublicAuth } from "../../common/outlet/PublicOutlet";
 import {
   authLoading,

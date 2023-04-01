@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
-import InputGroup from "../../common/components/Forms/InputGroup";
+import InputGroup from "../../common/components/forms/InputGroup";
 import iconList from "../../lib/iconList";
 
 const Reset = () => {

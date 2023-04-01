@@ -10,7 +10,7 @@ import { selectAuth } from "../../features/auth/authSlice";
 import iconList from "../../lib/iconList";
 import { CommentType } from "../../types/CommentType";
 import { NotificationType } from "../../types/NotificationType";
-import TextGroup from "./Forms/TextGroup";
+import TextGroup from "./forms/TextGroup";
 
 const CREATE_TOAST = "CREATE_COMMENT_TOAST";
 const CommentForm = ({

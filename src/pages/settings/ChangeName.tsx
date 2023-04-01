@@ -4,9 +4,9 @@ import { Helmet } from "react-helmet";
 import * as yup from "yup";
 import { useLazyGetUserQuery, useUpdateNameMutation } from "../../api/usersApi";
 import { useAppDispatch } from "../../app/hooks";
-import InputGroup from "../../common/components/Forms/InputGroup";
 import SettingsHeader from "../../common/components/Settings/SettingsHeader";
 import StatusText from "../../common/components/StatusText";
+import InputGroup from "../../common/components/forms/InputGroup";
 import { usePrivateAuth } from "../../common/outlet/PrivateOutlet";
 import { authSignIn } from "../../features/auth/authSlice";
 

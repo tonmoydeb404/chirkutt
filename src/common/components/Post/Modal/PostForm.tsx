@@ -3,7 +3,7 @@ import * as yup from "yup";
 import { useAppDispatch } from "../../../../app/hooks";
 import { closePostModal } from "../../../../features/postModal/postModalSlice";
 import iconList from "../../../../lib/iconList";
-import TextGroup from "../../Forms/TextGroup";
+import TextGroup from "../../forms/TextGroup";
 
 type PostFormProps = {
   defaultValue: string;
