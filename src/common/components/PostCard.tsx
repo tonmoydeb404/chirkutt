@@ -9,6 +9,8 @@ import {
 } from "../../api/notificationsApi";
 import {
   useDeletePostMutation,
+  useDislikePostMutation,
+  useLikePostMutation,
   useUpdatePostMutation,
 } from "../../api/postsApi";
 import {
@@ -46,6 +48,8 @@ const PostCard = ({
   const [removeNotifications] = useRemoveNotificationsMutation();
   const [removePostNotifications] = useRemovePostNotificationsMutation();
   const navigate = useNavigate();
+  const [likePost, likeResult] = useLikePostMutation();
+  const [dislikePost, dislikeResult] = useDislikePostMutation();
 
   // dispatch
   const dispatch = useAppDispatch();
@@ -134,33 +138,6 @@ const PostCard = ({
     }
   };
 
-  // add like
-  const addLike = async (user: AuthUserType) => {
-    try {
-      await updatePost({
-        id: id,
-        updates: { likes: [...likes, user.uid] },
-      }).unwrap();
-      await createLikeNotification(user);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  // remove like
-  const removeLike = async (user: AuthUserType) => {
-    try {
-      // remove like
-      await updatePost({
-        id: id,
-        updates: { likes: [...likes.filter((i) => i != user.uid)] },
-      }).unwrap();
-      await removeNotifications([`${id}:${authorUID}`]);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   // handle post reaction
   const handleReaction = async () => {
     if (!authUser) {
@@ -170,9 +147,11 @@ const PostCard = ({
 
     try {
       if (!likes.includes(authUser.uid)) {
-        await addLike(authUser);
+        await likePost({ id: id, uid: authUser.uid });
+        await createLikeNotification(authUser);
       } else {
-        await removeLike(authUser);
+        await dislikePost({ id: id, uid: authUser.uid });
+        await removeNotifications([`${id}:${authorUID}`]);
       }
     } catch (error) {
       console.log(error);

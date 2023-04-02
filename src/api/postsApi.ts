@@ -3,6 +3,8 @@ import { POSTS } from "../constants/firebase.constant";
 import {
   createDocument,
   deleteDocument,
+  popField,
+  pushField,
   readCollectionRealtime,
   readQuery,
   updateDocument,
@@ -100,6 +102,26 @@ export const postsApi = createApi({
         }
       },
     }),
+    likePost: builder.mutation({
+      queryFn: async ({ id, uid }: { id: string; uid: string }) => {
+        try {
+          const response = await pushField<PostType>(POSTS, id, "likes", uid);
+          return { data: response };
+        } catch (error) {
+          return { error };
+        }
+      },
+    }),
+    dislikePost: builder.mutation({
+      queryFn: async ({ id, uid }: { id: string; uid: string }) => {
+        try {
+          const response = await popField<PostType>(POSTS, id, "likes", uid);
+          return { data: response };
+        } catch (error) {
+          return { error };
+        }
+      },
+    }),
   }),
 });
 
@@ -111,4 +133,6 @@ export const {
   useUpdatePostMutation,
   useSearchPostsQuery,
   useLazySearchPostsQuery,
+  useLikePostMutation,
+  useDislikePostMutation,
 } = postsApi;

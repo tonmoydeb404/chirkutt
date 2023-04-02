@@ -1,5 +1,7 @@
 import { Unsubscribe } from "firebase/auth";
 import {
+  arrayRemove,
+  arrayUnion,
   collection,
   deleteDoc,
   deleteField,
@@ -289,6 +291,46 @@ export const updateFields = <T extends { [key: string]: any }>(
       );
 
       await updateDoc(docRef, { ...updatedData });
+
+      resolve(true);
+    } catch (error: any) {
+      const errorMsg = error.code || error.message || "something went wrong";
+      return reject(errorMsg);
+    }
+  });
+
+// add data to the field of array
+export const pushField = <T extends { [key: string]: any }>(
+  collectionName: string,
+  documentId: string,
+  field: keyof T,
+  value: string | number
+) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const docRef = doc(db, collectionName, documentId);
+
+      await updateDoc(docRef, { [field]: arrayUnion(value) });
+
+      resolve(true);
+    } catch (error: any) {
+      const errorMsg = error.code || error.message || "something went wrong";
+      return reject(errorMsg);
+    }
+  });
+
+// remove data from the field of array
+export const popField = <T extends { [key: string]: any }>(
+  collectionName: string,
+  documentId: string,
+  field: keyof T,
+  value: string | number
+) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const docRef = doc(db, collectionName, documentId);
+
+      await updateDoc(docRef, { [field]: arrayRemove(value) });
 
       resolve(true);
     } catch (error: any) {
