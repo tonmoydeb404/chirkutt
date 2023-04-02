@@ -1,15 +1,12 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
-import { SAVED } from "../constants/firebase.constant";
+import { SAVED, USERS } from "../constants/firebase.constant";
 import {
   createDocument,
-  deleteDocumentFields,
-  readDocument,
+  deleteDocument,
+  readCollection,
 } from "../lib/database";
 import { SavedPostType } from "../types/SavedPostType";
 import { arrayToObject } from "../utilities/arrayToObject";
-import { objectToArray } from "../utilities/objectToArray";
-
-type SavedPostDocument = { [key: string]: SavedPostType };
 
 export const savedApi = createApi({
   reducerPath: "savedApi",
@@ -18,26 +15,12 @@ export const savedApi = createApi({
     getSavedPosts: builder.query({
       queryFn: async (uid: string) => {
         try {
-          const response = await readDocument<SavedPostDocument>(
-            SAVED,
-            uid,
-            true
+          const response = await readCollection<SavedPostType>(
+            USERS,
+            [["savedAt", "asc"]],
+            [uid, SAVED]
           );
-
-          // sort object
-          const sortedResponseArr = objectToArray<SavedPostType>(response).sort(
-            (a, b) => {
-              return (
-                new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime()
-              );
-            }
-          );
-
-          const data = arrayToObject<SavedPostType>(
-            sortedResponseArr,
-            "postID"
-          );
-
+          const data = arrayToObject<SavedPostType>(response, "postID");
           return { data };
         } catch (error) {
           return { error };
@@ -48,12 +31,11 @@ export const savedApi = createApi({
       queryFn: async ({ uid, post }: { uid: string; post: SavedPostType }) => {
         try {
           const response = await createDocument(
-            SAVED,
-            uid,
-            {
-              [post.postID]: post,
-            },
-            true
+            USERS,
+            post.postID,
+            post,
+            false,
+            [uid, SAVED]
           );
           return { data: response };
         } catch (error) {
@@ -74,41 +56,23 @@ export const savedApi = createApi({
       },
     }),
     removeSavedPost: builder.mutation({
-      queryFn: async ({ uid, id }: { uid: string; id: string }) => {
+      queryFn: async ({ uid, postID }: { uid: string; postID: string }) => {
         try {
-          const response = await deleteDocumentFields(SAVED, uid, [id]);
+          const response = await deleteDocument(USERS, postID, [uid, SAVED]);
           return { data: response };
         } catch (error) {
           return { error };
         }
       },
-      onQueryStarted: async ({ uid, id }, { dispatch, queryFulfilled }) => {
+      onQueryStarted: async ({ uid, postID }, { dispatch, queryFulfilled }) => {
         try {
           await queryFulfilled;
           const patchResult = dispatch(
             savedApi.util.updateQueryData("getSavedPosts", uid, (draft) => {
-              delete draft?.[id];
+              delete draft?.[postID];
             })
           );
         } catch (error) {}
-      },
-    }),
-    clearSavedPost: builder.mutation({
-      queryFn: async ({ uid }: { uid: string }) => {
-        try {
-          const response = await createDocument(SAVED, uid, {});
-          return { data: response };
-        } catch (error) {
-          return { error };
-        }
-      },
-      onQueryStarted: async ({ uid }, { dispatch, queryFulfilled }) => {
-        try {
-          await queryFulfilled;
-          const patchResult = dispatch(savedApi.util.resetApiState());
-        } catch (error) {
-          console.log(error);
-        }
       },
     }),
   }),
@@ -120,5 +84,4 @@ export const {
   useGetSavedPostsQuery,
   useAddSavedPostMutation,
   useRemoveSavedPostMutation,
-  useClearSavedPostMutation,
 } = savedApi;

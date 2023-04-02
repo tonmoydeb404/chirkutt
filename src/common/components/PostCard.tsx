@@ -100,13 +100,13 @@ const PostCard = ({
         // remove bookmark
         await removePost({
           uid: authUser.uid,
-          id,
+          postID: id,
         }).unwrap();
       } else {
         // add bookmark
         await savePost({
           uid: authUser.uid,
-          post: { postID: id, savedAt: new Date().toISOString() },
+          post: { postID: id, savedAt: Date.now() },
         }).unwrap();
       }
     } catch (err) {

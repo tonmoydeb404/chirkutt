@@ -44,11 +44,12 @@ export const createDocument = (
   collectionName: string,
   documentId: string,
   data: { [key: string]: any },
-  merge: boolean = false
+  merge: boolean = false,
+  subPath: string[] = []
 ) =>
   new Promise<boolean>(async (resolve, reject) => {
     try {
-      const docRef = doc(db, collectionName, documentId);
+      const docRef = doc(db, collectionName, ...subPath, documentId);
       await setDoc(docRef, data, { merge });
       resolve(true);
     } catch (error: any) {
@@ -64,7 +65,8 @@ export const createDocument = (
 // read collection data
 export const readCollection = <T>(
   collectionName: string,
-  orders: [keyof T, "desc" | "asc"][] = []
+  orders: [keyof T, "desc" | "asc"][] = [],
+  subPath: string[] = []
 ) =>
   new Promise<T[]>(async (resolve, reject) => {
     try {
@@ -72,7 +74,7 @@ export const readCollection = <T>(
       const ordersBy = orders.map((order) =>
         orderBy(order[0] as string, order[1] || "asc")
       );
-      const collectionRef = collection(db, collectionName);
+      const collectionRef = collection(db, collectionName, ...subPath);
       const querySnapshot = await getDocs(query(collectionRef, ...ordersBy));
       querySnapshot.forEach((doc) => {
         data.push(doc.data() as T);
@@ -83,16 +85,18 @@ export const readCollection = <T>(
       return reject(errorMsg);
     }
   });
+
 // read collection data in realtime
 export const readCollectionRealtime = <T>(
   collectionName: string,
   orders: [keyof T, "desc" | "asc"][] = [],
-  callback: (data: T[]) => void
+  callback: (data: T[]) => void,
+  subPath: string[] = []
 ): Unsubscribe => {
   const ordersBy = orders.map((order) =>
     orderBy(order[0] as string, order[1] || "asc")
   );
-  const collectionRef = collection(db, collectionName);
+  const collectionRef = collection(db, collectionName, ...subPath);
   const unsubscribe = onSnapshot(
     query(collectionRef, ...ordersBy),
     (snapshot) => {
@@ -110,11 +114,12 @@ export const readCollectionRealtime = <T>(
 export const readDocument = <T>(
   collectionName: string,
   documentId: string,
-  forceCreate: boolean = false
+  forceCreate: boolean = false,
+  subPath: string[] = []
 ) =>
   new Promise<T>(async (resolve, reject) => {
     try {
-      const docRef = doc(db, collectionName, documentId);
+      const docRef = doc(db, collectionName, ...subPath, documentId);
       let snapshot = await getDoc(docRef);
       if (!snapshot.exists()) {
         // force to create document if not found
@@ -155,7 +160,8 @@ export const readDocumentRealtime = <T>(
 export const readQuery = <T extends { [key: string]: any }>(
   collectionName: string,
   queryParams: QueryParam<T>[],
-  orders: [keyof T, "desc" | "asc"][] = []
+  orders: [keyof T, "desc" | "asc"][] = [],
+  subPath: string[] = []
 ) =>
   new Promise<T[]>(async (resolve, reject) => {
     try {
@@ -166,7 +172,7 @@ export const readQuery = <T extends { [key: string]: any }>(
         orderBy(order[0] as string, order[1] || "asc")
       );
       const queryRef = query(
-        collection(db, collectionName),
+        collection(db, collectionName, ...subPath),
         ...qParamList,
         ...ordersBy
       );
@@ -187,7 +193,8 @@ export const readQueryRealtime = <T>(
   collectionName: string,
   queryParams: QueryParam<T>[],
   orders: [keyof T, "desc" | "asc"][] = [],
-  callback: (data: T[]) => void
+  callback: (data: T[]) => void,
+  subPath: string[] = []
 ): Unsubscribe => {
   const qParamList = queryParams.map((i) =>
     where(i.key as string, i.condition, i.value)
@@ -196,7 +203,7 @@ export const readQueryRealtime = <T>(
     orderBy(order[0] as string, order[1] || "asc")
   );
   const queryRef = query(
-    collection(db, collectionName),
+    collection(db, collectionName, ...subPath),
     ...qParamList,
     ...ordersBy
   );
@@ -219,12 +226,13 @@ export const readQueryRealtime = <T>(
 export const updateDocument = <T>(
   collectionName: string,
   documentId: string,
-  updates: Partial<T>
+  updates: Partial<T>,
+  subPath: string[] = []
 ) =>
   new Promise<T>(async (resolve, reject) => {
     try {
       if (!Object.keys(updates).length) throw Error("updates not provided");
-      const docRef = doc(db, collectionName, documentId);
+      const docRef = doc(db, collectionName, ...subPath, documentId);
       await updateDoc(docRef, updates as object);
 
       // get updated data
@@ -243,7 +251,8 @@ export const updateDocument = <T>(
 export const updateDocuments = <T>(
   collectionName: string,
   documentIdList: string[],
-  updates: Partial<T>
+  updates: Partial<T>,
+  subPath: string[] = []
 ) =>
   new Promise(async (resolve, reject) => {
     try {
@@ -252,7 +261,7 @@ export const updateDocuments = <T>(
       const batch = writeBatch(db);
 
       documentIdList.forEach((id) => {
-        const docRef = doc(db, collectionName, id);
+        const docRef = doc(db, collectionName, ...subPath, id);
         batch.update(docRef, updates as {});
       });
 
@@ -270,14 +279,15 @@ export const updateFields = <T extends { [key: string]: any }>(
   collectionName: string,
   documentId: string,
   fields: string[],
-  updates: Partial<T>
+  updates: Partial<T>,
+  subPath: string[] = []
 ) =>
   new Promise(async (resolve, reject) => {
     try {
       if (typeof updates !== "object" || !Object.keys(updates).length) {
         throw Error("updates not provided");
       }
-      const docRef = doc(db, collectionName, documentId);
+      const docRef = doc(db, collectionName, ...subPath, documentId);
 
       const updatedData = fields.reduce(
         (prev: { [key: string]: any }, current) => {
@@ -304,11 +314,12 @@ export const pushField = <T extends { [key: string]: any }>(
   collectionName: string,
   documentId: string,
   field: keyof T,
-  value: string | number
+  value: string | number,
+  subPath: string[] = []
 ) =>
   new Promise(async (resolve, reject) => {
     try {
-      const docRef = doc(db, collectionName, documentId);
+      const docRef = doc(db, collectionName, ...subPath, documentId);
 
       await updateDoc(docRef, { [field]: arrayUnion(value) });
 
@@ -324,11 +335,12 @@ export const popField = <T extends { [key: string]: any }>(
   collectionName: string,
   documentId: string,
   field: keyof T,
-  value: string | number
+  value: string | number,
+  subPath: string[] = []
 ) =>
   new Promise(async (resolve, reject) => {
     try {
-      const docRef = doc(db, collectionName, documentId);
+      const docRef = doc(db, collectionName, ...subPath, documentId);
 
       await updateDoc(docRef, { [field]: arrayRemove(value) });
 
@@ -344,10 +356,14 @@ export const popField = <T extends { [key: string]: any }>(
 /* ############################### */
 
 // delete a single document
-export const deleteDocument = (collectionName: string, documentId: string) =>
+export const deleteDocument = (
+  collectionName: string,
+  documentId: string,
+  subPath: string[] = []
+) =>
   new Promise<boolean>(async (resolve, reject) => {
     try {
-      const docRef = doc(db, collectionName, documentId);
+      const docRef = doc(db, collectionName, ...subPath, documentId);
       await deleteDoc(docRef);
 
       resolve(true);
@@ -358,13 +374,17 @@ export const deleteDocument = (collectionName: string, documentId: string) =>
   });
 
 // delete multiple document at once
-export const deleteDocuments = (collectionName: string, documentId: string[]) =>
+export const deleteDocuments = (
+  collectionName: string,
+  documentId: string[],
+  subPath: string[] = []
+) =>
   new Promise(async (resolve, reject) => {
     try {
       const batch = writeBatch(db);
 
       documentId.forEach((id) => {
-        const docRef = doc(db, collectionName, id);
+        const docRef = doc(db, collectionName, ...subPath, id);
         batch.delete(docRef);
       });
 
@@ -381,11 +401,12 @@ export const deleteDocuments = (collectionName: string, documentId: string[]) =>
 export const deleteDocumentFields = (
   collectionName: string,
   documentId: string,
-  fieldNames: string[]
+  fieldNames: string[],
+  subPath: string[] = []
 ) =>
   new Promise(async (resolve, reject) => {
     try {
-      const docRef = doc(db, collectionName, documentId);
+      const docRef = doc(db, collectionName, ...subPath, documentId);
       const fields = fieldNames.reduce(
         (prev: { [key: string]: any }, current) => {
           prev[current] = deleteField();
@@ -406,14 +427,18 @@ export const deleteDocumentFields = (
 // delete by query items
 export const deleteQuery = <T extends { [key: string]: any }>(
   collectionName: string,
-  queryParams: QueryParam<T>[]
+  queryParams: QueryParam<T>[],
+  subPath: string[] = []
 ) =>
   new Promise<T[]>(async (resolve, reject) => {
     try {
       const qParamList = queryParams.map((i) =>
         where(i.key as string, i.condition, i.value)
       );
-      const queryRef = query(collection(db, collectionName), ...qParamList);
+      const queryRef = query(
+        collection(db, collectionName, ...subPath),
+        ...qParamList
+      );
       const snapshot = await getDocs(queryRef);
       const data: T[] = [];
       const batch = writeBatch(db);
