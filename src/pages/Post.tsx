@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import PostCard from "../common/components/PostCard";
 import CommentForm from "../common/components/comment/CommentForm";
 import CommentsFeed from "../common/components/comment/CommentsFeed";
@@ -11,6 +11,7 @@ import usePosts from "../common/hooks/usePosts";
 import { PostDetailsType } from "../types/PostType";
 
 const Post = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
   if (!id) return <Navigate to={"/404"} />;
   const { posts, isLoading, isError } = usePosts();
@@ -26,7 +27,11 @@ const Post = () => {
   useEffect(() => {
     if (id && posts && !isLoading) {
       const fpost = posts.find((p) => p.id === id);
-      setPost(fpost);
+      if (!fpost) {
+        navigate("/404");
+      } else {
+        setPost(fpost);
+      }
     }
 
     // cleanup
