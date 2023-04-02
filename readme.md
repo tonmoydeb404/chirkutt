@@ -6,11 +6,9 @@ chirkutt is a kind of social media app. where you can share your thoughts by wri
 
 ### next steps
 
-- change settings page
-- delete account
-- change avatar
+- organize components
 - password reset page
 - handle empty states
-- handle user errors
+- change data models
 - organize tailwindcss
 - refactor data fetching technique
