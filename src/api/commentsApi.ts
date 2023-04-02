@@ -9,7 +9,7 @@ import {
   readQuery,
   readQueryRealtime,
 } from "../lib/database";
-import { CommentType } from "../types/CommentType";
+import { Comment } from "../types/CommentType";
 import { arrayToObject } from "../utilities/arrayToObject";
 
 export const commentsApi = createApi({
@@ -19,7 +19,7 @@ export const commentsApi = createApi({
     getAllComments: builder.query({
       queryFn: async () => {
         try {
-          const response = await readCollection<CommentType>(COMMENTS);
+          const response = await readCollection<Comment>(COMMENTS);
           // sorting by time
           const sortedResponse = response.sort((a, b) => {
             return (
@@ -40,7 +40,7 @@ export const commentsApi = createApi({
         try {
           await cacheDataLoaded;
 
-          unsubscribe = readCollectionRealtime<CommentType>(
+          unsubscribe = readCollectionRealtime<Comment>(
             COMMENTS,
             [],
             (data) => {
@@ -52,7 +52,7 @@ export const commentsApi = createApi({
                     new Date(a.createdAt).getTime()
                   );
                 });
-                draft = arrayToObject<CommentType>(sortedResponse, "id");
+                draft = arrayToObject<Comment>(sortedResponse, "id");
 
                 return draft;
               });
@@ -69,7 +69,7 @@ export const commentsApi = createApi({
     getPostComments: builder.query({
       queryFn: async (id: string) => {
         try {
-          const response = await readQuery<CommentType>(COMMENTS, [
+          const response = await readQuery<Comment>(COMMENTS, [
             { key: "postID", value: id, condition: "==" },
           ]);
           // sorting by time
@@ -92,13 +92,13 @@ export const commentsApi = createApi({
         try {
           await cacheDataLoaded;
 
-          unsubscribe = readQueryRealtime<CommentType>(
+          unsubscribe = readQueryRealtime<Comment>(
             COMMENTS,
             [{ key: "postID", value: id, condition: "==" }],
             [["createdAt", "asc"]],
             (response) => {
               updateCachedData((draft) => {
-                draft = arrayToObject<CommentType>(response, "id");
+                draft = arrayToObject<Comment>(response, "id");
 
                 return draft;
               });
@@ -112,7 +112,7 @@ export const commentsApi = createApi({
       },
     }),
     createComment: builder.mutation({
-      queryFn: async (params: CommentType) => {
+      queryFn: async (params: Comment) => {
         try {
           const response = await createDocument(COMMENTS, params.id, params);
           return { data: response };
@@ -122,13 +122,13 @@ export const commentsApi = createApi({
       },
     }),
     deleteComment: builder.mutation({
-      queryFn: async (comment: CommentType) => {
+      queryFn: async (comment: Comment) => {
         try {
-          let response: CommentType[] = [];
+          let response: Comment[] = [];
           await deleteDocument(COMMENTS, comment.id);
           if (comment.parentID === null) {
             // delete replies also
-            response = await deleteQuery<CommentType>(COMMENTS, [
+            response = await deleteQuery<Comment>(COMMENTS, [
               { key: "parentID", condition: "==", value: comment.id },
             ]);
           }
@@ -142,7 +142,7 @@ export const commentsApi = createApi({
     deleteReplies: builder.mutation({
       queryFn: async (parentID: string) => {
         try {
-          const response = await deleteQuery<CommentType>(COMMENTS, [
+          const response = await deleteQuery<Comment>(COMMENTS, [
             { key: "parentID", condition: "==", value: parentID },
           ]);
           return { data: response };

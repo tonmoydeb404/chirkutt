@@ -1,21 +1,18 @@
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { Navigate, useParams } from "react-router-dom";
-import CommentForm from "../common/components/CommentForm";
 import PostCard from "../common/components/PostCard";
-import PostComment from "../common/components/PostComment";
+import CommentForm from "../common/components/comment/CommentForm";
+import CommentsFeed from "../common/components/comment/CommentsFeed";
 import PostCardSekeleton from "../common/components/skeletons/PostCardSkeleton";
 import PostCommentSekeleton from "../common/components/skeletons/PostCommentSkeleton";
 import usePostComments from "../common/hooks/usePostComments";
 import usePosts from "../common/hooks/usePosts";
-import { usePrivateAuth } from "../common/outlet/PrivateOutlet";
 import { PostDetailsType } from "../types/PostType";
 
 const Post = () => {
   const { id } = useParams();
   if (!id) return <Navigate to={"/404"} />;
-
-  const auth = usePrivateAuth();
   const { posts, isLoading, isError } = usePosts();
   const {
     comments,
@@ -60,43 +57,7 @@ const Post = () => {
       </div>
 
       {post && comments ? (
-        <div className="comments mt-5">
-          {comments.length
-            ? comments.map((comment, _, arr) => {
-                // avoid reply
-                if (comment.parentID !== null) return null;
-
-                const commentReplies = arr
-                  .filter((replay) => replay.parentID === comment.id)
-                  .sort((replayA, replayB) => {
-                    return (
-                      new Date(replayA.createdAt).getTime() -
-                      new Date(replayB.createdAt).getTime()
-                    );
-                  });
-
-                return (
-                  <PostComment
-                    postAuthorUID={post.authorUID}
-                    key={comment.id}
-                    {...comment}
-                    replay={!post.author?.isDeleted}
-                  >
-                    {commentReplies.map((replay) => {
-                      return (
-                        <PostComment
-                          postAuthorUID={post.authorUID}
-                          key={replay.id}
-                          {...replay}
-                          replay={false}
-                        />
-                      );
-                    })}
-                  </PostComment>
-                );
-              })
-            : "no comments are found"}
-        </div>
+        <CommentsFeed comments={comments} postAuthorUID={post.authorUID} />
       ) : null}
       {commentsLoading ? (
         <div className="comments mt-5">

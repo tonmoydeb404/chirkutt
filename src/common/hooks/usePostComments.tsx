@@ -1,14 +1,14 @@
 import { useMemo } from "react";
 import { useGetAllCommentsQuery } from "../../api/commentsApi";
 import { useGetAllUsersQuery } from "../../api/usersApi";
-import { CommentDetailsType } from "../../types/CommentType";
+import { CommentDetails } from "../../types/CommentType";
 
 const usePostComments = (postID: string | undefined) => {
   const comments = useGetAllCommentsQuery({});
   const users = useGetAllUsersQuery({});
 
   const commentsData = useMemo(() => {
-    let data: CommentDetailsType[] | undefined = undefined;
+    let data: CommentDetails[] | undefined = undefined;
 
     if (
       comments.isSuccess &&
@@ -26,8 +26,8 @@ const usePostComments = (postID: string | undefined) => {
           if (!commentAuthor) return;
 
           // create comment object
-          const comment: CommentDetailsType = {
-            ...commentData,
+          const comment: CommentDetails = {
+            comment: commentData,
             author: {
               uid: commentAuthor.uid,
               name: commentAuthor.isDeleted

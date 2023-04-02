@@ -1,72 +1,65 @@
-import { formatDistanceToNow, parseISO } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import { ReactNode, useState } from "react";
 import { Link } from "react-router-dom";
-import { useDeleteCommentMutation } from "../../api/commentsApi";
-import { useRemoveNotificationsMutation } from "../../api/notificationsApi";
-import { useAppSelector } from "../../app/hooks";
-import { selectAuth } from "../../features/auth/authSlice";
-import { CommentDetailsType, CommentType } from "../../types/CommentType";
-import ReplayForm from "./ReplayForm";
+import { useDeleteCommentMutation } from "../../../api/commentsApi";
+import { useRemoveNotificationsMutation } from "../../../api/notificationsApi";
+import { useAppSelector } from "../../../app/hooks";
+import { selectAuth } from "../../../features/auth/authSlice";
+import { Comment, CommentDetails } from "../../../types/CommentType";
+import CommentReplayForm from "./CommentReplyForm";
 
-type PostCommentProps = {
+type CommentCardProps = {
   postAuthorUID: string;
   replay: boolean;
   children?: ReactNode;
-} & CommentDetailsType;
+} & CommentDetails;
 
-const PostComment = ({
+const CommentCard = ({
   author,
-  id,
-  children,
-  postID,
-  text,
-  createdAt,
-  replay,
-  authorUID,
+  comment,
   postAuthorUID,
-  parentID,
-}: PostCommentProps) => {
+  replay,
+  children,
+}: CommentCardProps) => {
   const { user: authUser } = useAppSelector(selectAuth);
   const [showReplay, setShowReplay] = useState(false);
   const [deleteComment] = useDeleteCommentMutation();
   const [removeNotifications] = useRemoveNotificationsMutation();
 
+  // delete notifications that linked with the comment
+  const handleDeleteNotifications = async (comments: Comment[]) => {
+    const deletedID = [];
+    // current comment notification
+    if (comment.authorUID !== postAuthorUID)
+      deletedID.push(`${comment.postID}:${postAuthorUID}:${comment.id}`);
+
+    comments.forEach((item) => {
+      // avoid comment author replies
+      if (item.authorUID !== comment.authorUID) {
+        deletedID.push(`${item.postID}:${comment.authorUID}:${item.id}`);
+      }
+      // avoid post author replies
+      if (item.authorUID !== postAuthorUID) {
+        deletedID.push(`${item.postID}:${postAuthorUID}:${item.id}`);
+      }
+    });
+
+    await removeNotifications(deletedID);
+  };
+
   // handle delete
   const handleDeleteComment = async () => {
-    const comment: CommentType = {
-      id,
-      text,
-      authorUID,
-      parentID,
-      postID,
-      createdAt,
-    };
     try {
       const response = await deleteComment(comment).unwrap();
-      // delete notifications too
-      const deletedID = [];
-      // current post notification
-      if (comment.parentID === null && comment.authorUID !== postAuthorUID)
-        deletedID.push(`${comment.postID}:${postAuthorUID}:${comment.id}`);
-
-      if (response !== undefined) {
-        response.forEach((item) => {
-          if (item.authorUID !== comment.authorUID) {
-            deletedID.push(`${item.postID}:${authorUID}:${item.id}`);
-          }
-          if (item.authorUID !== postAuthorUID) {
-            deletedID.push(`${item.postID}:${postAuthorUID}:${item.id}`);
-          }
-        });
-      }
-      await removeNotifications(deletedID);
+      if (!response) throw new Error("cannot delete comment");
+      await handleDeleteNotifications(response);
     } catch (e) {
       console.log(e);
     }
   };
 
   return (
-    <div className="comments_thread_wrapper" id={id}>
+    <div className="comments_thread_wrapper" id={comment.id}>
       <div className="flex flex-col gap-1 group">
         <div className="comments_thread ">
           <img src={author.avatar} alt={author.name} />
@@ -79,14 +72,11 @@ const PostComment = ({
                 {author.name}
               </Link>
               <p className="comment_thread_date text-xs opacity-60">
-                {formatDistanceToNow(
-                  parseISO(new Date(createdAt).toISOString())
-                )}{" "}
-                ago
+                {formatDistanceToNow(comment.createdAt)}&nbsp;ago
               </p>
             </div>
             <div className="flex gap-2">
-              <p className="comments_thread_text mr-auto">{text}</p>
+              <p className="comments_thread_text mr-auto">{comment.text}</p>
             </div>
 
             <div className="flex items-center gap-1 justify-end mt-1">
@@ -119,10 +109,10 @@ const PostComment = ({
       ) : null}
 
       {replay && showReplay ? (
-        <ReplayForm
-          postID={postID}
-          parentID={id}
-          commentAuthorUID={authorUID}
+        <CommentReplayForm
+          postID={comment.postID}
+          parentID={comment.id}
+          commentAuthorUID={comment.authorUID}
           postAuthorUID={postAuthorUID}
         />
       ) : null}
@@ -130,4 +120,4 @@ const PostComment = ({
   );
 };
 
-export default PostComment;
+export default CommentCard;
