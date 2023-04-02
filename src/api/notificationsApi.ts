@@ -22,18 +22,12 @@ export const notificationsApi = createApi({
     getNotifications: builder.query<NotificationDocumentType, string>({
       queryFn: async (userID: string) => {
         try {
-          const response = await readQuery<NotificationType>(NOTIFICATIONS, [
-            { key: "userID", condition: "==", value: userID },
-          ]);
-
-          const sortedResponse = response.sort((a, b) => {
-            return (
-              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-            );
-          });
-
-          const data = arrayToObject<NotificationType>(sortedResponse, "id");
-
+          const response = await readQuery<NotificationType>(
+            NOTIFICATIONS,
+            [{ key: "userID", condition: "==", value: userID }],
+            [["createdAt", "desc"]]
+          );
+          const data = arrayToObject<NotificationType>(response, "id");
           return { data };
         } catch (error) {
           return { error };
@@ -53,7 +47,6 @@ export const notificationsApi = createApi({
             (response) => {
               updateCachedData((draft) => {
                 draft = arrayToObject<NotificationType>(response, "id");
-
                 return draft;
               });
             }
@@ -65,7 +58,6 @@ export const notificationsApi = createApi({
         await cacheEntryRemoved;
         unsubscribe();
       },
-      keepUnusedDataFor: 0,
     }),
     addNotification: builder.mutation({
       queryFn: async (notification: NotificationType) => {
