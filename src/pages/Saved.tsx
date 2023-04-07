@@ -1,5 +1,5 @@
 import { Helmet } from "react-helmet";
-import PostCard from "../common/components/PostCard";
+import PostCard from "../common/components/post/card/PostCard";
 import PostCardSekeleton from "../common/components/skeletons/PostCardSkeleton";
 import useSavedPosts from "../common/hooks/useSavedPosts";
 import { usePrivateAuth } from "../common/outlet/PrivateOutlet";
@@ -32,15 +32,7 @@ const Saved = () => {
           {/* posts success state */}
           {posts?.length
             ? posts?.map((post) => {
-                return (
-                  <PostCard
-                    key={post.id}
-                    {...post}
-                    author={post.author}
-                    comments={post.comments}
-                    isSaved={post.isSaved}
-                  />
-                );
+                return <PostCard key={post.content.id} {...post} />;
               })
             : "no more posts"}
         </div>

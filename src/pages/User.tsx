@@ -2,8 +2,8 @@ import { useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useLazyGetUserQuery } from "../api/usersApi";
-import PostCard from "../common/components/PostCard";
 import ProfileCard from "../common/components/ProfileCard";
+import PostCard from "../common/components/post/card/PostCard";
 import PostCardSekeleton from "../common/components/skeletons/PostCardSkeleton";
 import ProfileCardSkeleton from "../common/components/skeletons/ProfileCardSkeleton";
 import useUserPosts from "../common/hooks/useUserPosts";
@@ -79,15 +79,7 @@ const User = () => {
             {/* posts success state */}
             {posts?.length
               ? posts?.map((post) => {
-                  return (
-                    <PostCard
-                      key={post.id}
-                      {...post}
-                      author={post.author}
-                      comments={post.comments}
-                      isSaved={post.isSaved}
-                    />
-                  );
+                  return <PostCard key={post.content.id} {...post} />;
                 })
               : "no more posts"}
           </div>

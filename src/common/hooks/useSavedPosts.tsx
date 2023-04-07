@@ -1,12 +1,12 @@
 import { useMemo } from "react";
-import { PostDetailsType } from "../../types/PostType";
+import { PostDetails } from "../../types/PostType";
 import usePosts from "./usePosts";
 
 const useSavedPosts = () => {
   const allPosts = usePosts();
 
   const postsData = useMemo(() => {
-    let data: undefined | PostDetailsType[] = undefined;
+    let data: undefined | PostDetails[] = undefined;
 
     if (allPosts.posts) {
       data = allPosts?.posts?.filter((post) => post.isSaved);

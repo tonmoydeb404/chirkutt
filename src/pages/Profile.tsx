@@ -1,30 +1,30 @@
 import { useEffect, useMemo } from "react";
 import { Helmet } from "react-helmet";
 import { useLazyGetUserQuery } from "../api/usersApi";
-import { useAppDispatch } from "../app/hooks";
-import PostCard from "../common/components/PostCard";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
 import ProfileCard from "../common/components/ProfileCard";
 import StatCard from "../common/components/StatCard";
+import PostCard from "../common/components/post/card/PostCard";
 import PostCardSekeleton from "../common/components/skeletons/PostCardSkeleton";
 import ProfileCardSkeleton from "../common/components/skeletons/ProfileCardSkeleton";
 import StatCardSkeleton from "../common/components/skeletons/StatCardSkeleton";
 import useUserPosts from "../common/hooks/useUserPosts";
-import { usePrivateAuth } from "../common/outlet/PrivateOutlet";
+import { selectAuth } from "../features/auth/authSlice";
 import { createPostModal } from "../features/postModal/postModalSlice";
 import iconList from "../lib/iconList";
 
 const Profile = () => {
   const dispatch = useAppDispatch();
-  const auth = usePrivateAuth();
+  const { user: authUser } = useAppSelector(selectAuth);
   const [getUser, user] = useLazyGetUserQuery();
-  const { posts, isLoading, isError } = useUserPosts(auth?.user?.uid);
+  const { posts, isLoading, isError } = useUserPosts(authUser?.uid);
 
   // trigger get user
   useEffect(() => {
     const fetchUser = async () => {
-      if (auth?.user) {
+      if (authUser) {
         try {
-          await getUser(auth.user.uid).unwrap();
+          await getUser(authUser.uid).unwrap();
         } catch (err) {
           console.log(err);
         }
@@ -32,13 +32,13 @@ const Profile = () => {
     };
 
     fetchUser();
-  }, [auth]);
+  }, [authUser]);
 
   // likes
   const likes = useMemo(() => {
     const like = posts?.length
       ? posts.reduce((prev, current) => {
-          return prev + current.likes.length;
+          return prev + current.content.likes.length;
         }, 0)
       : 0;
 
@@ -107,7 +107,7 @@ const Profile = () => {
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-medium">Recent Posts</h3>
 
-            {user.isSuccess && auth?.user?.uid === user.data.uid ? (
+            {user.isSuccess && authUser?.uid === user.data.uid ? (
               <button
                 className="btn btn-sm btn-primary"
                 onClick={() => dispatch(createPostModal())}
@@ -131,15 +131,7 @@ const Profile = () => {
             {/* posts success state */}
             {posts?.length
               ? posts?.map((post) => {
-                  return (
-                    <PostCard
-                      key={post.id}
-                      {...post}
-                      author={post.author}
-                      comments={post.comments}
-                      isSaved={post.isSaved}
-                    />
-                  );
+                  return <PostCard key={post.content.id} {...post} />;
                 })
               : "no more posts"}
           </div>

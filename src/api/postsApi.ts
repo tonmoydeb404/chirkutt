@@ -9,15 +9,15 @@ import {
   readQuery,
   updateDocument,
 } from "../lib/database";
-import { PostDocumentType, PostType } from "../types/PostType";
+import { PostDocument, PostType } from "../types/PostType";
 import { arrayToObject } from "../utilities/arrayToObject";
 
 export const postsApi = createApi({
   reducerPath: "postsApi",
   baseQuery: fakeBaseQuery(),
   endpoints: (builder) => ({
-    getAllPosts: builder.query<PostDocumentType, void>({
-      queryFn: () => ({ data: {} }),
+    getAllPosts: builder.query<PostDocument, void>({
+      queryFn: () => ({ data: {} as PostDocument }),
       onCacheEntryAdded: async (
         args,
         { cacheDataLoaded, updateCachedData, cacheEntryRemoved }

@@ -1,15 +1,15 @@
 import { useMemo } from "react";
-import { PostDetailsType } from "../../types/PostType";
+import { PostDetails } from "../../types/PostType";
 import usePosts from "./usePosts";
 
 const useUserPosts = (uid: string | undefined) => {
   const allPosts = usePosts();
 
   const postsData = useMemo(() => {
-    let data: undefined | PostDetailsType[] = undefined;
+    let data: undefined | PostDetails[] = undefined;
 
     if (uid) {
-      data = allPosts?.posts?.filter((post) => post.authorUID === uid);
+      data = allPosts?.posts?.filter((post) => post.content.authorUID === uid);
     }
 
     return data;

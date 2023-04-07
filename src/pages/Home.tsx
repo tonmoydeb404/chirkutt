@@ -1,4 +1,4 @@
-import PostCard from "../common/components/PostCard";
+import PostCard from "../common/components/post/card/PostCard";
 import PostCardSekeleton from "../common/components/skeletons/PostCardSkeleton";
 import usePosts from "../common/hooks/usePosts";
 
@@ -14,15 +14,7 @@ const Home = () => {
       <div className="flex flex-col gap-3">
         {posts.length
           ? posts?.map((post) => {
-              return (
-                <PostCard
-                  key={post.id}
-                  {...post}
-                  author={post.author}
-                  comments={post.comments}
-                  isSaved={post.isSaved}
-                />
-              );
+              return <PostCard key={post.content.id} {...post} />;
             })
           : "nothing is here"}
       </div>

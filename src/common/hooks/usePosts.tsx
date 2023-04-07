@@ -3,7 +3,7 @@ import { useGetAllCommentsQuery } from "../../api/commentsApi";
 import { useGetAllPostsQuery } from "../../api/postsApi";
 import { useLazyGetSavedPostsQuery } from "../../api/savedApi";
 import { useGetAllUsersQuery } from "../../api/usersApi";
-import { PostDetailsType } from "../../types/PostType";
+import { PostDetails } from "../../types/PostType";
 import { usePrivateAuth } from "../outlet/PrivateOutlet";
 
 const usePosts = () => {
@@ -29,7 +29,7 @@ const usePosts = () => {
   }, [auth]);
 
   const postsData = useMemo(() => {
-    let data: undefined | PostDetailsType[] = undefined;
+    let data: undefined | PostDetails[] = undefined;
 
     if (
       posts.isSuccess &&
@@ -51,8 +51,8 @@ const usePosts = () => {
         if (!postAuthor) return;
 
         // create post object
-        const post: PostDetailsType = {
-          ...postContent,
+        const post: PostDetails = {
+          content: postContent,
           author: {
             name: postAuthor.isDeleted ? "Unknown Author" : postAuthor.name,
             uid: postAuthor.uid,

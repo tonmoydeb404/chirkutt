@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet";
 import { Navigate, useSearchParams } from "react-router-dom";
-import PostCard from "../common/components/PostCard";
+import PostCard from "../common/components/post/card/PostCard";
 import PostCardSekeleton from "../common/components/skeletons/PostCardSkeleton";
 import usePosts from "../common/hooks/usePosts";
 
@@ -36,18 +36,10 @@ const Search = () => {
           ? posts?.length
             ? posts
                 ?.filter((post) =>
-                  post.text?.toLowerCase().includes(query.toLowerCase())
+                  post.content.text?.toLowerCase().includes(query.toLowerCase())
                 )
                 .map((post) => {
-                  return (
-                    <PostCard
-                      key={post.id}
-                      {...post}
-                      author={post.author}
-                      comments={post.comments}
-                      isSaved={post.isSaved}
-                    />
-                  );
+                  return <PostCard key={post.content.id} {...post} />;
                 })
             : "no more posts"
           : null}

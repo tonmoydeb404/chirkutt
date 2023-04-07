@@ -1,8 +1,11 @@
+import { useEffect } from "react";
 import { Helmet } from "react-helmet";
-import { useReadNotificationsMutation } from "../api/notificationsApi";
+import {
+  useLazyGetNotificationsQuery,
+  useReadNotificationsMutation,
+} from "../api/notificationsApi";
 import NotificationCard from "../common/components/NotificationCard";
 import NotificationCardSkeleton from "../common/components/skeletons/NotificationCardSkeleton";
-import { useAppContext } from "../common/layout/AppLayout";
 import { usePrivateAuth } from "../common/outlet/PrivateOutlet";
 import {
   NotificationDocumentType,
@@ -11,8 +14,32 @@ import {
 
 const Notifications = () => {
   const auth = usePrivateAuth();
-  const data = useAppContext();
   const [readNotifications] = useReadNotificationsMutation();
+  const [getNotifications, notifications] = useLazyGetNotificationsQuery();
+
+  // trigger get notifications
+  useEffect(() => {
+    const fetchData = async () => {
+      if (auth && auth.status === "AUTHORIZED" && auth.user) {
+        try {
+          await getNotifications(auth.user.uid).unwrap();
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    };
+
+    fetchData();
+  }, [auth]);
+
+  // is all notifications are readed
+  const notificationUnread = Boolean(
+    notifications.isSuccess &&
+      Object.keys(notifications.data).length &&
+      Object.keys(notifications.data).some(
+        (key) => notifications.data[key].status === "UNSEEN"
+      )
+  );
 
   // handle read all notification
   const handleReadAllNotifications = async (
@@ -48,13 +75,11 @@ const Notifications = () => {
           <h3 className="text-lg font-medium">Notifications</h3>
 
           <div className="flex items-center gap-1">
-            {data.notifications.isSuccess && data.notificationUnread ? (
+            {notifications.isSuccess && notificationUnread ? (
               <button
                 className="btn btn-sm btn-theme"
                 onClick={async () =>
-                  await handleReadAllNotifications(
-                    data.notifications?.data || {}
-                  )
+                  await handleReadAllNotifications(notifications?.data || {})
                 }
               >
                 mark all as read
@@ -63,9 +88,9 @@ const Notifications = () => {
           </div>
         </div>
         <div className="flex flex-col gap-1">
-          {data.notifications.isSuccess
-            ? Object.keys(data.notifications.data).map((notifID) => {
-                const notif = data.notifications.data?.[notifID];
+          {notifications.isSuccess
+            ? Object.keys(notifications.data).map((notifID) => {
+                const notif = notifications.data?.[notifID];
 
                 if (!notif) return null;
 
@@ -79,7 +104,7 @@ const Notifications = () => {
               })
             : null}
 
-          {data.notifications.isLoading || !data.notifications.data ? (
+          {notifications.isLoading || !notifications.data ? (
             <>
               <NotificationCardSkeleton />
               <NotificationCardSkeleton />
@@ -88,10 +113,10 @@ const Notifications = () => {
             </>
           ) : null}
 
-          {data.notifications.isSuccess && !data.notifications.data
+          {notifications.isSuccess && !notifications.data
             ? "nothing here"
             : null}
-          {data.notifications.isError ? "something wents to wrong" : null}
+          {notifications.isError ? "something wents to wrong" : null}
         </div>
       </div>
     </>
