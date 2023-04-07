@@ -37,16 +37,18 @@ const PostCard = ({ content, author, comments, isSaved }: PostDetails) => {
         {isAuthorAuthorized ? <PostCardActions post={content} /> : null}
       </section>
       {/* body part */}
-      <section className="flex flex-col mb-3">
+      <section className="flex flex-col">
         <p className="text-base whitespace-pre-line">{content.text}</p>
       </section>
       {/* footer part */}
-      <PostCardFooter
-        author={author}
-        content={content}
-        comments={comments}
-        isSaved={isSaved}
-      />
+      {!author.isDeleted ? (
+        <PostCardFooter
+          author={author}
+          content={content}
+          comments={comments}
+          isSaved={isSaved}
+        />
+      ) : null}
     </article>
   );
 };

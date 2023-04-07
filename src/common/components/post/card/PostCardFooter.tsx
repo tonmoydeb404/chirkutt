@@ -59,7 +59,7 @@ const PostCardFooter = ({
   };
 
   return (
-    <section className="flex items-center gap-1">
+    <section className="flex items-center gap-1 mt-3">
       <PostCardReaction
         disabled={!!author.isDeleted}
         isLiked={isLiked}
@@ -71,24 +71,17 @@ const PostCardFooter = ({
         <span className="text-base">{iconList.comment}</span>
       </Link>
 
-      {author.isDeleted ? null : (
-        <>
-          <button
-            className="btn-icon btn-sm btn-theme ml-auto"
-            onClick={handleShare}
-          >
-            {iconList.share}
-          </button>
-          {status === "AUTHORIZED" ? (
-            <button
-              className="btn-icon btn-theme btn-sm"
-              onClick={handleBookmark}
-            >
-              {iconList[isSaved ? "remove_bookmark" : "add_bookmark"]}
-            </button>
-          ) : null}
-        </>
-      )}
+      <button
+        className="btn-icon btn-sm btn-theme ml-auto"
+        onClick={handleShare}
+      >
+        {iconList.share}
+      </button>
+      {status === "AUTHORIZED" ? (
+        <button className="btn-icon btn-theme btn-sm" onClick={handleBookmark}>
+          {iconList[isSaved ? "remove_bookmark" : "add_bookmark"]}
+        </button>
+      ) : null}
     </section>
   );
 };
