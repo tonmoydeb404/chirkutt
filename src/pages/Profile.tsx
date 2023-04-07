@@ -2,9 +2,9 @@ import { useEffect, useMemo } from "react";
 import { Helmet } from "react-helmet";
 import { useLazyGetUserQuery } from "../api/usersApi";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
-import ProfileCard from "../common/components/ProfileCard";
-import StatCard from "../common/components/StatCard";
 import PostCard from "../common/components/post/card/PostCard";
+import ProfileCard from "../common/components/profile/card/ProfileCard";
+import ProfileStat from "../common/components/profile/stat/ProfileStat";
 import PostCardSekeleton from "../common/components/skeletons/PostCardSkeleton";
 import ProfileCardSkeleton from "../common/components/skeletons/ProfileCardSkeleton";
 import StatCardSkeleton from "../common/components/skeletons/StatCardSkeleton";
@@ -79,14 +79,19 @@ const Profile = () => {
         {/* user stats data state */}
         {user.isSuccess && user.data ? (
           <div className="grid min-[500px]:grid-cols-2 sm:grid-cols-3 mt-2 gap-2">
-            <StatCard
+            <ProfileStat
               icon="post"
               color="primary"
               title="chirkutts"
               count={posts?.length || 0}
             />
-            <StatCard icon="like" color="success" title="likes" count={likes} />
-            <StatCard
+            <ProfileStat
+              icon="like"
+              color="success"
+              title="likes"
+              count={likes}
+            />
+            <ProfileStat
               icon="comment"
               color="warning"
               title="comments"

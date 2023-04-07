@@ -1,14 +1,14 @@
 import { BiCopyAlt } from "react-icons/bi";
-import iconList from "../../lib/iconList";
+import iconList from "../../../../lib/iconList";
 
-type ProfileCardType = {
+type ProfileCardProps = {
   avatar: string;
   name: string;
   bio: string | null | undefined;
   email: string;
 };
 
-const ProfileCard = ({ avatar, name, bio, email }: ProfileCardType) => {
+const ProfileCard = ({ avatar, name, bio, email }: ProfileCardProps) => {
   return (
     <div className="flex flex-col sm:flex-row items-start gap-3 box p-3 sm:p-4 rounded">
       <div className="w-[70px]">

@@ -1,24 +1,16 @@
-import iconList from "../../lib/iconList";
+import iconList from "../../../../lib/iconList";
 
-type StatCardType = {
+type ProfileStatProps = {
   icon: string;
   title: string;
   count: number;
   color: "primary" | "success" | "warning";
 };
 
-const StatCard = ({ icon, title, count, color }: StatCardType) => {
+const ProfileStat = ({ icon, title, count, color }: ProfileStatProps) => {
   return (
     <div className="flex items-start gap-1 py-2 sm:py-2.5 px-2 lg:px-3 box rounded">
-      <span
-        className={`text-[40px] ${
-          color === "warning"
-            ? "text-warning-600"
-            : color === "success"
-            ? "text-success-600"
-            : "text-primary-600"
-        }`}
-      >
+      <span className={`text-[40px] text-${color}-600`}>
         {iconList?.[icon]}
       </span>
       <div className="flex flex-col gap-0">
@@ -29,4 +21,4 @@ const StatCard = ({ icon, title, count, color }: StatCardType) => {
   );
 };
 
-export default StatCard;
+export default ProfileStat;
