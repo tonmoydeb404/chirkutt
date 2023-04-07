@@ -6,7 +6,7 @@ import {
   BiText,
   BiTrash,
 } from "react-icons/bi";
-import SettingsCard from "../../common/components/SettingsCard";
+import SettingsCard from "../../common/components/settings/card/SettingsCard";
 
 const Settings = () => {
   return (
