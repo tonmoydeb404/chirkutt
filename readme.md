@@ -6,7 +6,6 @@ chirkutt is a kind of social media app. where you can share your thoughts by wri
 
 ### next steps
 
-- password reset page
 - handle empty states
 - change data models
 - organize tailwindcss

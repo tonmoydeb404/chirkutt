@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from "react";
+import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { useLazyGetNotificationsQuery } from "../../api/notificationsApi";
 
@@ -9,12 +9,7 @@ import Navbar from "../components/layout/Navbar";
 import Sidebar from "../components/layout/Sidebar";
 import PostModal from "../components/post/modal/PostModal";
 
-type AppLayoutProps = {
-  children?: ReactNode;
-  sidebar: boolean;
-};
-
-const AppLayout = ({ children, sidebar }: AppLayoutProps) => {
+const AppLayout = () => {
   const auth = useAppSelector(selectAuth);
   const [getNotifications, allNotifications] = useLazyGetNotificationsQuery();
 
@@ -47,11 +42,9 @@ const AppLayout = ({ children, sidebar }: AppLayoutProps) => {
       <Navbar auth={auth} />
       <div className="container py-5 flex gap-3 md:gap-5 relative">
         <div className="flex-1">
-          {children ? children : <Outlet context={auth} />}
+          <Outlet context={auth} />
         </div>
-        {sidebar ? (
-          <Sidebar notifications={notificationUnread} auth={auth} />
-        ) : null}
+        <Sidebar notifications={notificationUnread} auth={auth} />
       </div>
       <Appbar notifications={notificationUnread} auth={auth} />
       <PostModal />

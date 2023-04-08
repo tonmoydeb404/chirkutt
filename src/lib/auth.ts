@@ -5,6 +5,7 @@ import {
   createUserWithEmailAndPassword,
   deleteUser,
   reauthenticateWithCredential,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
   updatePassword,
@@ -152,6 +153,20 @@ export const deleteAuth = ({ user }: DeleteAuth) =>
       if (!auth.currentUser) throw Error("authorization error");
       await deleteUser(user);
       resolve(user);
+    } catch (error: any) {
+      const errorMsg = error.code || error.message || "something went wrong";
+      reject(errorMsg);
+    }
+  });
+
+type ResetPassword = {
+  email: string;
+};
+export const resetPassword = ({ email }: ResetPassword) =>
+  new Promise<string>(async (resolve, reject) => {
+    try {
+      await sendPasswordResetEmail(auth, email);
+      resolve("password reset email send");
     } catch (error: any) {
       const errorMsg = error.code || error.message || "something went wrong";
       reject(errorMsg);

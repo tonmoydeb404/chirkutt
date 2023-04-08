@@ -3,6 +3,7 @@ import { USERS } from "../constants/firebase.constant";
 import {
   deleteAuth,
   reAuthenticate,
+  resetPassword,
   updateAuth,
   updateAuthPassword,
 } from "../lib/auth";
@@ -150,6 +151,16 @@ export const usersApi = createApi({
         }
       },
     }),
+    resetPassword: builder.mutation({
+      queryFn: async ({ email }: { email: string }) => {
+        try {
+          const response = await resetPassword({ email });
+          return { data: response };
+        } catch (error) {
+          return { error };
+        }
+      },
+    }),
   }),
 });
 
@@ -163,4 +174,5 @@ export const {
   useUpdateNameMutation,
   useUpdatePasswordMutation,
   useDeleteUserMutation,
+  useResetPasswordMutation,
 } = usersApi;

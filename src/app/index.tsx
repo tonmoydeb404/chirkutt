@@ -39,11 +39,12 @@ const App = () => {
               <Route element={<AuthLayout />}>
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
+                <Route path="/reset" element={<Reset />} />
               </Route>
             </Route>
             {/* only authenticated user can access */}
             <Route element={<PrivateOutlet />}>
-              <Route element={<AppLayout sidebar={true} />}>
+              <Route element={<AppLayout />}>
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/notifications" element={<Notifications />} />
                 <Route path="/settings">
@@ -58,14 +59,11 @@ const App = () => {
               </Route>
             </Route>
             {/* everyone can access */}
-            <Route element={<AppLayout sidebar={true} />}>
+            <Route element={<AppLayout />}>
               <Route path="/" element={<Home />} />
               <Route path="/search" element={<Search />} />
               <Route path="/post/:id" element={<Post />} />
               <Route path="/user/:uid" element={<User />} />
-            </Route>
-            <Route element={<AuthLayout />}>
-              <Route path="/reset" element={<Reset />} />
             </Route>
             {/* error */}
             <Route path="*" element={<NotFound />} />
