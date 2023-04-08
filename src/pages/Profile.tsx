@@ -8,6 +8,8 @@ import ProfileStat from "../common/components/profile/stat/ProfileStat";
 import PostCardSekeleton from "../common/components/skeletons/PostCardSkeleton";
 import ProfileCardSkeleton from "../common/components/skeletons/ProfileCardSkeleton";
 import StatCardSkeleton from "../common/components/skeletons/StatCardSkeleton";
+import EmptyState from "../common/components/state/EmptyState";
+import ErrorState from "../common/components/state/ErrorState";
 import useUserPosts from "../common/hooks/useUserPosts";
 import { selectAuth } from "../features/auth/authSlice";
 import { createPostModal } from "../features/postModal/postModalSlice";
@@ -132,13 +134,15 @@ const Profile = () => {
               </>
             ) : null}
             {/* posts error state */}
-            {isError ? <p>something wents to wrong...</p> : null}
+            {isError ? <ErrorState /> : null}
             {/* posts success state */}
-            {posts?.length
-              ? posts?.map((post) => {
-                  return <PostCard key={post.content.id} {...post} />;
-                })
-              : "no more posts"}
+            {posts?.length ? (
+              posts?.map((post) => {
+                return <PostCard key={post.content.id} {...post} />;
+              })
+            ) : (
+              <EmptyState text="no recent posts" />
+            )}
           </div>
         </div>
       </div>

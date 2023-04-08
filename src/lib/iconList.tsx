@@ -20,6 +20,7 @@ import {
   BiMessageAdd,
   BiMoon,
   BiPencil,
+  BiSad,
   BiSend,
   BiShare,
   BiSun,
@@ -66,6 +67,7 @@ const iconList: { [key: string]: JSX.Element } = {
   send: <BiSend />,
   pencil: <BiPencil />,
   notification: <BiBell />,
+  sad: <BiSad />,
 };
 
 export default iconList;

@@ -1,6 +1,8 @@
 import { Helmet } from "react-helmet";
 import PostCard from "../common/components/post/card/PostCard";
 import PostCardSekeleton from "../common/components/skeletons/PostCardSkeleton";
+import EmptyState from "../common/components/state/EmptyState";
+import ErrorState from "../common/components/state/ErrorState";
 import useSavedPosts from "../common/hooks/useSavedPosts";
 import { usePrivateAuth } from "../common/outlet/PrivateOutlet";
 
@@ -28,13 +30,15 @@ const Saved = () => {
             </>
           ) : null}
           {/* posts error state */}
-          {isError ? <p>something wents to wrong...</p> : null}
+          {isError ? <ErrorState /> : null}
           {/* posts success state */}
-          {posts?.length
-            ? posts?.map((post) => {
-                return <PostCard key={post.content.id} {...post} />;
-              })
-            : "no more posts"}
+          {posts?.length ? (
+            posts?.map((post) => {
+              return <PostCard key={post.content.id} {...post} />;
+            })
+          ) : (
+            <EmptyState text="nothing is saved" />
+          )}
         </div>
       </div>
     </>

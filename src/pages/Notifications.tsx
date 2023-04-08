@@ -6,6 +6,8 @@ import {
 } from "../api/notificationsApi";
 import NotificationCard from "../common/components/NotificationCard";
 import NotificationCardSkeleton from "../common/components/skeletons/NotificationCardSkeleton";
+import EmptyState from "../common/components/state/EmptyState";
+import ErrorState from "../common/components/state/ErrorState";
 import { usePrivateAuth } from "../common/outlet/PrivateOutlet";
 import {
   NotificationDocumentType,
@@ -89,11 +91,7 @@ const Notifications = () => {
         </div>
         <div className="flex flex-col gap-1">
           {notifications.isSuccess
-            ? Object.keys(notifications.data).map((notifID) => {
-                const notif = notifications.data?.[notifID];
-
-                if (!notif) return null;
-
+            ? Object.values(notifications.data).map((notif) => {
                 return (
                   <NotificationCard
                     key={notif.id}
@@ -113,10 +111,11 @@ const Notifications = () => {
             </>
           ) : null}
 
-          {notifications.isSuccess && !notifications.data
-            ? "nothing here"
-            : null}
-          {notifications.isError ? "something wents to wrong" : null}
+          {notifications.isSuccess &&
+          !Object.keys(notifications.data).length ? (
+            <EmptyState text="no new notificaitons!" />
+          ) : null}
+          {notifications.isError ? <ErrorState /> : null}
         </div>
       </div>
     </>
