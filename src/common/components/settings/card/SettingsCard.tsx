@@ -24,7 +24,7 @@ const SettingsCard = ({
     <Link
       to={to}
       onClick={onClick}
-      className={`flex items-center py-3 px-3 box rounded gap-3 group ${wrapperClass}`}
+      className={`flex items-center py-3 px-3 box rounded gap-3 group duration-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 ${wrapperClass}`}
     >
       <span className={`text-2xl text-primary-600 ${iconClass}`}>
         <Icon />
