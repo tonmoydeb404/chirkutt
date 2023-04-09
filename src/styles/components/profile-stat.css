@@ -1,0 +1,27 @@
+.profile-stat {
+  @apply flex items-start gap-1 py-2 sm:py-2.5 px-2 lg:px-3 box rounded;
+}
+
+.profile-stat .profile-stat_icon {
+  @apply text-[40px];
+}
+
+.profile-stat.primary .profile-stat_icon {
+  @apply text-primary-600;
+}
+.profile-stat.warning .profile-stat_icon {
+  @apply text-warning-600;
+}
+.profile-stat.error .profile-stat_icon {
+  @apply text-error-600;
+}
+.profile-stat.success .profile-stat_icon {
+  @apply text-success-600;
+}
+
+.profile-stat_title {
+  @apply text-xs uppercase tracking-wide;
+}
+.profile-stat_amount {
+  @apply text-xl font-bold;
+}

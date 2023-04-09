@@ -9,13 +9,11 @@ type ProfileStatProps = {
 
 const ProfileStat = ({ icon, title, count, color }: ProfileStatProps) => {
   return (
-    <div className="flex items-start gap-1 py-2 sm:py-2.5 px-2 lg:px-3 box rounded">
-      <span className={`text-[40px] text-${color}-600`}>
-        {iconList?.[icon]}
-      </span>
+    <div className={`profile-stat ${color}`}>
+      <span className={`profile-stat_icon`}>{iconList?.[icon]}</span>
       <div className="flex flex-col gap-0">
-        <h3 className="text-xs uppercase tracking-wide">{title}</h3>
-        <h2 className="text-xl font-bold">{count}</h2>
+        <h3 className="profile-stat_title">{title}</h3>
+        <h2 className="profile-stat_amount">{count}</h2>
       </div>
     </div>
   );
