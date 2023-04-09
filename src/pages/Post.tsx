@@ -1,44 +1,24 @@
-import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import CommentForm from "../common/components/comment/CommentForm";
 import CommentsFeed from "../common/components/comment/CommentsFeed";
 import PostCard from "../common/components/post/card/PostCard";
 import PostCardSekeleton from "../common/components/skeletons/PostCardSkeleton";
 import PostCommentSekeleton from "../common/components/skeletons/PostCommentSkeleton";
+import usePost from "../common/hooks/usePost";
 import usePostComments from "../common/hooks/usePostComments";
-import usePosts from "../common/hooks/usePosts";
-import { PostDetails } from "../types/PostType";
 
 const Post = () => {
-  const navigate = useNavigate();
   const { id } = useParams();
   if (!id) return <Navigate to={"/404"} />;
-  const { posts, isLoading, isError } = usePosts();
+  const { post, isLoading, isError, error } = usePost(id);
   const {
     comments,
     isLoading: commentsLoading,
     isError: commentsError,
   } = usePostComments(id);
 
-  const [post, setPost] = useState<PostDetails | undefined | null>(null);
-
-  // find post state
-  useEffect(() => {
-    if (id && posts && !isLoading) {
-      const fpost = posts.find((p) => p.content.id === id);
-      if (!fpost) {
-        navigate("/404");
-      } else {
-        setPost(fpost);
-      }
-    }
-
-    // cleanup
-    return () => {
-      setPost(null);
-    };
-  }, [posts, id, isLoading]);
+  if (!post && error === "document not found") return <Navigate to={"/404"} />;
 
   return (
     <>
@@ -50,7 +30,7 @@ const Post = () => {
         ) : null}
       </Helmet>
       {/* post loading state */}
-      {post === null ? <PostCardSekeleton /> : null}
+      {isLoading ? <PostCardSekeleton /> : null}
 
       {/* post success state */}
       {post ? <PostCard key={post.content.id} {...post} /> : null}
@@ -62,15 +42,17 @@ const Post = () => {
         />
       ) : null}
 
-      <div className="flex items-center justify-between mt-10">
-        <h3 className="">All Comments</h3>
-      </div>
-
       {post && comments ? (
-        <CommentsFeed
-          comments={comments}
-          postAuthorUID={post.content.authorUID}
-        />
+        <>
+          <div className="flex items-center justify-between mt-10">
+            <h3 className="">All Comments</h3>
+          </div>
+
+          <CommentsFeed
+            comments={comments}
+            postAuthorUID={post.content.authorUID}
+          />
+        </>
       ) : null}
       {commentsLoading ? (
         <div className="comments mt-5">

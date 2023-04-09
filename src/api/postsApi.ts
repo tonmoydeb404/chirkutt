@@ -6,6 +6,8 @@ import {
   popField,
   pushField,
   readCollectionRealtime,
+  readDocument,
+  readDocumentRealtime,
   readQuery,
   updateDocument,
 } from "../lib/database";
@@ -19,7 +21,7 @@ export const postsApi = createApi({
     getAllPosts: builder.query<PostDocument, void>({
       queryFn: () => ({ data: {} as PostDocument }),
       onCacheEntryAdded: async (
-        args,
+        _args,
         { cacheDataLoaded, updateCachedData, cacheEntryRemoved }
       ) => {
         let unsubscribe = () => {};
@@ -42,6 +44,34 @@ export const postsApi = createApi({
 
         await cacheEntryRemoved;
         unsubscribe();
+      },
+    }),
+    getPost: builder.query<PostType, string>({
+      queryFn: async (id) => {
+        try {
+          const response = await readDocument<PostType>(POSTS, id);
+          return { data: response };
+        } catch (error) {
+          return { error };
+        }
+      },
+      onCacheEntryAdded: async (
+        id,
+        { cacheDataLoaded, updateCachedData, cacheEntryRemoved }
+      ) => {
+        try {
+          await cacheDataLoaded;
+          readDocumentRealtime<PostType>(id, POSTS, (data) => {
+            updateCachedData((draft) => {
+              draft = data;
+              return draft;
+            });
+          });
+        } catch (error) {
+          console.log(error);
+        }
+
+        await cacheEntryRemoved;
       },
     }),
     createPost: builder.mutation({
@@ -74,9 +104,6 @@ export const postsApi = createApi({
       }) => {
         try {
           const response = await updateDocument<PostType>(POSTS, id, updates);
-
-          if (!response) throw "something went to wrong";
-
           return { data: response };
         } catch (error) {
           return { error };
@@ -86,16 +113,12 @@ export const postsApi = createApi({
     searchPosts: builder.query({
       queryFn: async (query: string) => {
         try {
-          const response = await readQuery<PostType>(POSTS, [
-            { key: "text", condition: ">=", value: query },
-          ]);
-          // sorting by time
-          const sortedResponse = response.sort((a, b) => {
-            return (
-              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-            );
-          });
-          const data = arrayToObject(sortedResponse, "id");
+          const response = await readQuery<PostType>(
+            POSTS,
+            [{ key: "text", condition: ">=", value: query }],
+            [["createdAt", "desc"]]
+          );
+          const data = arrayToObject(response, "id");
           return { data };
         } catch (error) {
           return { error };
@@ -135,4 +158,5 @@ export const {
   useLazySearchPostsQuery,
   useLikePostMutation,
   useDislikePostMutation,
+  useLazyGetPostQuery,
 } = postsApi;

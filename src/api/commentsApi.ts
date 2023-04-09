@@ -4,12 +4,11 @@ import {
   createDocument,
   deleteDocument,
   deleteQuery,
-  readCollection,
   readCollectionRealtime,
   readQuery,
   readQueryRealtime,
 } from "../lib/database";
-import { Comment } from "../types/CommentType";
+import { Comment, CommentDocument } from "../types/CommentType";
 import { arrayToObject } from "../utilities/arrayToObject";
 
 export const commentsApi = createApi({
@@ -17,43 +16,19 @@ export const commentsApi = createApi({
   baseQuery: fakeBaseQuery(),
   endpoints: (builder) => ({
     getAllComments: builder.query({
-      queryFn: async () => {
-        try {
-          const response = await readCollection<Comment>(COMMENTS);
-          // sorting by time
-          const sortedResponse = response.sort((a, b) => {
-            return (
-              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-            );
-          });
-          const data = arrayToObject(sortedResponse, "id");
-          return { data };
-        } catch (error) {
-          return { error };
-        }
-      },
+      queryFn: async () => ({ data: {} as CommentDocument }),
       onCacheEntryAdded: async (
-        args,
+        _args,
         { cacheDataLoaded, updateCachedData, cacheEntryRemoved }
       ) => {
-        let unsubscribe = () => {};
         try {
           await cacheDataLoaded;
-
-          unsubscribe = readCollectionRealtime<Comment>(
+          readCollectionRealtime<Comment>(
             COMMENTS,
-            [],
+            [["createdAt", "asc"]],
             (data) => {
               updateCachedData((draft) => {
-                // sorting by time
-                const sortedResponse = data.sort((a, b) => {
-                  return (
-                    new Date(b.createdAt).getTime() -
-                    new Date(a.createdAt).getTime()
-                  );
-                });
-                draft = arrayToObject<Comment>(sortedResponse, "id");
-
+                draft = arrayToObject<Comment>(data, "id");
                 return draft;
               });
             }
@@ -63,22 +38,17 @@ export const commentsApi = createApi({
         }
 
         await cacheEntryRemoved;
-        unsubscribe();
       },
     }),
     getPostComments: builder.query({
       queryFn: async (id: string) => {
         try {
-          const response = await readQuery<Comment>(COMMENTS, [
-            { key: "postID", value: id, condition: "==" },
-          ]);
-          // sorting by time
-          const sortedResponse = response.sort((a, b) => {
-            return (
-              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-            );
-          });
-          const data = arrayToObject(sortedResponse, "id");
+          const response = await readQuery<Comment>(
+            COMMENTS,
+            [{ key: "postID", value: id, condition: "==" }],
+            [["createdAt", "asc"]]
+          );
+          const data = arrayToObject(response, "id");
           return { data };
         } catch (error) {
           return { error };
@@ -109,6 +79,7 @@ export const commentsApi = createApi({
         }
 
         await cacheEntryRemoved;
+        unsubscribe();
       },
     }),
     createComment: builder.mutation({
