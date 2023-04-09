@@ -1,4 +1,3 @@
-import { BiCopyAlt } from "react-icons/bi";
 import iconList from "../../../../lib/iconList";
 
 type ProfileCardProps = {
@@ -20,13 +19,6 @@ const ProfileCard = ({ avatar, name, bio, email }: ProfileCardProps) => {
       <div className="flex flex-col gap-1 w-full">
         <div className="flex items-center gap-2">
           <h2 className="text-2xl font-semibold">{name}</h2>
-          <span>-</span>
-          <span
-            title="copy profile link"
-            className="text-primary-600 text-sm hover:text-primary-700 cursor-copy"
-          >
-            <BiCopyAlt />
-          </span>
         </div>
         {bio ? (
           <p className="text-sm w-full">{bio}</p>
